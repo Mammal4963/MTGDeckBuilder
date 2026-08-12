@@ -1,0 +1,66 @@
+# A small example collection - try:
+#   python -m mtg_deckbuilder analyze examples/sample_collection.txt
+#   python -m mtg_deckbuilder suggest examples/sample_collection.txt
+#   python -m mtg_deckbuilder build examples/sample_collection.txt --commander "Krenko, Mob Boss" --explain
+
+1 Krenko, Mob Boss
+1 Purphoros, God of the Forge
+1 Vito, Thorn of the Dusk Rose
+1 Talrand, Sky Summoner
+1 Ezuri, Renegade Leader
+2 Goblin Chieftain
+4 Skirk Prospector
+2 Goblin Matron
+2 Impact Tremors
+4 Lightning Bolt
+2 Shock
+2 Empty the Warrens
+1 Goblin Bombardment
+1 Blasphemous Act
+2 Young Pyromancer
+1 Guttersnipe
+2 Blood Artist
+2 Zulaport Cutthroat
+1 Viscera Seer
+2 Carrion Feeder
+1 Grave Pact
+2 Sign in Blood
+1 Night's Whisper
+2 Doom Blade
+1 Reanimate
+2 Stitcher's Supplier
+1 Gravecrawler
+1 Malakir Rebirth
+2 Soul Warden
+2 Ajani's Pridemate
+2 Swords to Plowshares
+1 Path to Exile
+1 Wrath of God
+3 Raise the Alarm
+2 Intangible Virtue
+1 Archmage Emeritus
+3 Opt
+2 Brainstorm
+2 Ponder
+3 Counterspell
+4 Llanowar Elves
+2 Elvish Mystic
+1 Elvish Archdruid
+2 Imperious Perfect
+1 Lys Alana Huntmaster
+2 Cultivate
+2 Rampant Growth
+1 Overrun
+1 Beast Whisperer
+1 Harmonize
+1 Sol Ring
+1 Arcane Signet
+2 Mind Stone
+1 Skullclamp
+1 Command Tower
+4 Evolving Wilds
+20 Mountain
+15 Swamp
+12 Plains
+12 Island
+15 Forest
