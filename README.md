@@ -19,8 +19,11 @@ No install needed (Python 3.9+). Try it immediately on the bundled sample:
 ```bash
 python -m mtg_deckbuilder analyze examples/sample_collection.txt
 python -m mtg_deckbuilder suggest examples/sample_collection.txt
-python -m mtg_deckbuilder build examples/sample_collection.txt --commander "Krenko, Mob Boss" --explain
+python -m mtg_deckbuilder build   examples/sample_collection.txt --explain
 ```
+
+`build` with no options builds the best 60-card deck it can find in the
+collection, picking the colors and theme for you.
 
 Or install it to get the `mtgdeck` command:
 
@@ -35,13 +38,14 @@ The bundled sample database only knows ~60 cards. For your real collection,
 download Scryfall's free card catalog (updated daily):
 
 ```bash
-mtgdeck fetch-data          # ~150 MB, saved to ~/.cache/mtg_deckbuilder/
+mtgdeck fetch-data          # ~25 MB download, saved to ~/.cache/mtg_deckbuilder/
 ```
 
 If your machine can't reach the internet, download the **Oracle Cards** bulk
-file from <https://scryfall.com/docs/api/bulk-data> in a browser and either
-save it as `~/.cache/mtg_deckbuilder/oracle-cards.json` or pass
-`--data /path/to/oracle-cards.json` (or set `MTGDECK_DATA`).
+file (a `.jsonl.gz`) from <https://scryfall.com/docs/api/bulk-data> in a
+browser and pass `--data /path/to/oracle-cards.jsonl.gz` (or set
+`MTGDECK_DATA`). Both the current JSON Lines format and the older JSON-array
+format work, gzipped or not.
 
 ## Your collection file
 
@@ -75,22 +79,24 @@ A theme only scores well when you own both halves of it — twenty token
 producers with nothing that rewards tokens is not a deck, and the score
 (a geometric mean of the two sides) reflects that.
 
-### `mtgdeck suggest <collection> [--format commander|60]`
+### `mtgdeck suggest <collection> [--format 60|commander]`
 
-Finds complete decks hiding in the collection. For Commander it tries every
-legendary creature you own as a leader, scores every theme inside that
-commander's color identity (commanders that personally participate in the
-theme score higher), and checks you own enough ramp/draw/removal support.
-For 60-card it sweeps every mono-color and color pair.
+Finds complete decks hiding in the collection. The default 60-card mode
+sweeps every mono-color and color pair for viable themes. With
+`--format commander` it instead tries every legendary creature you own as a
+leader, scores every theme inside that commander's color identity
+(commanders that personally participate in the theme score higher), and
+checks you own enough ramp/draw/removal support.
 
 ### `mtgdeck build <collection> [options]`
 
-Builds and tunes an actual decklist:
+Builds and tunes an actual decklist (60-card by default):
 
 ```bash
-mtgdeck build cards.txt --commander "Krenko, Mob Boss"          # 100-card EDH
-mtgdeck build cards.txt --format 60 --colors BR --theme sacrifice
-mtgdeck build cards.txt --commander "..." --explain             # why each card?
+mtgdeck build cards.txt                              # best 60-card deck, auto colors
+mtgdeck build cards.txt --colors BR --theme sacrifice
+mtgdeck build cards.txt --explain                    # why each card?
+mtgdeck build cards.txt --commander "Krenko, Mob Boss"   # 100-card EDH
 ```
 
 The builder fills role quotas first (ramp package, card draw, removal, board

@@ -1,6 +1,12 @@
+import gzip
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
-from tests.helpers import sample_db
+from mtg_deckbuilder.carddata import CardDatabase
+
+from tests.helpers import SAMPLE_DB, sample_db
 
 
 class CardDataTests(unittest.TestCase):
@@ -32,6 +38,25 @@ class CardDataTests(unittest.TestCase):
     def test_god_is_commander_candidate(self):
         purphoros = self.db.get("Purphoros, God of the Forge")
         self.assertTrue(purphoros.is_legendary_creature)
+
+    def test_loads_jsonl_and_gzipped_files(self):
+        # Scryfall's bulk data is now JSON Lines (optionally gzipped); the
+        # loader must read those as well as the legacy JSON array.
+        with open(SAMPLE_DB, encoding="utf-8") as fh:
+            entries = json.load(fh)
+        lines = "\n".join(json.dumps(e) for e in entries)
+        with tempfile.TemporaryDirectory() as tmp:
+            jsonl = Path(tmp) / "cards.jsonl"
+            jsonl.write_text(lines, encoding="utf-8")
+            db = CardDatabase.load(jsonl)
+            self.assertEqual(len(db), len(self.db))
+            self.assertIsNotNone(db.get("Llanowar Elves"))
+
+            gz = Path(tmp) / "cards.jsonl.gz"
+            with gzip.open(gz, "wt", encoding="utf-8") as fh:
+                fh.write(lines)
+            db_gz = CardDatabase.load(gz)
+            self.assertEqual(len(db_gz), len(self.db))
 
     def test_color_identity_fit(self):
         vito = self.db.get("Vito, Thorn of the Dusk Rose")

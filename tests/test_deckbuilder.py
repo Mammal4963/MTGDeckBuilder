@@ -84,9 +84,23 @@ class DeckBuilderTests(unittest.TestCase):
             if not deck_card.card.is_basic_land:
                 self.assertLessEqual(deck_card.count, 4)
 
-    def test_sixty_card_needs_colors(self):
+    def test_sixty_card_auto_picks_colors(self):
+        deck = build_deck(self.pool, fmt="60")
+        self.assertEqual(deck.total_cards, 60)
+        self.assertTrue(deck.colors, "auto-pick should choose at least one color")
+        self.assertTrue(
+            any("Auto-picked" in note for note in deck.notes),
+            "auto-picked colors should be explained in the notes",
+        )
+
+    def test_sixty_card_auto_pick_honors_forced_theme(self):
+        deck = build_deck(self.pool, fmt="60", theme="lifegain")
+        self.assertEqual(deck.theme, "lifegain")
+        self.assertEqual(deck.total_cards, 60)
+
+    def test_sixty_card_auto_pick_fails_on_tiny_pool(self):
         with self.assertRaises(DeckBuildError):
-            build_deck(self.pool, fmt="60")
+            build_deck(self.pool[:3], fmt="60")
 
     def test_every_nonland_pick_has_a_reason(self):
         deck = self.build_krenko()

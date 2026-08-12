@@ -1,11 +1,14 @@
 """Card data model and Scryfall bulk-data loading.
 
-The card database is expected in Scryfall "oracle cards" bulk format:
-a JSON array of card objects (https://scryfall.com/docs/api/bulk-data).
-Only a handful of fields are used, so trimmed-down files work too.
+The card database is expected in Scryfall "oracle cards" bulk format
+(https://scryfall.com/docs/api/bulk-data): either the current JSON Lines
+files (one card object per line, optionally gzipped) or the older format,
+a single JSON array of card objects.  Only a handful of fields are used,
+so trimmed-down files work too.
 """
 from __future__ import annotations
 
+import gzip
 import json
 import re
 from dataclasses import dataclass, field
@@ -144,11 +147,9 @@ class CardDatabase:
 
     @classmethod
     def load(cls, path: Path) -> "CardDatabase":
-        with open(path, encoding="utf-8") as fh:
-            raw = json.load(fh)
         cards = []
         seen = set()
-        for entry in raw:
+        for entry in _read_bulk_file(Path(path)):
             # Skip non-playable layouts (tokens, art cards, ...)
             if entry.get("layout") in {"token", "double_faced_token", "art_series", "emblem"}:
                 continue
@@ -164,3 +165,20 @@ class CardDatabase:
 
     def __len__(self) -> int:
         return len(self.cards)
+
+
+def _read_bulk_file(path: Path) -> Iterable[dict]:
+    """Yield card objects from a bulk file: JSONL or a JSON array, .gz or not."""
+    opener = gzip.open if path.suffix == ".gz" else open
+    with opener(path, "rt", encoding="utf-8") as fh:
+        first = fh.read(1)
+        while first and first.isspace():
+            first = fh.read(1)
+        fh.seek(0)
+        if first == "[":
+            yield from json.load(fh)
+        else:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    yield json.loads(line)

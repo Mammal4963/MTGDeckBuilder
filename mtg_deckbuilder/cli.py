@@ -2,9 +2,10 @@
 
     mtgdeck fetch-data
     mtgdeck analyze  my_collection.txt
-    mtgdeck suggest  my_collection.txt [--format commander|60]
+    mtgdeck suggest  my_collection.txt [--format 60|commander]
+    mtgdeck build    my_collection.txt                    # best 60-card deck
+    mtgdeck build    my_collection.txt --colors BR --theme sacrifice
     mtgdeck build    my_collection.txt --commander "Krenko, Mob Boss"
-    mtgdeck build    my_collection.txt --format 60 --colors BR --theme sacrifice
     mtgdeck card     "Skullclamp"
 """
 from __future__ import annotations
@@ -18,7 +19,13 @@ from typing import List, Optional, Tuple
 from .carddata import Card, CardDatabase
 from .collection import load_collection
 from .deckbuilder import DeckBuildError, build_deck
-from .fetch import DEFAULT_DATA_PATH, MANUAL_INSTRUCTIONS, FetchError, fetch_bulk_data
+from .fetch import (
+    DEFAULT_DATA_PATH,
+    LEGACY_DATA_PATH,
+    MANUAL_INSTRUCTIONS,
+    FetchError,
+    fetch_bulk_data,
+)
 from .synergy import (
     THEME_NAMES,
     find_commander_decks,
@@ -39,6 +46,8 @@ def _data_path(arg: Optional[str]) -> Path:
         return Path(env)
     if DEFAULT_DATA_PATH.exists():
         return DEFAULT_DATA_PATH
+    if LEGACY_DATA_PATH.exists():
+        return LEGACY_DATA_PATH
     if SAMPLE_DATA.exists():
         print(
             "note: using the small bundled sample database "
@@ -277,15 +286,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("suggest", help="find complete decks hiding in the collection")
     p.add_argument("collection")
-    p.add_argument("--format", choices=["commander", "60"], default="commander")
+    p.add_argument("--format", choices=["60", "commander"], default="60")
     p.add_argument("--top", type=int, default=8)
     p.set_defaults(func=cmd_suggest)
 
     p = sub.add_parser("build", help="build and tune a deck from the collection")
     p.add_argument("collection")
     p.add_argument("--commander", help="commander name (implies --format commander)")
-    p.add_argument("--format", choices=["commander", "60"])
-    p.add_argument("--colors", help="colors for 60-card decks, e.g. WG or ubr")
+    p.add_argument("--format", choices=["60", "commander"], help="default: 60")
+    p.add_argument(
+        "--colors",
+        help="colors for 60-card decks, e.g. WG or ubr "
+        "(default: auto-pick the best combo for the collection)",
+    )
     p.add_argument("--theme", help="force a theme key (see `analyze`)")
     p.add_argument(
         "--explain", action="store_true",

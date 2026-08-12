@@ -22,7 +22,13 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from .carddata import Card
-from .synergy import THEME_NAMES, ThemeScore, filter_pool_by_colors, score_themes
+from .synergy import (
+    THEME_NAMES,
+    ThemeScore,
+    filter_pool_by_colors,
+    find_sixty_card_decks,
+    score_themes,
+)
 from .tags import tag_card
 
 BASIC_FOR_COLOR = {
@@ -233,6 +239,7 @@ def build_deck(
     if fmt not in ("commander", "60"):
         raise DeckBuildError(f"unknown format: {fmt!r} (expected 'commander' or '60')")
 
+    auto_note: Optional[str] = None
     if fmt == "commander":
         if commander is None:
             raise DeckBuildError("commander format needs a commander")
@@ -241,7 +248,24 @@ def build_deck(
         singleton = True
     else:
         if not colors:
-            raise DeckBuildError("60-card format needs --colors (e.g. WG)")
+            # No colors given: pick the best color combo (and theme, if the
+            # caller didn't force one) that the collection supports.
+            ideas = find_sixty_card_decks(pool, top=8)
+            if theme is not None:
+                ideas = [i for i in ideas if i.theme.theme == theme] or ideas
+            if not ideas:
+                raise DeckBuildError(
+                    "could not auto-pick colors for a 60-card deck from this "
+                    "pool; pass colors explicitly (e.g. WG)"
+                )
+            best = ideas[0]
+            colors = best.colors
+            if theme is None:
+                theme = best.theme.theme
+            auto_note = (
+                f"Auto-picked {''.join(best.colors)} "
+                f"{best.theme.display_name} (score {best.score:.1f})."
+            )
         deck_colors = tuple(dict.fromkeys(c.upper() for c in colors))
         deck_size = 60
         singleton = False
@@ -266,18 +290,31 @@ def build_deck(
             theme = preferred[0].theme
 
     deck = Deck(format=fmt, colors=deck_colors, theme=theme, commander=commander)
+    if auto_note:
+        deck.notes.append(auto_note)
 
     # Provisional land count; retuned from the real curve afterwards.
     lands_target = 37 if fmt == "commander" else 23
     nonland_target = deck_size - lands_target
 
-    scale = nonland_target / 62.0
-    quotas = {
-        "ramp": max(2, round(10 * scale)),
-        "draw": max(2, round(9 * scale)),
-        "removal": max(2, round(6 * scale)),
-        "board_wipe": max(1, round(3 * scale)),
-    }
+    if fmt == "commander":
+        scale = nonland_target / 62.0
+        quotas = {
+            "ramp": max(2, round(10 * scale)),
+            "draw": max(2, round(9 * scale)),
+            "removal": max(2, round(6 * scale)),
+            "board_wipe": max(1, round(3 * scale)),
+        }
+    else:
+        # Constructed 60-card decks lean on playset consistency, not a big
+        # ramp package: light ramp, some draw, a real removal suite, and at
+        # most a couple of sweepers.
+        quotas = {
+            "ramp": 3,
+            "draw": 5,
+            "removal": 7,
+            "board_wipe": 2,
+        }
 
     selection = _Selection(pool, singleton)
     _fill_role(selection, "ramp", quotas["ramp"], "Ramp", theme, nonland_target)
