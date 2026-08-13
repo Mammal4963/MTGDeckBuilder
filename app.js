@@ -33,6 +33,49 @@ const resultsEl = $("results");
 let api = null;                          // Pyodide module proxy for webapi
 
 // ---------------------------------------------------------------------------
+// Remember the collection + options across refreshes (stays in this browser).
+// ---------------------------------------------------------------------------
+
+const UI_STATE_KEY = "mtgdeck:ui";
+let restoredCollection = false;
+
+function saveUiState() {
+  try {
+    localStorage.setItem(UI_STATE_KEY, JSON.stringify({
+      collection: $("collection").value,
+      format: $("format").value,
+      colors: $("colors").value,
+      theme: $("theme").value,
+      commander: $("commander").value,
+      playsets: $("playsets").checked,
+    }));
+  } catch { /* storage full or blocked — nothing to do */ }
+}
+
+function loadUiState() {
+  try {
+    return JSON.parse(localStorage.getItem(UI_STATE_KEY)) ?? {};
+  } catch { return {}; }
+}
+
+function restoreUiState() {
+  const state = loadUiState();
+  if (state.collection) {
+    $("collection").value = state.collection;
+    restoredCollection = true;
+  }
+  if (state.format) {
+    $("format").value = state.format;
+    updateFormatVisibility();
+  }
+  if (state.colors) $("colors").value = state.colors;
+  if (state.commander) $("commander").value = state.commander;
+  $("playsets").checked = !!state.playsets;
+  // The theme select's options are filled once the engine loads; boot()
+  // re-applies the saved theme after that.
+}
+
+// ---------------------------------------------------------------------------
 // Engine boot
 // ---------------------------------------------------------------------------
 
@@ -59,8 +102,13 @@ async function boot() {
       themeSelect.appendChild(opt);
     }
 
+    const savedTheme = loadUiState().theme;
+    if (savedTheme) themeSelect.value = savedTheme;
+
     for (const id of ["btn-build", "btn-suggest", "btn-analyze"]) $(id).disabled = false;
-    setStatus("Ready. Paste your collection and build a deck.", "ok");
+    setStatus(restoredCollection
+      ? "Ready. Your collection was restored from last time."
+      : "Ready. Paste your collection and build a deck.", "ok");
   } catch (err) {
     setStatus(`The engine failed to load: ${err.message ?? err}. ` +
       "Try reloading the page.", "error");
@@ -435,21 +483,37 @@ $("btn-build").addEventListener("click", () => runAction("build"));
 $("btn-suggest").addEventListener("click", () => runAction("suggest"));
 $("btn-analyze").addEventListener("click", () => runAction("analyze"));
 
-$("format").addEventListener("change", () => {
+function updateFormatVisibility() {
   const isCommander = $("format").value === "commander";
   $("commander-field").classList.toggle("hidden", !isCommander);
   $("colors").parentElement.classList.toggle("hidden", isCommander);
-});
+}
+$("format").addEventListener("change", updateFormatVisibility);
 
 $("file-input").addEventListener("change", async (event) => {
   const file = event.target.files[0];
-  if (file) $("collection").value = await file.text();
+  if (file) {
+    $("collection").value = await file.text();
+    saveUiState();
+  }
 });
 
 $("load-sample").addEventListener("click", async () => {
   const res = await fetch("examples/sample_collection.txt");
   $("collection").value = await res.text();
+  saveUiState();
   setStatus("Sample collection loaded — try “Build deck”.", "ok");
 });
 
+// Persist edits: options immediately, the textarea lightly debounced.
+let saveTimer = null;
+$("collection").addEventListener("input", () => {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveUiState, 400);
+});
+for (const id of ["format", "colors", "theme", "commander", "playsets"]) {
+  $(id).addEventListener("change", saveUiState);
+}
+
+restoreUiState();
 boot();
