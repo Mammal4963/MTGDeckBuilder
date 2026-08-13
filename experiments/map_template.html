@@ -66,6 +66,7 @@
     color: var(--text-secondary); font-size: 0.75rem;
   }
   canvas { display: block; cursor: grab; }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -79,6 +80,10 @@
     </select>
   </label>
   <input id="search" type="search" placeholder="highlight cards… e.g. bolt" size="22">
+  <label class="n" id="meta-label">meta
+    <select id="meta"><option value="">off</option></select>
+  </label>
+  <select id="deck" class="hidden"><option value="">— highlight a deck —</option></select>
   <button id="reset">Reset view</button>
   <span class="n" id="count"></span>
   <a id="builder-link" href="builder.html">deck builder →</a>
@@ -90,6 +95,7 @@
 
 <script>
 const DATA = __DATA__;
+const META = __META__;   /* {formats, heat: {fmt:[[row,count],…]}, decks} */
 const N = DATA.x.length;
 
 /* Categories & palettes (dataviz reference palette, dark-mode steps;
@@ -124,6 +130,7 @@ const tip = document.getElementById("tip");
 let mode = "role";
 let isolate = null;          // active category index or null
 let highlight = null;        // Set of point indexes matching search, or null
+let heatMap = null;          // Map(row -> play count) for the chosen format
 let view = null;             // {cx, cy, scale}
 
 /* bounds */
@@ -162,14 +169,18 @@ function draw(){
     for (let i=0;i<N;i++){
       const v = vals[i];
       const dim = !!((isolate!==null && v!==isolate) ||
-                     (highlight && !highlight.has(i)));
+                     (highlight && !highlight.has(i)) ||
+                     (heatMap && !heatMap.has(i)));
       if ((pass===0) !== dim) continue;      /* dim first, lit on top */
       const [sx,sy] = toScreen(DATA.x[i], DATA.y[i]);
       if (sx<-4||sy<-4||sx>canvas.clientWidth+4||sy>canvas.clientHeight+4) continue;
-      ctx.globalAlpha = dim ? 0.07 : 0.8;
+      let rr = dim ? r*0.8 : r;
+      if (!dim && heatMap)
+        rr = r * (1 + Math.log2(1 + heatMap.get(i)) * 0.35);
+      ctx.globalAlpha = dim ? (heatMap ? 0.04 : 0.07) : (heatMap ? 0.88 : 0.8);
       ctx.fillStyle = cat.colors[v];
       ctx.beginPath();
-      ctx.arc(sx, sy, dim ? r*0.8 : r, 0, 6.2832);
+      ctx.arc(sx, sy, rr, 0, 6.2832);
       ctx.fill();
     }
   }
@@ -268,6 +279,40 @@ document.getElementById("search").oninput = e=>{
     for (let i=0;i<N;i++)
       if (DATA.name[i].toLowerCase().includes(q)) highlight.add(i);
   }
+  draw();
+};
+
+/* meta overlay: per-format play heat + single-deck highlighting */
+const metaSelect = document.getElementById("meta");
+const deckSelect = document.getElementById("deck");
+if (META.formats.length){
+  for (const fmt of META.formats){
+    const opt=document.createElement("option");
+    opt.value=fmt; opt.textContent=fmt;
+    metaSelect.appendChild(opt);
+  }
+} else {
+  document.getElementById("meta-label").classList.add("hidden");
+}
+metaSelect.onchange = ()=>{
+  const fmt = metaSelect.value;
+  highlight = null;
+  document.getElementById("search").value = "";
+  deckSelect.innerHTML = '<option value="">— highlight a deck —</option>';
+  if (!fmt){ heatMap=null; deckSelect.classList.add("hidden"); draw(); return; }
+  heatMap = new Map(META.heat[fmt]);
+  META.decks.forEach((deck,i)=>{
+    if (deck.format!==fmt) return;
+    const opt=document.createElement("option");
+    opt.value=i; opt.textContent=deck.label;
+    deckSelect.appendChild(opt);
+  });
+  deckSelect.classList.remove("hidden");
+  draw();
+};
+deckSelect.onchange = ()=>{
+  const i = deckSelect.value;
+  highlight = (i==="") ? null : new Set(META.decks[Number(i)].rows);
   draw();
 };
 

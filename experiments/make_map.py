@@ -49,10 +49,35 @@ def main() -> None:
         "type": [TYPES.index(type_label(m["type_line"])) for m in meta],
     }
 
+    # Optional meta overlay (present once phase 2's analyze_meta.py has run).
+    overlay = {"formats": [], "heat": {}, "decks": []}
+    meta_path = OUT / "meta.json"
+    decks_path = OUT / "decks_meta.json"
+    if meta_path.exists():
+        blob = json.loads(meta_path.read_text(encoding="utf-8"))
+        overlay["formats"] = blob["formats"]
+        overlay["heat"] = blob["heat"]
+    if decks_path.exists():
+        by_fmt = {}
+        for deck in json.loads(decks_path.read_text(encoding="utf-8")):
+            by_fmt.setdefault(deck["format"], []).append(deck)
+        for fmt in sorted(by_fmt):
+            ranked = sorted(
+                by_fmt[fmt], key=lambda d: (-d.get("wins", 0), d["date"]),
+            )[:40]
+            for deck in ranked:
+                overlay["decks"].append({
+                    "format": fmt,
+                    "label": f'{deck["player"]} · '
+                             f'{" + ".join(deck["top_cards"][:2])} · {deck["date"]}',
+                    "rows": [r for r, _q in deck["cards"]],
+                })
+
     template = (Path(__file__).resolve().parent / "map_template.html").read_text(
         encoding="utf-8"
     )
     html = template.replace("__DATA__", json.dumps(data, separators=(",", ":")))
+    html = html.replace("__META__", json.dumps(overlay, separators=(",", ":")))
     out = OUT / "card-map.html"
     out.write_text(html, encoding="utf-8")
     print(f"wrote {out} ({out.stat().st_size / 1e6:.1f} MB, {len(meta)} cards)")
