@@ -203,6 +203,45 @@ button.ghost, .file-label {
 .role-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .role-table td.examples { color: var(--muted); font-size: 0.86rem; }
 
+/* clickable card names + image popup */
+.card-link {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 2px;
+}
+.card-link:hover, .card-link:focus-visible { color: var(--accent); }
+
+#card-modal { position: fixed; inset: 0; z-index: 50; }
+#card-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+#card-modal-figure {
+  position: relative; margin: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: fit-content; max-width: min(92vw, 56rem);
+}
+#card-modal-images {
+  display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;
+}
+#card-modal-images img {
+  width: clamp(240px, 38vw, 400px);
+  max-height: 80vh; object-fit: contain;
+  border-radius: 4.75% / 3.5%;          /* MTG card corner radius */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+#card-modal-caption {
+  color: #fff; font-size: 0.9rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+#card-modal-close {
+  position: absolute; top: -0.6rem; right: -0.6rem;
+  width: 2rem; height: 2rem; padding: 0; line-height: 1;
+  border-radius: 50%; font-size: 1.1rem;
+  background: var(--panel); color: var(--text);
+}
+
 .site-footer { color: var(--muted); font-size: 0.82rem; padding-bottom: 2.5rem; }
 .site-footer a { color: inherit; }
 

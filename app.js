@@ -12,8 +12,9 @@ const ENGINE_FILES = [
   "synergy.py", "deckbuilder.py", "webapi.py",
 ];
 const SCRYFALL_COLLECTION_URL = "https://api.scryfall.com/cards/collection";
+const SCRYFALL_NAMED_URL = "https://api.scryfall.com/cards/named";
 const CHUNK = 75;                       // Scryfall's per-request identifier cap
-const CACHE_PREFIX = "mtgdeck:v1:";
+const CACHE_PREFIX = "mtgdeck:v2:";     // v2: card images added to cache entries
 const CACHE_TTL_MS = 7 * 24 * 3600 * 1000;
 
 // Only the fields the engine reads; keeps localStorage and the JS<->Python
@@ -90,14 +91,34 @@ function cachePut(name, card) {
 function slimCard(card) {
   const out = {};
   for (const f of CARD_FIELDS) if (card[f] !== undefined) out[f] = card[f];
+  if (card.image_uris?.normal) out.images = [card.image_uris.normal];
   if (Array.isArray(card.card_faces)) {
     out.card_faces = card.card_faces.map((face) => {
       const slim = {};
       for (const f of FACE_FIELDS) if (face[f] !== undefined) slim[f] = face[f];
       return slim;
     });
+    if (!out.images) {
+      const faces = card.card_faces
+        .map((face) => face.image_uris?.normal)
+        .filter(Boolean);
+      if (faces.length) out.images = faces;
+    }
   }
   return out;
+}
+
+// name (normalized) -> [image urls]; filled from every Scryfall response.
+const imageIndex = new Map();
+
+function indexImages(cards) {
+  for (const card of cards) {
+    if (!card.images) continue;
+    imageIndex.set(normalize(card.name), card.images);
+    if (card.name.includes(" // ")) {
+      imageIndex.set(normalize(frontFace(card.name)), card.images);
+    }
+  }
 }
 
 const normalize = (s) => s.replace(/\s+/g, " ").trim().toLowerCase();
@@ -161,7 +182,20 @@ async function lookupCards(names) {
     const hit = byKey.get(normalize(name)) ?? byKey.get(normalize(frontFace(name)));
     if (hit) cachePut(name, hit);
   }
+  indexImages(cards);
   return { cards, notFound };
+}
+
+/** Image URLs for one card, fetching from Scryfall if we don't have them. */
+async function imagesFor(name) {
+  const key = normalize(name);
+  if (imageIndex.has(key)) return imageIndex.get(key);
+  const res = await fetch(
+    `${SCRYFALL_NAMED_URL}?exact=${encodeURIComponent(name)}`);
+  if (!res.ok) throw new Error(`Scryfall doesn't know “${name}” (HTTP ${res.status})`);
+  const card = slimCard(await res.json());
+  indexImages([card]);
+  return imageIndex.get(key) ?? card.images ?? [];
 }
 
 // ---------------------------------------------------------------------------
@@ -231,6 +265,49 @@ const colorChips = (label) =>
   `<span class="color-chips">${[...label].map((c) =>
     `<span class="pip ${c}">${c}</span>`).join("")}</span>`;
 
+/** A clickable card name that pops up the card image. */
+const cardLink = (name) =>
+  `<span class="card-link" role="button" tabindex="0" ` +
+  `data-card="${escapeHtml(name)}">${escapeHtml(name)}</span>`;
+
+// ---- card image modal ----
+
+function closeCardModal() {
+  $("card-modal").hidden = true;
+}
+
+async function showCardModal(name) {
+  const modal = $("card-modal");
+  const imagesEl = $("card-modal-images");
+  const caption = $("card-modal-caption");
+  modal.hidden = false;
+  imagesEl.innerHTML = "";
+  caption.textContent = `Loading ${name}…`;
+  try {
+    const images = await imagesFor(name);
+    if (!images.length) throw new Error(`no image available for “${name}”`);
+    if (modal.hidden) return;              // closed while loading
+    imagesEl.innerHTML = images.map((url) =>
+      `<img src="${escapeHtml(url)}" alt="${escapeHtml(name)}">`).join("");
+    caption.textContent = name;
+  } catch (err) {
+    caption.textContent = `${err.message ?? err}`;
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const link = event.target.closest(".card-link");
+  if (link) { showCardModal(link.dataset.card); return; }
+  if (event.target.closest("#card-modal-close") ||
+      event.target.id === "card-modal-backdrop") closeCardModal();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeCardModal();
+  if (event.key === "Enter" && event.target.classList?.contains("card-link")) {
+    showCardModal(event.target.dataset.card);
+  }
+});
+
 function missingNote(missing, notFound) {
   const all = [...new Set([...(missing ?? []), ...(notFound ?? [])])];
   if (!all.length) return "";
@@ -249,7 +326,7 @@ function renderDeck(deck, notFound) {
       <ul>${cat.cards.map((card) => `
         <li title="${escapeHtml(card.reasons.join("; "))}">
           <span class="card-count">${card.count}</span>
-          <span class="card-name">${escapeHtml(card.name)}</span>
+          <span class="card-name">${cardLink(card.name)}</span>
           ${manaPips(card.mana_cost)}
         </li>`).join("")}
       </ul>
@@ -267,7 +344,7 @@ function renderDeck(deck, notFound) {
         <button type="button" id="download-deck">Download .txt</button>
       </div>
       <div class="category-grid">${categories}</div>
-      <p class="result-note">Hover a card for why it was picked.</p>
+      <p class="result-note">Click a card to see it; hover for why it was picked.</p>
     </div>`;
 
   $("copy-deck").addEventListener("click", async () => {
@@ -304,7 +381,7 @@ function renderIdeas(result, notFound) {
             ${escapeHtml(idea.theme_name)} ${colorChips(idea.color_label)}</span>
           <span class="score">score ${idea.score}</span>
           <button type="button" data-idea="${i}">Build this</button>
-          <span class="key-cards">Key cards: ${idea.key_cards.map(escapeHtml).join(", ")}</span>
+          <span class="key-cards">Key cards: ${idea.key_cards.map(cardLink).join(", ")}</span>
         </div>`).join("")}
     </div>`;
 
@@ -325,14 +402,14 @@ function renderAnalysis(result, notFound) {
   const roles = result.roles.map((r) => `
     <tr><td>${escapeHtml(r.role.replace(/_/g, " "))}</td>
       <td class="num">${r.count}</td>
-      <td class="examples">${r.examples.map(escapeHtml).join(", ")}</td></tr>`).join("");
+      <td class="examples">${r.examples.map(cardLink).join(", ")}</td></tr>`).join("");
   const maxScore = Math.max(...result.themes.map((t) => t.score), 1);
   const themes = result.themes.map((t) => `
     <div class="theme-row${t.viable ? " viable" : ""}">
       <span class="name">${escapeHtml(t.name)}</span>
       <span class="bar-track"><span class="bar" style="width:${(100 * t.score / maxScore).toFixed(0)}%"></span></span>
       <span class="score">${t.score}</span>
-      <span class="theme-examples">${t.examples.map(escapeHtml).join(", ")}</span>
+      <span class="theme-examples">${t.examples.map(cardLink).join(", ")}</span>
     </div>`).join("");
 
   resultsEl.innerHTML = `
