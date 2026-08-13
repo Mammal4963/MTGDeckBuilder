@@ -38,8 +38,8 @@ ROLE_PRIORITY = [
 
 
 def playable(card: Card) -> bool:
-    """Real cards only: legal in at least one constructed format."""
-    return any(v == "legal" for v in card.legalities.values())
+    """Real cards only: legal (or restricted - Vintage power) somewhere."""
+    return any(v in ("legal", "restricted") for v in card.legalities.values())
 
 
 def compose(card: Card) -> str:
