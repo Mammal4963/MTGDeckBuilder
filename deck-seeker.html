@@ -73,6 +73,14 @@
   #deck-out .dline .nm { cursor: pointer; }
   #deck-out .dline .nm:hover { color: var(--accent); }
   #deck-out .toolbar { display: flex; gap: 0.6rem; margin: 0.6rem 0 0.2rem; }
+  #coll-panel { margin: 0.2rem 0 0.6rem; }
+  #coll-panel summary { cursor: pointer; }
+  #coll-panel textarea { width: 100%; margin-top: 0.5rem;
+    background: var(--surface-2); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 7px;
+    padding: 0.5rem 0.6rem; font: 0.85rem/1.5 ui-monospace, Menlo, Consolas, monospace; }
+  .coll-actions { display: flex; gap: 1rem; margin-top: 0.4rem; align-items: center; }
+  .file-label { cursor: pointer; text-decoration: underline dotted; }
 </style>
 </head>
 <body>
@@ -99,6 +107,20 @@
     <button id="build" class="primary" title="Generate a complete 60-card deck from your picks">Build full deck</button>
     <button id="clear">Clear</button>
   </div>
+  <details id="coll-panel">
+    <summary class="muted">My collection <span id="coll-status"></span></summary>
+    <div class="coll-body">
+      <textarea id="coll-text" rows="5" spellcheck="false"
+        placeholder="One card per line (4 Lightning Bolt) or a CSV export from ManaBox / Moxfield / Archidekt / Deckbox. Shared with the deck builder page."></textarea>
+      <div class="coll-actions">
+        <label class="chk"><input id="use-coll" type="checkbox">
+          only suggest &amp; build from my collection</label>
+        <label class="chk file-label">upload file
+          <input id="coll-file" type="file" accept=".txt,.csv,text/plain,text/csv" hidden>
+        </label>
+      </div>
+    </div>
+  </details>
   <div id="search-results"></div>
   <div id="picks"></div>
   <div id="deck-out" hidden></div>
@@ -140,9 +162,76 @@ const cos=(a,b)=>dot(a,b)/(NORM[a]*NORM[b]);
 
 const nameIndex = new Map();
 DATA.names.forEach((n,i)=>nameIndex.set(n.toLowerCase(),i));
+/* front faces of double-faced cards, as collection exports write them */
+DATA.names.forEach((n,i)=>{
+  if (n.includes(" // ")){
+    const front = n.split(" // ")[0].trim().toLowerCase();
+    if (!nameIndex.has(front)) nameIndex.set(front,i);
+  }
+});
 
 const picks = [];
 const $ = id=>document.getElementById(id);
+
+/* ---- collection (shared with the deck builder page via mtgdeck:ui) ---- */
+let owned = null;              // Map(row -> count) or null when unused
+
+function parseCollection(text){
+  const counts = new Map();    // name(lower) -> qty
+  const lines = text.split(/\r?\n/);
+  const header = (lines[0]||"").toLowerCase();
+  if (header.includes(",") && /(^|,)\s*"?(name|card name|card)"?\s*(,|$)/.test(header)){
+    const cols = header.split(",").map(s=>s.trim().replace(/^"|"$/g,""));
+    const nameIx = cols.findIndex(c=>["name","card name","card"].includes(c));
+    const qtyIx = cols.findIndex(c=>["count","quantity","qty","amount"].includes(c));
+    for (const line of lines.slice(1)){
+      const cells = line.split(",").map(s=>s.trim().replace(/^"|"$/g,""));
+      const name = cells[nameIx];
+      if (!name) continue;
+      const qty = qtyIx>=0 ? Math.max(1, parseInt(cells[qtyIx])||1) : 1;
+      const key = name.toLowerCase();
+      counts.set(key,(counts.get(key)||0)+qty);
+    }
+  } else {
+    for (const line of lines){
+      if (!line.trim() || /^\s*(#|\/\/)/.test(line)) continue;
+      const m = line.match(/^\s*(?:(\d+)\s*[xX]?\s+)?(.+?)\s*$/);
+      if (!m) continue;
+      const key = m[2].toLowerCase();
+      counts.set(key,(counts.get(key)||0)+(parseInt(m[1])||1));
+    }
+  }
+  return counts;
+}
+
+function refreshOwned(){
+  const text = $("coll-text").value;
+  if (!text.trim()){ owned=null; $("coll-status").textContent=""; return; }
+  const counts = parseCollection(text);
+  owned = new Map();
+  let matched=0;
+  for (const [key,qty] of counts){
+    const row = nameIndex.get(key);
+    if (row!==undefined){ owned.set(row,(owned.get(row)||0)+qty); matched++; }
+  }
+  $("coll-status").textContent =
+    `· ${matched}/${counts.size} names matched, ${[...owned.values()].reduce((a,b)=>a+b,0)} cards`;
+}
+
+function loadSharedCollection(){
+  try {
+    const state = JSON.parse(localStorage.getItem("mtgdeck:ui")) || {};
+    if (state.collection){ $("coll-text").value = state.collection; refreshOwned(); }
+  } catch {}
+}
+function saveSharedCollection(){
+  try {
+    const state = JSON.parse(localStorage.getItem("mtgdeck:ui")) || {};
+    state.collection = $("coll-text").value;
+    localStorage.setItem("mtgdeck:ui", JSON.stringify(state));
+  } catch {}
+}
+const useColl = ()=> $("use-coll").checked && owned;
 
 const fmtSelect=$("format");
 DATA.formats.forEach(f=>{const o=document.createElement("option");
@@ -176,6 +265,7 @@ function candidateOk(i, colorMask, fmtBit){
   if ($("incolors").checked && picks.length &&
       (DATA.colors[i] & ~32 & ~colorMask)) return false;
   if ($("proven").checked && !FREQ[i]) return false;
+  if (useColl() && !owned.has(i)) return false;
   return true;
 }
 
@@ -312,17 +402,20 @@ function buildDeck(){
   for(let b=0;b<8;b++) curve[b]/=(csum||1);
   let maxPres=0; for (const v of presence.values()) maxPres=Math.max(maxPres,v);
 
+  const restrict = useColl();
   const okCard=(r)=>{
     if (fmtBit && !(DATA.legal[r] & fmtBit)) return false;
     if (inColors && (DATA.colors[r] & ~32 & ~colorMask)) return false;
+    if (restrict && !owned.has(r)) return false;
     return true;
   };
+  const maxCopies=(r)=> restrict ? Math.min(4, owned.get(r)||0) : 4;
 
   const picked=new Map(), curCurve=new Float32Array(8);
   let total=0;
   for (const p of picks){
     if (DATA.colors[p] & 32) continue;
-    const q=Math.min(4, nonlandTarget-total);
+    const q=Math.max(1, Math.min(restrict?maxCopies(p)||1:4, nonlandTarget-total));
     picked.set(p,q); curCurve[Math.min(7,DATA.mv[p])]+=q; total+=q;
   }
   const cands=[...presence.keys()].filter(r=>
@@ -340,7 +433,7 @@ function buildDeck(){
     }
     if (best<0) break;
     let copies=Math.round(qtySum.get(best)/Math.max(qtyN.get(best),1e-9));
-    copies=Math.max(1,Math.min(4,copies,nonlandTarget-total));
+    copies=Math.max(1,Math.min(maxCopies(best),copies,nonlandTarget-total));
     picked.set(best,copies);
     curCurve[Math.min(7,DATA.mv[best])]+=copies;
     total+=copies;
@@ -354,21 +447,25 @@ function buildDeck(){
     if (landTotal>=Math.floor(landTarget*0.55)) break;
     if (fmtBit && !(DATA.legal[row] & fmtBit)) continue;
     if (inColors && (DATA.colors[row] & ~32 & ~colorMask)) continue;
-    const copies=Math.min(4,landTarget-landTotal);
+    if (restrict && !owned.has(row)) continue;
+    const copies=Math.min(restrict?maxCopies(row):4, 4, landTarget-landTotal);
+    if (copies<=0) continue;
     lands.set(row,copies); landTotal+=copies;
   }
+  const shortfall = nonlandTarget-total;   /* pool ran dry (small collections) */
+  const effLandTarget = landTarget + Math.max(0, shortfall);
   const pipCount={};
   for (const [r,q] of picked)
     for (const ch of DATA.pips[r]) pipCount[ch]=(pipCount[ch]||0)+q;
   const colorsUsed=Object.keys(pipCount);
-  let remaining=landTarget-landTotal;
+  let remaining=effLandTarget-landTotal;
   if (colorsUsed.length && remaining>0){
     const totPips=Object.values(pipCount).reduce((a,b)=>a+b,0);
     /* every color gets at least one source */
     const alloc={};
     colorsUsed.forEach(c=>{alloc[c]=1; remaining-=1;});
     colorsUsed.sort((a,b)=>pipCount[b]-pipCount[a]).forEach((c,i)=>{
-      const extra=Math.round((landTarget-landTotal-colorsUsed.length)*pipCount[c]/totPips);
+      const extra=Math.round((effLandTarget-landTotal-colorsUsed.length)*pipCount[c]/totPips);
       const take=Math.max(0,Math.min(extra,remaining));
       alloc[c]+=take; remaining-=take;
     });
@@ -420,6 +517,18 @@ function renderDeck(picked,lands){
 }
 
 $("build").addEventListener("click", buildDeck);
+
+let collTimer=null;
+$("coll-text").addEventListener("input", ()=>{
+  clearTimeout(collTimer);
+  collTimer=setTimeout(()=>{refreshOwned(); saveSharedCollection(); render();},400);
+});
+$("use-coll").addEventListener("change", render);
+$("coll-file").addEventListener("change", async e=>{
+  const f=e.target.files[0];
+  if (f){ $("coll-text").value=await f.text(); refreshOwned(); saveSharedCollection(); render(); }
+});
+loadSharedCollection();
 
 $("search").addEventListener("input", renderSearch);
 $("clear").onclick=()=>{picks.length=0;render();};
