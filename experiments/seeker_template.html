@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTG Deck Seeker</title>
+<style>
+  :root {
+    --surface-1: #1a1a19; --surface-2: #242422; --surface-3: #2e2d2a;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7;
+    --border: #3c3b36; --accent: #d4b85a;
+    --bar: #8a7b3d; --bar-track: #35301f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface-1); color: var(--text-primary);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 1.1rem 1.25rem 0.4rem; max-width: 62rem; margin: 0 auto; }
+  header h1 { margin: 0; font-size: 1.35rem; }
+  header p { margin: 0.3rem 0 0; color: var(--text-secondary); font-size: 0.9rem; }
+  header a { color: var(--text-secondary); }
+  main { max-width: 62rem; margin: 0 auto; padding: 0.75rem 1.25rem 3rem; }
+  .controls { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;
+    margin: 0.6rem 0 0.8rem; }
+  input[type=search], select, button {
+    background: var(--surface-2); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 7px;
+    padding: 0.45rem 0.6rem; font-size: 0.95rem; }
+  input[type=search] { flex: 1 1 16rem; }
+  label.chk { color: var(--text-secondary); font-size: 0.85rem;
+    display: flex; gap: 0.35rem; align-items: center; }
+  #picks { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.6rem 0; }
+  .pick {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    background: var(--surface-3); border: 1px solid var(--accent);
+    border-radius: 999px; padding: 0.28rem 0.5rem 0.28rem 0.8rem;
+    font-size: 0.92rem; }
+  .pick button { border: none; background: none; color: var(--text-secondary);
+    cursor: pointer; font-size: 1rem; padding: 0 0.2rem; }
+  .pick button:hover { color: var(--text-primary); }
+  #suggest-list { margin-top: 0.4rem; }
+  .row {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr 9rem 3rem;
+    gap: 0.7rem; align-items: center;
+    padding: 0.4rem 0.6rem; border-radius: 8px; cursor: pointer;
+  }
+  .row:hover { background: var(--surface-2); }
+  .row .rank { color: var(--text-secondary); font-size: 0.8rem; text-align: right; }
+  .row .name { font-weight: 600; }
+  .row .name .why, .row .name .badge {
+    font-weight: 400; color: var(--text-secondary); font-size: 0.78rem; }
+  .row .name .badge { color: var(--accent); }
+  .row .type { color: var(--text-secondary); font-size: 0.8rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .bar-track { grid-column: auto; background: var(--bar-track);
+    height: 0.5rem; border-radius: 4px; overflow: hidden; }
+  .row .bar { background: var(--bar); height: 100%; }
+  .row .sc { color: var(--text-secondary); font-size: 0.78rem;
+    font-variant-numeric: tabular-nums; text-align: right; }
+  #search-results { margin: 0.3rem 0 0.6rem; }
+  #search-results .row { grid-template-columns: 1fr 12rem; }
+  .muted { color: var(--text-secondary); font-size: 0.88rem; }
+  .starters { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.5rem; }
+  .starters button { border-radius: 999px; font-size: 0.88rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Deck Seeker</h1>
+  <p>Pick a card you want to build around — the pool collapses to cards that
+     belong in the same deck, learned from tournament decklists. Keep picking;
+     it keeps collapsing. <a href="/">card map</a> · <a href="deck-map.html">deck map</a></p>
+</header>
+<main>
+  <div class="controls">
+    <input id="search" type="search" placeholder="find a card to add… e.g. Blood Artist">
+    <select id="format">
+      <option value="">any format</option>
+    </select>
+    <label class="chk"><input id="incolors" type="checkbox" checked>
+      stay in picked colors</label>
+    <label class="chk"><input id="proven" type="checkbox">
+      played cards only</label>
+    <button id="clear">Clear</button>
+  </div>
+  <div id="search-results"></div>
+  <div id="picks"></div>
+  <div id="suggestions">
+    <p class="muted" id="empty-hint">Nothing picked yet. Search for a card above, or
+      start from a classic:</p>
+    <div class="starters" id="starters"></div>
+    <div id="suggest-list"></div>
+  </div>
+</main>
+
+<script>
+const DATA = __DATA__;
+const N = DATA.names.length;
+const DIM = DATA.dim;
+
+/* decode int8 vectors + per-card norms */
+const raw = atob("__VECS__");
+const V = new Int8Array(N*DIM);
+for (let i=0;i<raw.length;i++) V[i] = (raw.charCodeAt(i)<<24)>>24;
+const NORM = new Float32Array(N);
+for (let i=0;i<N;i++){
+  let s=0; const o=i*DIM;
+  for (let d=0;d<DIM;d++) s += V[o+d]*V[o+d];
+  NORM[i] = Math.sqrt(s)||1;
+}
+const dot=(a,b)=>{let s=0;const oa=a*DIM,ob=b*DIM;
+  for(let d=0;d<DIM;d++)s+=V[oa+d]*V[ob+d];return s;};
+const cos=(a,b)=>dot(a,b)/(NORM[a]*NORM[b]);
+
+const nameIndex = new Map();
+DATA.names.forEach((n,i)=>nameIndex.set(n.toLowerCase(),i));
+
+const picks = [];
+const $ = id=>document.getElementById(id);
+
+const fmtSelect=$("format");
+DATA.formats.forEach(f=>{const o=document.createElement("option");
+  o.value=f;o.textContent=f;fmtSelect.appendChild(o);});
+
+const STARTERS=["Blood Artist","Krenko, Mob Boss","Guttersnipe","Ajani's Pridemate",
+  "Counterspell","Lightning Bolt","Skirk Prospector"];
+STARTERS.forEach(n=>{
+  if(!nameIndex.has(n.toLowerCase()))return;
+  const b=document.createElement("button");
+  b.textContent=n; b.onclick=()=>addPick(nameIndex.get(n.toLowerCase()));
+  $("starters").appendChild(b);
+});
+
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const scry=n=>"https://scryfall.com/search?q="+encodeURIComponent('!"'+n+'"');
+
+function addPick(i){
+  if (!picks.includes(i)) picks.push(i);
+  $("search").value=""; renderSearch(); render();
+}
+function removePick(i){
+  picks.splice(picks.indexOf(i),1); render();
+}
+
+function candidateOk(i, colorMask, fmtBit){
+  if (picks.includes(i)) return false;
+  if (DATA.colors[i] & 32) return false;              /* lands out of ranking */
+  if (fmtBit && !(DATA.legal[i] & fmtBit)) return false;
+  if ($("incolors").checked && picks.length &&
+      (DATA.colors[i] & ~32 & ~colorMask)) return false;
+  if ($("proven").checked && !DATA.freq[i]) return false;
+  return true;
+}
+
+function render(){
+  $("picks").innerHTML = picks.map(i=>`
+    <span class="pick">${esc(DATA.names[i])}
+      <button data-i="${i}" aria-label="remove">×</button></span>`).join("");
+  document.querySelectorAll("#picks button").forEach(b=>
+    b.onclick=()=>removePick(Number(b.dataset.i)));
+  $("empty-hint").style.display = picks.length? "none":"";
+  $("starters").style.display = picks.length? "none":"";
+  if (!picks.length){ $("suggest-list").innerHTML=""; return; }
+
+  const fmtBit = fmtSelect.value ?
+    (1 << DATA.formats.indexOf(fmtSelect.value)) : 0;
+  let colorMask=0;
+  for (const p of picks) colorMask |= (DATA.colors[p] & ~32);
+
+  const scores=[];
+  for (let i=0;i<N;i++){
+    if (!candidateOk(i,colorMask,fmtBit)) continue;
+    let s=0, best=-2, bestP=picks[0];
+    for (const p of picks){
+      const c=cos(i,p); s+=c;
+      if (c>best){best=c;bestP=p;}
+    }
+    s/=picks.length;
+    s += Math.log1p(DATA.freq[i])*0.012;   /* gentle popularity prior */
+    scores.push([s,i,bestP]);
+  }
+  scores.sort((a,b)=>b[0]-a[0]);
+  const top=scores.slice(0,60);
+  const max=top.length?top[0][0]:1;
+  $("suggest-list").innerHTML = top.map(([s,i,bp],k)=>`
+    <div class="row" data-i="${i}">
+      <span class="rank">${k+1}</span>
+      <span class="name"><a href="${scry(DATA.names[i])}" target="_blank"
+          rel="noopener" onclick="event.stopPropagation()">${esc(DATA.names[i])}</a>
+        <span class="why">· pairs with ${esc(DATA.names[bp])}</span>
+        ${DATA.freq[i]? "": '<span class="badge">unproven</span>'}</span>
+      <span class="bar-track"><span class="bar" style="width:${(100*Math.max(0,s)/max).toFixed(0)}%"></span></span>
+      <span class="sc">${s.toFixed(2)}</span>
+      <span class="type" style="grid-column: 2 / -1">${esc(DATA.types[i])}</span>
+    </div>`).join("");
+  document.querySelectorAll("#suggest-list .row").forEach(r=>
+    r.onclick=()=>addPick(Number(r.dataset.i)));
+}
+
+function renderSearch(){
+  const q=$("search").value.trim().toLowerCase();
+  if (q.length<2){ $("search-results").innerHTML=""; return; }
+  const hits=[];
+  for (let i=0;i<N && hits.length<12;i++){
+    if (DATA.names[i].toLowerCase().includes(q)) hits.push(i);
+  }
+  $("search-results").innerHTML = hits.map(i=>`
+    <div class="row" data-i="${i}">
+      <span class="name">${esc(DATA.names[i])}</span>
+      <span class="type">${esc(DATA.types[i])}</span>
+    </div>`).join("");
+  document.querySelectorAll("#search-results .row").forEach(r=>
+    r.onclick=()=>addPick(Number(r.dataset.i)));
+}
+
+$("search").addEventListener("input", renderSearch);
+$("clear").onclick=()=>{picks.length=0;render();};
+["format","incolors","proven"].forEach(id=>
+  $(id).addEventListener("change", render));
+render();
+</script>
+</body>
+</html>

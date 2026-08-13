@@ -30,7 +30,7 @@
   #bar h1 { font-size: 0.95rem; margin: 0 0.4rem 0 0; font-weight: 600; }
   #bar .n { color: var(--text-secondary); font-size: 0.8rem; }
   #bar a#deckmap-link { margin-left: auto; }
-  #bar a#deckmap-link, #bar a#builder-link {
+  #bar a#deckmap-link, #bar a#builder-link, #bar a.navlink {
     color: var(--text-secondary); font-size: 0.83rem;
   }
   #bar a:hover { color: var(--text-primary); }
@@ -87,7 +87,8 @@
   <select id="deck" class="hidden"><option value="">— highlight a deck —</option></select>
   <button id="reset">Reset view</button>
   <span class="n" id="count"></span>
-  <a id="deckmap-link" href="deck-map.html">meta deck map →</a>
+  <a id="deckmap-link" href="deck-seeker.html">deck seeker →</a>
+  <a href="deck-map.html" class="navlink">meta deck map →</a>
   <a id="builder-link" href="builder.html">deck builder →</a>
 </div>
 <div id="legend"></div>
