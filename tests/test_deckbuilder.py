@@ -1,7 +1,14 @@
 import unittest
 
+from mtg_deckbuilder.carddata import Card
 from mtg_deckbuilder.collection import load_collection
-from mtg_deckbuilder.deckbuilder import DeckBuildError, build_deck
+from mtg_deckbuilder.deckbuilder import (
+    DeckBuildError,
+    _fill_scored,
+    _goodstuff_score,
+    _Selection,
+    build_deck,
+)
 from mtg_deckbuilder.synergy import resolve_pool
 
 from tests.helpers import SAMPLE_COLLECTION, sample_db
@@ -101,6 +108,61 @@ class DeckBuilderTests(unittest.TestCase):
     def test_sixty_card_auto_pick_fails_on_tiny_pool(self):
         with self.assertRaises(DeckBuildError):
             build_deck(self.pool[:3], fmt="60")
+
+    def test_sixty_card_prefers_playsets_over_equal_singles(self):
+        # Same-quality creatures; we own 4 of one and 1 each of two others.
+        # The focused builder should take the playset first.
+        def bear(name):
+            return Card(
+                name=name, mana_cost="{1}{G}", mana_value=2.0,
+                color_identity=("G",), type_line="Creature — Bear",
+                keywords=("Trample",), power="2", toughness="2",
+            )
+
+        playset, single_a, single_b = bear("Bearset"), bear("Lone Bear A"), bear("Lone Bear B")
+        selection = _Selection(
+            [(playset, 4), (single_a, 1), (single_b, 1)], singleton=False
+        )
+        _fill_scored(
+            selection, 4, "Flex", _goodstuff_score, lambda c: ["test"], 40
+        )
+        self.assertIn("Bearset", selection.picked)
+        self.assertEqual(selection.picked["Bearset"].count, 4)
+
+    def test_sixty_card_does_not_split_playsets(self):
+        deck = build_deck(self.pool, fmt="60", colors=["B", "R"], theme="sacrifice")
+        owned = {card.name: count for card, count in self.pool}
+        for deck_card in deck.cards:
+            if deck_card.card.is_basic_land or deck_card.card.is_land:
+                continue
+            usable = min(owned.get(deck_card.card.name, 0), 4)
+            if usable >= 4:
+                self.assertEqual(
+                    deck_card.count, usable,
+                    f"{deck_card.card.name}: took {deck_card.count} of {usable} usable",
+                )
+
+    def test_multi_copy_picks_explain_consistency(self):
+        deck = build_deck(self.pool, fmt="60", colors=["B", "R"], theme="sacrifice")
+        for deck_card in deck.cards:
+            if deck_card.card.is_land or deck_card.count <= 1:
+                continue
+            self.assertTrue(
+                any("copies for consistency" in r for r in deck_card.reasons),
+                f"{deck_card.count}x {deck_card.card.name} lacks a consistency note",
+            )
+            # The note must match the final count, even after trimming.
+            note = next(r for r in deck_card.reasons if "copies for consistency" in r)
+            self.assertTrue(
+                note.startswith(str(deck_card.count)),
+                f"{deck_card.card.name}: count {deck_card.count} but note {note!r}",
+            )
+
+    def test_commander_deck_has_no_consistency_notes(self):
+        deck = self.build_krenko()
+        for deck_card in deck.cards:
+            for reason in deck_card.reasons:
+                self.assertNotIn("consistency", reason)
 
     def test_every_nonland_pick_has_a_reason(self):
         deck = self.build_krenko()

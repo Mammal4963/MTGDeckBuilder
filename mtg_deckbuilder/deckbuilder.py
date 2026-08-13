@@ -161,6 +161,13 @@ class _Selection:
         self.buckets[_bucket(card.mana_value)] += copies
         return copies
 
+    def consistency_bonus(self, card: Card, weight: float) -> float:
+        """Reward cards we own multiples of: a focused 60-card deck would
+        rather run a playset of a solid card than four different singles."""
+        if self.singleton:
+            return 0.0
+        return weight * (self.available.get(card.name, 0) - 1)
+
     def candidates(self) -> List[Card]:
         return [
             self.cards[name]
@@ -187,6 +194,7 @@ def _fill_role(
             score = (
                 role_weight * 2.0
                 + _theme_weight(card, theme) * 0.8
+                + selection.consistency_bonus(card, 0.4)
                 - card.mana_value * 0.25
                 - selection.curve_penalty(card, total_nonland_target)
             )
@@ -195,7 +203,12 @@ def _fill_role(
         if best is None:
             break
         _score, card, role_weight = best
-        copies = 1 if selection.singleton else min(quota, 4 if role_weight >= 2 else 2)
+        if selection.singleton:
+            copies = 1
+        else:
+            # Take the whole usable set, even slightly past the quota:
+            # a split playset (e.g. 1 of 4 owned copies) helps nobody.
+            copies = 4 if role_weight >= 2 else 2
         reasons = [role.replace("_", " ")]
         theme_weight = _theme_weight(card, theme)
         if theme_weight:
@@ -210,6 +223,7 @@ def _fill_scored(
     scorer,
     reason_for,
     total_nonland_target: int,
+    consistency: float = 0.6,
 ) -> None:
     while quota > 0:
         best: Optional[Tuple[float, Card]] = None
@@ -217,13 +231,18 @@ def _fill_scored(
             base = scorer(card)
             if base <= 0:
                 continue
-            score = base - selection.curve_penalty(card, total_nonland_target)
+            score = (
+                base
+                + selection.consistency_bonus(card, consistency)
+                - selection.curve_penalty(card, total_nonland_target)
+            )
             if best is None or score > best[0]:
                 best = (score, card)
         if best is None:
             break
         _score, card = best
-        copies = 1 if selection.singleton else min(quota, 4)
+        # Whole usable set at once (see _fill_role); trim rebalances later.
+        copies = 1 if selection.singleton else 4
         quota -= selection.take(card, category, reason_for(card), copies)
 
 
@@ -377,12 +396,17 @@ def build_deck(
             key=lambda dc: (_goodstuff_score(dc.card), -dc.card.mana_value),
         )
         excess = selection.nonland_count - nonland_target
-        for deck_card in removable:
-            if excess <= 0:
-                break
-            cut = min(excess, deck_card.count)
-            deck_card.count -= cut
-            excess -= cut
+        # Cut whole singleton entries first; break up playsets only as a
+        # last resort, so the deck stays focused on its multi-copy cards.
+        for pass_singletons_only in (True, False):
+            for deck_card in removable:
+                if excess <= 0:
+                    break
+                if pass_singletons_only and deck_card.count != 1:
+                    continue
+                cut = min(excess, deck_card.count)
+                deck_card.count -= cut
+                excess -= cut
         selection.picked = {
             name: dc for name, dc in selection.picked.items() if dc.count > 0
         }
@@ -399,6 +423,14 @@ def build_deck(
             deck.notes.append(
                 f"Pool ran out of playables; {still_short} extra lands added."
             )
+
+    # Note multi-copy picks in the explanations, from the final counts.
+    if not singleton:
+        for deck_card in selection.picked.values():
+            if deck_card.count > 1:
+                deck_card.reasons = deck_card.reasons + [
+                    f"{deck_card.count} copies for consistency"
+                ]
 
     deck.cards.extend(selection.picked.values())
 
