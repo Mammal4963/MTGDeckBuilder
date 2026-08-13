@@ -11,7 +11,9 @@ Writes output/deck-seeker.html
 from __future__ import annotations
 
 import base64
+import gzip
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -25,6 +27,46 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = Path(__file__).resolve().parent / "output"
 FORMATS = ["standard", "pioneer", "modern", "legacy", "vintage", "pauper", "commander"]
 WUBRG = "WUBRG"
+_PIP_RE = re.compile(r"\{([WUBRG])(?:/[WUBRGP])?\}")
+
+
+def norm(name: str) -> str:
+    return re.sub(r"\s+", " ", name).strip().lower()
+
+
+def load_decks60(name_to_row, is_land, is_basic):
+    """All 60-card decks (tournament + casual) as row/qty lists, for the
+    in-browser recipe retrieval."""
+    decks = []
+
+    def record(fmt, pairs):
+        cards, lands = {}, {}
+        for name, qty in pairs:
+            row = name_to_row.get(norm(name))
+            if row is None:
+                continue
+            qty = int(qty)
+            if is_land[row]:
+                lands[row] = lands.get(row, 0) + qty
+            else:
+                cards[row] = min(cards.get(row, 0) + qty, 4)
+        if len(cards) >= 8:
+            decks.append({
+                "f": fmt,
+                "c": sorted([int(r), int(q)] for r, q in cards.items()),
+                "l": sorted([int(r), int(q)] for r, q in lands.items()),
+            })
+
+    with gzip.open(ROOT / "data" / "decks" / "mtgo-decks.jsonl.gz", "rt") as fh:
+        for line in fh:
+            deck = json.loads(line)
+            record(deck["format"], deck["main"])
+    with gzip.open(ROOT / "data" / "decks" / "archidekt-decks.jsonl.gz", "rt") as fh:
+        for line in fh:
+            deck = json.loads(line)
+            if deck["format"] != "commander":
+                record(deck["format"], deck["cards"])
+    return decks
 
 
 def quantize(path: Path) -> str:
@@ -43,7 +85,7 @@ def main() -> None:
         deck_freq = {int(k): v for k, v in covocab["deck_freq"].items()}
         freqs[label] = [deck_freq.get(i, 0) for i in range(len(meta))]
 
-    colors, legal, names, types = [], [], [], []
+    colors, legal, names, types, mvs, pips = [], [], [], [], [], []
     for m in meta:
         card = db.get(m["name"])
         mask = 0
@@ -60,6 +102,21 @@ def main() -> None:
         legal.append(lmask)
         names.append(m["name"])
         types.append(m["type_line"][:48])
+        mvs.append(int(min(m["mana_value"], 15)))
+        pips.append("".join(_PIP_RE.findall(card.mana_cost)) if card else "")
+
+    name_to_row = {}
+    for i, m in enumerate(meta):
+        name_to_row.setdefault(norm(m["name"]), i)
+        if " // " in m["name"]:
+            name_to_row.setdefault(norm(m["name"].split(" // ")[0]), i)
+    is_land = [("Land" in m["type_line"]) for m in meta]
+    is_basic = [("Basic" in m["type_line"]) for m in meta]
+    decks60 = load_decks60(name_to_row, is_land, is_basic)
+    basics = {c: name_to_row[norm(n)] for c, n in
+              {"W": "Plains", "U": "Island", "B": "Swamp",
+               "R": "Mountain", "G": "Forest"}.items()}
+    print(f"{len(decks60)} recipe decks bundled")
 
     data = {
         "formats": FORMATS[:-1],
@@ -71,6 +128,10 @@ def main() -> None:
         "legal": legal,
         "freq60": freqs["60"],
         "freqcmd": freqs["cmd"],
+        "mv": mvs,
+        "pips": pips,
+        "decks60": decks60,
+        "basics": basics,
     }
     template = (Path(__file__).resolve().parent / "seeker_template.html").read_text()
     html = (template

@@ -62,6 +62,17 @@
   .muted { color: var(--text-secondary); font-size: 0.88rem; }
   .starters { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.5rem; }
   .starters button { border-radius: 999px; font-size: 0.88rem; }
+  #build { background: var(--accent); color: #221d0e; border-color: var(--accent); font-weight: 600; }
+  #deck-out { margin-top: 1rem; border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.9rem 1.1rem; }
+  #deck-out h2 { margin: 0 0 0.2rem; font-size: 1.05rem; }
+  #deck-out .cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem,1fr));
+    gap: 0.2rem 1.4rem; margin-top: 0.5rem; }
+  #deck-out .dline { display: flex; gap: 0.5rem; font-size: 0.92rem; padding: 0.1rem 0; }
+  #deck-out .dline .q { color: var(--text-secondary); min-width: 1.1em; text-align: right; }
+  #deck-out .dline .nm { cursor: pointer; }
+  #deck-out .dline .nm:hover { color: var(--accent); }
+  #deck-out .toolbar { display: flex; gap: 0.6rem; margin: 0.6rem 0 0.2rem; }
 </style>
 </head>
 <body>
@@ -85,10 +96,12 @@
       stay in picked colors</label>
     <label class="chk"><input id="proven" type="checkbox">
       played cards only</label>
+    <button id="build" class="primary" title="Generate a complete 60-card deck from your picks">Build full deck</button>
     <button id="clear">Clear</button>
   </div>
   <div id="search-results"></div>
   <div id="picks"></div>
+  <div id="deck-out" hidden></div>
   <div id="suggestions">
     <p class="muted" id="empty-hint">Nothing picked yet. Search for a card above, or
       start from a classic:</p>
@@ -227,6 +240,187 @@ function renderSearch(){
     r.onclick=()=>addPick(Number(r.dataset.i)));
 }
 
+/* ---- full-deck generation: the neighbors are the recipe ---- */
+const K_NEIGHBORS = 25, DECK_SIZE = 60;
+let centroids = null;
+function deckCentroids(){
+  if (centroids) return centroids;
+  const D = DATA.decks60.length;
+  centroids = new Float32Array(D*DIM);
+  for (let d=0; d<D; d++){
+    let tot=0;
+    const off=d*DIM;
+    for (const [row,qty] of DATA.decks60[d].c){
+      const o=row*DIM;
+      for (let k=0;k<DIM;k++) centroids[off+k]+=V[o+k]/NORM[row]*qty;
+      tot+=qty;
+    }
+    let nrm=0;
+    for (let k=0;k<DIM;k++){centroids[off+k]/=tot; nrm+=centroids[off+k]**2;}
+    nrm=Math.sqrt(nrm)||1;
+    for (let k=0;k<DIM;k++) centroids[off+k]/=nrm;
+  }
+  return centroids;
+}
+
+function buildDeck(){
+  if (!picks.length || source==="cmd") return;
+  const cents = deckCentroids();
+  const seedVec = new Float32Array(DIM);
+  for (const p of picks){const o=p*DIM;
+    for(let k=0;k<DIM;k++) seedVec[k]+=V[o+k]/NORM[p];}
+  let nrm=0; for(let k=0;k<DIM;k++) nrm+=seedVec[k]**2;
+  nrm=Math.sqrt(nrm)||1; for(let k=0;k<DIM;k++) seedVec[k]/=nrm;
+
+  const D = DATA.decks60.length;
+  const sims = new Float32Array(D);
+  for (let d=0;d<D;d++){let s=0;const off=d*DIM;
+    for(let k=0;k<DIM;k++) s+=cents[off+k]*seedVec[k];
+    sims[d]=s;}
+  const order = [...Array(D).keys()].sort((a,b)=>sims[b]-sims[a])
+    .slice(0,K_NEIGHBORS);
+
+  const fmtBit = $("format").value ? (1<<DATA.formats.indexOf($("format").value)) : 0;
+  let colorMask=0;
+  for (const p of picks) colorMask |= (DATA.colors[p] & ~32);
+  const inColors = $("incolors").checked;
+
+  const presence=new Map(), qtySum=new Map(), qtyN=new Map(), landPres=new Map();
+  const curve=new Float32Array(8);
+  const nonlandCounts=[], landCounts=[];
+  for (const d of order){
+    const w=sims[d], rec=DATA.decks60[d];
+    let nl=0, ll=0;
+    for (const [row,qty] of rec.c){
+      nl+=qty;
+      curve[Math.min(7,DATA.mv[row])]+=w*qty;
+      presence.set(row,(presence.get(row)||0)+w);
+      qtySum.set(row,(qtySum.get(row)||0)+w*qty);
+      qtyN.set(row,(qtyN.get(row)||0)+w);
+    }
+    for (const [row,qty] of rec.l){
+      ll+=qty;
+      if (!DATA.types[row].includes("Basic"))
+        landPres.set(row,(landPres.get(row)||0)+w);
+    }
+    nonlandCounts.push(nl); landCounts.push(ll);
+  }
+  nonlandCounts.sort((a,b)=>a-b);
+  const nonlandTarget=Math.min(40,nonlandCounts[Math.floor(nonlandCounts.length/2)]||36);
+  const landTarget=DECK_SIZE-nonlandTarget;
+  let csum=0; for(let b=0;b<8;b++) csum+=curve[b];
+  for(let b=0;b<8;b++) curve[b]/=(csum||1);
+  let maxPres=0; for (const v of presence.values()) maxPres=Math.max(maxPres,v);
+
+  const okCard=(r)=>{
+    if (fmtBit && !(DATA.legal[r] & fmtBit)) return false;
+    if (inColors && (DATA.colors[r] & ~32 & ~colorMask)) return false;
+    return true;
+  };
+
+  const picked=new Map(), curCurve=new Float32Array(8);
+  let total=0;
+  for (const p of picks){
+    if (DATA.colors[p] & 32) continue;
+    const q=Math.min(4, nonlandTarget-total);
+    picked.set(p,q); curCurve[Math.min(7,DATA.mv[p])]+=q; total+=q;
+  }
+  const cands=[...presence.keys()].filter(r=>
+    !(DATA.colors[r]&32) && !picked.has(r) && okCard(r));
+  const syn=new Map(cands.map(r=>[r,cos_vec(r,seedVec)]));
+  while (total<nonlandTarget && cands.length){
+    let best=-1,bestScore=-1e9,bestIdx=-1;
+    for (let ci=0;ci<cands.length;ci++){
+      const r=cands[ci];
+      let score=2.0*presence.get(r)/maxPres + syn.get(r);
+      const b=Math.min(7,DATA.mv[r]);
+      const over=(curCurve[b]+2)/Math.max(total+2,1)-curve[b];
+      score-=3.0*Math.max(0,over);
+      if (score>bestScore){best=r;bestScore=score;bestIdx=ci;}
+    }
+    if (best<0) break;
+    let copies=Math.round(qtySum.get(best)/Math.max(qtyN.get(best),1e-9));
+    copies=Math.max(1,Math.min(4,copies,nonlandTarget-total));
+    picked.set(best,copies);
+    curCurve[Math.min(7,DATA.mv[best])]+=copies;
+    total+=copies;
+    cands.splice(bestIdx,1);
+  }
+
+  /* lands: neighbors' nonbasics, then basics covering every pip color */
+  const lands=new Map();
+  let landTotal=0;
+  for (const [row,_w] of [...landPres.entries()].sort((a,b)=>b[1]-a[1])){
+    if (landTotal>=Math.floor(landTarget*0.55)) break;
+    if (fmtBit && !(DATA.legal[row] & fmtBit)) continue;
+    if (inColors && (DATA.colors[row] & ~32 & ~colorMask)) continue;
+    const copies=Math.min(4,landTarget-landTotal);
+    lands.set(row,copies); landTotal+=copies;
+  }
+  const pipCount={};
+  for (const [r,q] of picked)
+    for (const ch of DATA.pips[r]) pipCount[ch]=(pipCount[ch]||0)+q;
+  const colorsUsed=Object.keys(pipCount);
+  let remaining=landTarget-landTotal;
+  if (colorsUsed.length && remaining>0){
+    const totPips=Object.values(pipCount).reduce((a,b)=>a+b,0);
+    /* every color gets at least one source */
+    const alloc={};
+    colorsUsed.forEach(c=>{alloc[c]=1; remaining-=1;});
+    colorsUsed.sort((a,b)=>pipCount[b]-pipCount[a]).forEach((c,i)=>{
+      const extra=Math.round((landTarget-landTotal-colorsUsed.length)*pipCount[c]/totPips);
+      const take=Math.max(0,Math.min(extra,remaining));
+      alloc[c]+=take; remaining-=take;
+    });
+    if (remaining>0) alloc[colorsUsed[0]]+=remaining;
+    for (const c of colorsUsed){
+      const row=DATA.basics[c];
+      if (alloc[c]>0) lands.set(row,(lands.get(row)||0)+alloc[c]);
+    }
+  }
+  renderDeck(picked,lands);
+}
+
+function cos_vec(r, vec){
+  let s=0; const o=r*DIM;
+  for(let k=0;k<DIM;k++) s+=V[o+k]*vec[k];
+  return s/NORM[r];
+}
+
+function renderDeck(picked,lands){
+  const entries=[...picked.entries()].sort((a,b)=>
+    (DATA.mv[a[0]]-DATA.mv[b[0]]) || (b[1]-a[1]));
+  const landEntries=[...lands.entries()].sort((a,b)=>b[1]-a[1]);
+  const total=[...picked.values()].reduce((a,b)=>a+b,0)+
+    [...lands.values()].reduce((a,b)=>a+b,0);
+  const line=([r,q])=>`<div class="dline"><span class="q">${q}</span>
+    <span class="nm"><a href="${scry(DATA.names[r])}" target="_blank" rel="noopener"
+      style="color:inherit">${esc(DATA.names[r])}</a></span></div>`;
+  const text=[...entries,...landEntries].map(([r,q])=>`${q} ${DATA.names[r]}`).join("\n");
+  const out=$("deck-out");
+  out.hidden=false;
+  out.innerHTML=`<h2>Generated deck <span class="muted">· ${total} cards ·
+      built from the ${K_NEIGHBORS} most similar real decks</span></h2>
+    <div class="toolbar">
+      <button id="copy-deck">Copy decklist</button>
+      <button id="dl-deck">Download .txt</button>
+      <button id="close-deck">Close</button>
+    </div>
+    <div class="cols">${entries.map(line).join("")}</div>
+    <p class="muted">Lands</p>
+    <div class="cols">${landEntries.map(line).join("")}</div>`;
+  $("copy-deck").onclick=async()=>{await navigator.clipboard.writeText(text);};
+  $("dl-deck").onclick=()=>{
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([text+"\n"],{type:"text/plain"}));
+    a.download="deck.txt"; a.click(); URL.revokeObjectURL(a.href);
+  };
+  $("close-deck").onclick=()=>{out.hidden=true;};
+  out.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+$("build").addEventListener("click", buildDeck);
+
 $("search").addEventListener("input", renderSearch);
 $("clear").onclick=()=>{picks.length=0;render();};
 ["format","incolors","proven"].forEach(id=>
@@ -235,6 +429,7 @@ $("source").addEventListener("change", ()=>{
   source = $("source").value;
   V = SPACES[source].vecs; NORM = SPACES[source].norms; FREQ = SPACES[source].freq;
   $("format").style.display = source==="cmd" ? "none" : "";
+  $("build").style.display = source==="cmd" ? "none" : "";
   render();
 });
 render();
