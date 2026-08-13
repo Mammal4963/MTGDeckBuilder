@@ -20,20 +20,22 @@ the same Python engine in your browser via [Pyodide](https://pyodide.org)
 collection; the page looks up just those cards through the
 [Scryfall API](https://scryfall.com/docs/api) and builds the deck locally.
 
-### Deploying on Cloudflare Pages
+### Deployment (Cloudflare Workers)
 
-The site is plain static files with no build step. In the Pages project
-settings for this repo use:
+The site is deployed as a static-assets-only Cloudflare Worker named
+`mtgdeckbuilder`, live at <https://mtgdeckbuilder.abe141516.workers.dev>.
+`wrangler.jsonc` holds the config (assets served from the repo root;
+`.assetsignore` keeps tests and CLI-only files out of the upload). To
+redeploy after changes:
 
-- **Framework preset:** None
-- **Build command:** *(leave empty)*
-- **Build output directory:** `/`
+```bash
+npx wrangler deploy    # uses CLOUDFLARE_API_TOKEN or `wrangler login`
+```
 
-Every push to the production branch redeploys it. Any other static host
-(GitHub Pages, Netlify, `python -m http.server`) works the same way — the
-only requirement is that the `mtg_deckbuilder/*.py` files and
-`examples/sample_collection.txt` are served alongside `index.html`, which
-they are by default.
+There is no build step. Any other static host (Cloudflare Pages, GitHub
+Pages, Netlify, `python -m http.server`) works too — the only requirement
+is that the `mtg_deckbuilder/*.py` files and
+`examples/sample_collection.txt` are served alongside `index.html`.
 
 ## Command-line quick start
 

@@ -1,0 +1,11 @@
+// Cloudflare Workers config: serves the repo as a static-assets-only worker.
+// Deploy with: npx wrangler deploy   (needs CLOUDFLARE_API_TOKEN or wrangler login)
+{
+  "name": "mtgdeckbuilder",
+  "compatibility_date": "2026-08-12",
+  "assets": {
+    "directory": ".",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+}

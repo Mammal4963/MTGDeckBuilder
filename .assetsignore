@@ -1,0 +1,12 @@
+# Files that should not be uploaded as site assets by `wrangler deploy`.
+.git
+.gitignore
+.assetsignore
+wrangler.jsonc
+README.md
+pyproject.toml
+tests
+examples/sample_cards.json
+mtg_deckbuilder/cli.py
+mtg_deckbuilder/fetch.py
+mtg_deckbuilder/__main__.py
