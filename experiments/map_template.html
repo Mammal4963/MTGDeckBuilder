@@ -29,6 +29,10 @@
   }
   #bar h1 { font-size: 0.95rem; margin: 0 0.4rem 0 0; font-weight: 600; }
   #bar .n { color: var(--text-secondary); font-size: 0.8rem; }
+  #bar a#builder-link {
+    margin-left: auto; color: var(--text-secondary); font-size: 0.83rem;
+  }
+  #bar a#builder-link:hover { color: var(--text-primary); }
   select, input[type=search], button {
     background: var(--surface-2); color: var(--text-primary);
     border: 1px solid var(--border); border-radius: 6px;
@@ -77,6 +81,7 @@
   <input id="search" type="search" placeholder="highlight cards… e.g. bolt" size="22">
   <button id="reset">Reset view</button>
   <span class="n" id="count"></span>
+  <a id="builder-link" href="builder.html">deck builder →</a>
 </div>
 <div id="legend"></div>
 <div id="tip"></div>

@@ -6,6 +6,8 @@ wrangler.jsonc
 README.md
 pyproject.toml
 tests
+data
+experiments
 examples/sample_cards.json
 mtg_deckbuilder/cli.py
 mtg_deckbuilder/fetch.py
