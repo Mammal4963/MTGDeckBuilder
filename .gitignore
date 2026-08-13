@@ -14,3 +14,6 @@ default-cards*.json
 # Experiment outputs that are large or regenerable from committed inputs
 experiments/output/*.npy
 experiments/output/*.npz
+
+# Committed map artifacts (small, regenerable but useful)
+!experiments/output/coords.npy

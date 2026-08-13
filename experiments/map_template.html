@@ -156,8 +156,8 @@ function draw(){
   for (let pass=0; pass<2; pass++){
     for (let i=0;i<N;i++){
       const v = vals[i];
-      const dim = (isolate!==null && v!==isolate) ||
-                  (highlight && !highlight.has(i));
+      const dim = !!((isolate!==null && v!==isolate) ||
+                     (highlight && !highlight.has(i)));
       if ((pass===0) !== dim) continue;      /* dim first, lit on top */
       const [sx,sy] = toScreen(DATA.x[i], DATA.y[i]);
       if (sx<-4||sy<-4||sx>canvas.clientWidth+4||sy>canvas.clientHeight+4) continue;
