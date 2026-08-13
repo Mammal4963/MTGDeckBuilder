@@ -1,10 +1,10 @@
 """Build the deck seeker: pick cards, watch the good options collapse.
 
-Bundles every card's blended co-occurrence vector (int8-quantized) plus
-name/type/colors/legality/popularity into a self-contained page that
-re-ranks all candidates on every pick.
+Two separate learned synergy spaces (chosen with a toggle, never mixed):
+  60  - MTGO tournament decks + casual 60-card community decks
+  cmd - Commander community decks
 
-Reads  output/{covectors.npy,covocab.json,cards_meta.json}
+Reads  output/covectors-{60,cmd}.npy, covocab-{60,cmd}.json, cards_meta.json
        data/scryfall-oracle-cards-2026-08-12.jsonl.gz  (legalities)
 Writes output/deck-seeker.html
 """
@@ -23,22 +23,28 @@ from mtg_deckbuilder.carddata import CardDatabase  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = Path(__file__).resolve().parent / "output"
-FORMATS = ["standard", "pioneer", "modern", "legacy", "vintage", "pauper"]
+FORMATS = ["standard", "pioneer", "modern", "legacy", "vintage", "pauper", "commander"]
 WUBRG = "WUBRG"
 
 
+def quantize(path: Path) -> str:
+    vecs = np.load(path)
+    q = np.clip(np.round(vecs * 127), -127, 127).astype(np.int8)
+    return base64.b64encode(q.tobytes()).decode()
+
+
 def main() -> None:
-    vecs = np.load(OUT / "covectors.npy")
     meta = json.loads((OUT / "cards_meta.json").read_text())
-    covocab = json.loads((OUT / "covocab.json").read_text())
-    deck_freq = {int(k): v for k, v in covocab["deck_freq"].items()}
     db = CardDatabase.load(ROOT / "data" / "scryfall-oracle-cards-2026-08-12.jsonl.gz")
 
-    q = np.clip(np.round(vecs * 127), -127, 127).astype(np.int8)
-    b64 = base64.b64encode(q.tobytes()).decode()
+    freqs = {}
+    for label in ("60", "cmd"):
+        covocab = json.loads((OUT / f"covocab-{label}.json").read_text())
+        deck_freq = {int(k): v for k, v in covocab["deck_freq"].items()}
+        freqs[label] = [deck_freq.get(i, 0) for i in range(len(meta))]
 
-    colors, legal, freq, names, types = [], [], [], [], []
-    for i, m in enumerate(meta):
+    colors, legal, names, types = [], [], [], []
+    for m in meta:
         card = db.get(m["name"])
         mask = 0
         for b, c in enumerate(WUBRG):
@@ -52,23 +58,25 @@ def main() -> None:
             if card and card.legalities.get(fmt) in ("legal", "restricted"):
                 lmask |= 1 << b
         legal.append(lmask)
-        freq.append(deck_freq.get(i, 0))
         names.append(m["name"])
         types.append(m["type_line"][:48])
 
     data = {
-        "formats": FORMATS,
-        "dim": int(vecs.shape[1]),
+        "formats": FORMATS[:-1],
+        "commanderBit": 1 << (len(FORMATS) - 1),
+        "dim": 64,
         "names": names,
         "types": types,
         "colors": colors,
         "legal": legal,
-        "freq": freq,
+        "freq60": freqs["60"],
+        "freqcmd": freqs["cmd"],
     }
     template = (Path(__file__).resolve().parent / "seeker_template.html").read_text()
     html = (template
             .replace("__DATA__", json.dumps(data, separators=(",", ":")))
-            .replace("__VECS__", b64))
+            .replace("__VECS60__", quantize(OUT / "covectors-60.npy"))
+            .replace("__VECSCMD__", quantize(OUT / "covectors-cmd.npy")))
     out = OUT / "deck-seeker.html"
     out.write_text(html, encoding="utf-8")
     print(f"wrote {out} ({out.stat().st_size / 1e6:.1f} MB, {len(names)} cards)")

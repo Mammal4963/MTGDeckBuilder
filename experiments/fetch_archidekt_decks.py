@@ -23,14 +23,21 @@ UA = {"User-Agent": "mtg-deckbuilder-research/0.1 (one-time corpus fetch; github
 API = "https://archidekt.com/api"
 DELAY = 1.0
 
-# (label, search query, decks to take)
+# (label, search query, decks to take, size range)
+# deckFormat: 1 standard, 2 modern, 3 commander, 4 legacy, 6 pauper,
+# 16 historic. 60-card formats are size-filtered to exclude the cubes,
+# binders and wantlists that share those categories.
 QUERIES = [
-    ("commander-popular", "formats=3&orderBy=-viewCount", 900),
-    ("commander-recent", "formats=3&orderBy=-createdAt", 400),
-    ("pauper-popular", "formats=6&orderBy=-viewCount", 300),
-    ("casual-popular", "formats=7&orderBy=-viewCount", 200),
+    ("commander-popular", "deckFormat=3&orderBy=-viewCount", 900, (60, 120)),
+    ("commander-recent", "deckFormat=3&orderBy=-createdAt", 400, (60, 120)),
+    ("standard-popular", "deckFormat=1&orderBy=-viewCount", 400, (55, 90)),
+    ("modern-popular", "deckFormat=2&orderBy=-viewCount", 400, (55, 90)),
+    ("pauper-popular", "deckFormat=6&orderBy=-viewCount", 400, (55, 90)),
+    ("historic-popular", "deckFormat=16&orderBy=-viewCount", 300, (55, 90)),
+    ("legacy-popular", "deckFormat=4&orderBy=-viewCount", 200, (55, 90)),
 ]
-FORMAT_NAMES = {3: "commander", 6: "pauper-casual", 7: "casual"}
+FORMAT_NAMES = {3: "commander", 1: "casual-standard", 2: "casual-modern",
+                4: "casual-legacy", 6: "casual-pauper", 16: "casual-historic"}
 
 
 def fetch_json(url: str):
@@ -80,15 +87,16 @@ def main() -> None:
         print(f"resuming: {n_existing} decks already fetched")
 
     todo = []
-    for label, query, want in QUERIES:
+    for label, query, want, (lo, hi) in QUERIES:
         got, page = 0, 1
-        while got < want and page <= (want // 50) + 2:
+        while got < want and page <= (want // 50) + 4:
             data = fetch_json(f"{API}/decks/v3/?{query}&pageSize=50&page={page}")
             time.sleep(DELAY)
             if not data or not data.get("results"):
                 break
             for r in data["results"]:
-                if r["id"] not in seen and r.get("size", 0) >= 40 and not r.get("private"):
+                if (r["id"] not in seen and lo <= (r.get("size") or 0) <= hi
+                        and not r.get("private")):
                     todo.append((r["id"], r.get("deckFormat"), r.get("name", "")))
                     seen.add(r["id"])
                     got += 1

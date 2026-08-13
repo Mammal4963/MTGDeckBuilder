@@ -1,22 +1,19 @@
-"""Phase 3: the co-occurrence space - what cards are *played with*.
+"""Phase 3: co-occurrence spaces - what cards are *played with*.
 
-1. Build PPMI card-pair statistics over the MTGO deck corpus (train
-   split), factor with truncated SVD -> co-occurrence vectors for every
-   card seen in enough decks (the "vocab").
-2. Generalize: ridge-regress text embeddings -> co-occurrence vectors,
-   so every card in the Scryfall snapshot gets a predicted synergy
-   vector even if no tournament deck ever played it. Vocab cards keep
-   their grounded vectors; everything else uses the projection.
-3. Mine the disagreement list: pairs with high co-occurrence similarity
-   but low text similarity - true synergy pairs no text model sees.
-4. Evaluate the user-facing task: on held-out decks, hide a card and
-   rank it among all format-legal candidates given the rest of the deck.
-   Compare against text-only and popularity baselines.
+Two separate synergy spaces, per the project owner's design:
 
-Reads  data/decks/mtgo-decks.jsonl.gz, output/{embeddings.npy,cards_meta.json}
-Writes output/covectors.npy       blended [n_cards, 64] unit vectors
-       output/covocab.json        vocab rows + per-format play counts
-       output/synergy_pairs.json  top disagreement pairs
+* **60**  - MTGO tournament decks + Archidekt casual 60-card decks
+            (standard/modern/legacy/pauper/historic community lists).
+* **cmd** - Archidekt Commander decks only.
+
+For each space: PPMI over card pairs (equal pair-mass per deck), SVD to
+64 dims, ridge projection from text-embedding space so every card gets a
+vector, and a mined "synergy disagreement" list (high co-occurrence, low
+text similarity). The 60 space is evaluated by held-out reconstruction
+on the same MTGO test split as earlier phases.
+
+Writes output/covectors-{60,cmd}.npy, covocab-{60,cmd}.json,
+       synergy_pairs-{60,cmd}.json
 """
 from __future__ import annotations
 
@@ -37,13 +34,91 @@ from mtg_deckbuilder.carddata import CardDatabase  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 OUT = Path(__file__).resolve().parent / "output"
 DIM = 64
-MIN_DECKS = 3          # vocab threshold
+MIN_DECKS = 3
 TEST_FRAC = 0.1
 RNG = np.random.default_rng(11)
 
 
 def norm(name: str) -> str:
     return re.sub(r"\s+", " ", name).strip().lower()
+
+
+def build_space(train, emb, meta, label):
+    """PPMI -> SVD -> ridge-blended vectors for one corpus. Returns
+    (blended vectors, vocab rows, deck_freq, fmt_freq, pairs_list)."""
+    deck_freq = Counter()
+    fmt_freq: dict = defaultdict(Counter)
+    for fmt, rows in train:
+        for r in rows:
+            deck_freq[r] += 1
+            fmt_freq[fmt][r] += 1
+    vocab = sorted(r for r, c in deck_freq.items() if c >= MIN_DECKS)
+    v_index = {r: i for i, r in enumerate(vocab)}
+    NV = len(vocab)
+
+    pair_w: dict = defaultdict(float)
+    pair_decks = Counter()
+    for _fmt, rows in train:
+        vrows = [v_index[r] for r in rows if r in v_index]
+        n = len(vrows)
+        if n < 2:
+            continue
+        w = min(1.0, 350.0 / (n * (n - 1) / 2))
+        for a in range(n):
+            for b in range(a + 1, n):
+                i, j = (vrows[a], vrows[b]) if vrows[a] < vrows[b] else (vrows[b], vrows[a])
+                key = i * NV + j
+                pair_w[key] += w
+                pair_decks[key] += 1
+
+    n_pairs = sum(pair_w.values())
+    totals = defaultdict(float)
+    for key, c in pair_w.items():
+        totals[key // NV] += c
+        totals[key % NV] += c
+    rows_ix, cols_ix, vals = [], [], []
+    for key, c in pair_w.items():
+        i, j = key // NV, key % NV
+        pmi = np.log(c * n_pairs / (totals[i] * totals[j]))
+        if pmi > 0:
+            rows_ix += [i, j]
+            cols_ix += [j, i]
+            vals += [pmi, pmi]
+    M = sparse.csr_matrix((vals, (rows_ix, cols_ix)), shape=(NV, NV))
+
+    from sklearn.decomposition import TruncatedSVD
+    from sklearn.linear_model import Ridge
+
+    svd = TruncatedSVD(n_components=min(DIM, NV - 1), random_state=0)
+    V = svd.fit_transform(M)
+    V /= np.maximum(np.linalg.norm(V, axis=1, keepdims=True), 1e-9)
+    print(f"[{label}] {len(train)} decks, vocab {NV}, nnz {M.nnz}, "
+          f"SVD var {svd.explained_variance_ratio_.sum():.2f}")
+
+    vocab_rows = np.array(vocab)
+    ridge = Ridge(alpha=1.0)
+    ridge.fit(emb[vocab_rows], V)
+    predicted = ridge.predict(emb)
+    predicted /= np.maximum(np.linalg.norm(predicted, axis=1, keepdims=True), 1e-9)
+    blended = predicted.copy()
+    blended[vocab_rows] = V
+    blended = blended.astype(np.float32)
+
+    pairs_list = []
+    for key, c in pair_decks.items():
+        if c < 8:
+            continue
+        i, j = key // NV, key % NV
+        co_sim = float(V[i] @ V[j])
+        text_sim = float(emb[vocab[i]] @ emb[vocab[j]])
+        pairs_list.append({
+            "a": meta[vocab[i]]["name"], "b": meta[vocab[j]]["name"],
+            "decks": c, "co_sim": round(co_sim, 3),
+            "text_sim": round(text_sim, 3),
+            "synergy": round(co_sim - text_sim, 3),
+        })
+    pairs_list.sort(key=lambda p: -p["synergy"])
+    return blended, vocab, deck_freq, fmt_freq, pairs_list
 
 
 def main() -> None:
@@ -60,8 +135,7 @@ def main() -> None:
         rows = {name_to_row[norm(n)] for n, _q in pairs if norm(n) in name_to_row}
         return sorted(r for r in rows if not is_land[r])
 
-    # MTGO tournament decks (train/test split kept identical to phase 3
-    # so results stay comparable).
+    # MTGO tournament decks; split kept identical to earlier phases.
     deck_rows = []
     with gzip.open(ROOT / "data" / "decks" / "mtgo-decks.jsonl.gz", "rt") as fh:
         for line in fh:
@@ -69,151 +143,57 @@ def main() -> None:
             rows = to_rows(deck["main"])
             if len(rows) >= 8:
                 deck_rows.append((deck["format"], rows))
-
     order = RNG.permutation(len(deck_rows))
-    n_test = int(len(deck_rows) * TEST_FRAC)
-    test_idx = set(order[:n_test].tolist())
-    train = [deck_rows[i] for i in range(len(deck_rows)) if i not in test_idx]
+    test_idx = set(order[: int(len(deck_rows) * TEST_FRAC)].tolist())
+    train_60 = [deck_rows[i] for i in range(len(deck_rows)) if i not in test_idx]
     test = [deck_rows[i] for i in sorted(test_idx)]
 
-    # Casual corpus (Archidekt), train-only: teaches the archetypes
-    # tournament play never shows (aristocrats, tribal, lifegain...).
-    casual_path = ROOT / "data" / "decks" / "archidekt-decks.jsonl.gz"
-    n_casual = 0
-    if casual_path.exists():
-        with gzip.open(casual_path, "rt") as fh:
+    # Archidekt: casual 60-card formats join the 60 space; Commander gets
+    # its own space entirely - the corpora never mix.
+    train_cmd = []
+    casual = ROOT / "data" / "decks" / "archidekt-decks.jsonl.gz"
+    n_c60 = 0
+    if casual.exists():
+        with gzip.open(casual, "rt") as fh:
             for line in fh:
                 deck = json.loads(line)
                 rows = to_rows(deck["cards"])
-                if len(rows) >= 15:
-                    train.append((deck["format"], rows))
-                    n_casual += 1
-    print(f"{len(train)} train ({n_casual} casual) / {len(test)} test decks")
+                if deck["format"] == "commander":
+                    if len(rows) >= 30:
+                        train_cmd.append((deck["format"], rows))
+                elif len(rows) >= 15:
+                    train_60.append((deck["format"], rows))
+                    n_c60 += 1
+    print(f"60 space: {len(train_60)} train ({n_c60} casual) / {len(test)} test")
+    print(f"cmd space: {len(train_cmd)} commander decks")
 
-    # ---- vocab & pair counts (train only) ------------------------------
-    deck_freq = Counter()
-    fmt_freq: dict = defaultdict(Counter)
-    for fmt, rows in train:
-        for r in rows:
-            deck_freq[r] += 1
-            fmt_freq[fmt][r] += 1
-    vocab = sorted(r for r, c in deck_freq.items() if c >= MIN_DECKS)
-    v_index = {r: i for i, r in enumerate(vocab)}
-    print(f"vocab: {len(vocab)} cards seen in >= {MIN_DECKS} train decks")
-
-    # Weighted pairs: every deck contributes roughly equal total pair
-    # mass, so a 100-card Commander list doesn't out-vote a 60-card deck
-    # (a 60-card deck has ~300 pairs; Commander decks ~2000).
-    NV = len(vocab)
-    pair_w: dict = defaultdict(float)     # weighted mass (for PPMI)
-    pair_decks = Counter()                # integer deck counts (for display)
-    for _fmt, rows in train:
-        vrows = [v_index[r] for r in rows if r in v_index]
-        n = len(vrows)
-        if n < 2:
+    results = {}
+    for label, train in (("60", train_60), ("cmd", train_cmd)):
+        if not train:
+            print(f"[{label}] no decks - skipped")
             continue
-        w = min(1.0, 350.0 / (n * (n - 1) / 2))
-        for a in range(n):
-            for b in range(a + 1, n):
-                i, j = (vrows[a], vrows[b]) if vrows[a] < vrows[b] else (vrows[b], vrows[a])
-                key = i * NV + j
-                pair_w[key] += w
-                pair_decks[key] += 1
+        blended, vocab, deck_freq, fmt_freq, pairs = build_space(
+            train, emb, meta, label)
+        np.save(OUT / f"covectors-{label}.npy", blended)
+        (OUT / f"synergy_pairs-{label}.json").write_text(
+            json.dumps(pairs[:500], indent=1), encoding="utf-8")
+        (OUT / f"covocab-{label}.json").write_text(json.dumps({
+            "vocab_rows": [int(r) for r in vocab],
+            "deck_freq": {str(r): int(c) for r, c in deck_freq.items()},
+            "fmt_freq": {f: {str(r): int(c) for r, c in cs.items()}
+                         for f, cs in fmt_freq.items()},
+        }), encoding="utf-8")
+        results[label] = (blended, deck_freq, fmt_freq)
+        print(f"[{label}] top synergy pairs:")
+        for p in pairs[:8]:
+            print(f"   {p['synergy']:+.3f}  {p['a']}  +  {p['b']}  ({p['decks']} decks)")
 
-    # ---- PPMI + SVD ----------------------------------------------------
-    n_pairs = sum(pair_w.values())
-    card_pair_totals = defaultdict(float)
-    for key, c in pair_w.items():
-        card_pair_totals[key // NV] += c
-        card_pair_totals[key % NV] += c
-    rows_ix, cols_ix, vals = [], [], []
-    for key, c in pair_w.items():
-        i, j = key // NV, key % NV
-        pmi = np.log(c * n_pairs / (card_pair_totals[i] * card_pair_totals[j]))
-        if pmi > 0:
-            rows_ix += [i, j]
-            cols_ix += [j, i]
-            vals += [pmi, pmi]
-    M = sparse.csr_matrix(
-        (vals, (rows_ix, cols_ix)), shape=(len(vocab), len(vocab))
-    )
-    from sklearn.decomposition import TruncatedSVD
-
-    svd = TruncatedSVD(n_components=DIM, random_state=0)
-    V = svd.fit_transform(M)
-    V /= np.maximum(np.linalg.norm(V, axis=1, keepdims=True), 1e-9)
-    print(f"PPMI matrix nnz={M.nnz}, SVD explained variance "
-          f"{svd.explained_variance_ratio_.sum():.2f}")
-
-    # ---- projection: text space -> co-occurrence space -----------------
-    from sklearn.linear_model import Ridge
-
-    vocab_rows = np.array(vocab)
-    ridge = Ridge(alpha=1.0)
-    ridge.fit(emb[vocab_rows], V)
-    ridge_pred = ridge.predict(emb)
-    ridge_pred /= np.maximum(np.linalg.norm(ridge_pred, axis=1, keepdims=True), 1e-9)
-
-    # kNN transfer: an unplayed card borrows the grounded co-vectors of its
-    # closest *played* text-neighbors (sharpened weights). This keeps casual
-    # staples like Blood Artist attached to real archetype geometry instead
-    # of a smoothed regression that echoes text similarity.
-    K = 8
-    knn_pred = np.zeros_like(ridge_pred)
-    vocab_emb = emb[vocab_rows]
-    for start in range(0, len(emb), 4096):
-        chunk = emb[start:start + 4096]
-        sims = chunk @ vocab_emb.T
-        top = np.argpartition(-sims, K, axis=1)[:, :K]
-        for local, i in enumerate(range(start, start + len(chunk))):
-            w = np.maximum(sims[local, top[local]], 0.0) ** 4
-            if w.sum() <= 0:
-                continue
-            knn_pred[i] = (V[top[local]] * (w / w.sum())[:, None]).sum(0)
-    knn_pred /= np.maximum(np.linalg.norm(knn_pred, axis=1, keepdims=True), 1e-9)
-
-    # Projection sanity on vocab (leave-self-out isn't exact here, but the
-    # ridge comparison is like-for-like).
-    holdout = RNG.choice(len(vocab), size=min(300, len(vocab)), replace=False)
-    cos_r = (ridge_pred[vocab_rows[holdout]] * V[holdout]).sum(1)
-    print(f"projection: ridge mean cos = {cos_r.mean():.3f}")
-
-    # Ridge alone evaluates best on held-out reconstruction (kNN transfer
-    # was tried at 50/50 and scored slightly worse; both fail the same way
-    # for archetypes the corpus simply never plays - that needs more data,
-    # not a different projection).
-    predicted = ridge_pred
-    blended = predicted.copy()
-    blended[vocab_rows] = V            # grounded vectors win where they exist
-    blended = blended.astype(np.float32)
-    np.save(OUT / "covectors.npy", blended)
-
-    # ---- synergy disagreement list -------------------------------------
-    pairs_list = []
-    for key, c in pair_decks.items():
-        if c < 8:
-            continue
-        i, j = key // NV, key % NV
-        co_sim = float(V[i] @ V[j])
-        text_sim = float(emb[vocab[i]] @ emb[vocab[j]])
-        pairs_list.append({
-            "a": meta[vocab[i]]["name"], "b": meta[vocab[j]]["name"],
-            "decks": c, "co_sim": round(co_sim, 3),
-            "text_sim": round(text_sim, 3),
-            "synergy": round(co_sim - text_sim, 3),
-        })
-    pairs_list.sort(key=lambda p: -p["synergy"])
-    (OUT / "synergy_pairs.json").write_text(
-        json.dumps(pairs_list[:500], indent=1), encoding="utf-8")
-    print("\nTop synergy pairs (played together, textually unalike):")
-    for p in pairs_list[:15]:
-        print(f"  {p['synergy']:+.3f}  {p['a']}  +  {p['b']}   "
-              f"({p['decks']} decks, text {p['text_sim']:.2f})")
-
-    # ---- evaluation: held-out deck reconstruction ----------------------
+    # ---- evaluation (60 space only; comparable to earlier phases) ------
+    blended, _freq, fmt_freq = results["60"]
     db = CardDatabase.load(ROOT / "data" / "scryfall-oracle-cards-2026-08-12.jsonl.gz")
+    mtgo_fmts = {f for f, _ in test}
     legal_rows = {}
-    for fmt in fmt_freq:
+    for fmt in mtgo_fmts:
         mask = np.array([
             (card := db.get(m["name"])) is not None
             and card.legalities.get(fmt) in ("legal", "restricted")
@@ -238,48 +218,19 @@ def main() -> None:
                 ranks.append(rank)
         ranks = np.array(ranks)
         print(f"  {label:<22} median rank {np.median(ranks):>6.0f}   "
-              f"hit@10 {np.mean(ranks<=10):.1%}   hit@50 {np.mean(ranks<=50):.1%}"
-              f"   (n={len(ranks)}, pool ~{np.mean([len(legal_rows[f]) for f,_ in test]):.0f})")
-        return ranks
+              f"hit@10 {np.mean(ranks<=10):.1%}   hit@50 {np.mean(ranks<=50):.1%}")
 
-    print("\nHeld-out reconstruction (hide a card, rank it among all legal cards):")
-    evaluate(blended, "co-occurrence (ours)")
+    print("\nHeld-out MTGO reconstruction (60 space):")
+    evaluate(blended, "co-occurrence (60)")
     evaluate(emb, "text embeddings")
-    # Popularity baseline: rank by train play count in format.
-    ranks = []
-    for fmt, rows in test:
-        candidates = legal_rows[fmt]
-        pop = np.array([fmt_freq[fmt].get(r, 0) for r in candidates], dtype=float)
-        pos = {r: k for k, r in enumerate(candidates)}
-        usable = [r for r in rows if r in pos]
-        if len(usable) < 10:
-            continue
-        held = RNG.choice(usable, size=min(5, len(usable) // 2), replace=False)
-        for h in held:
-            rank = int((pop > pop[pos[h]]).sum()) + 1
-            ranks.append(rank)
-    ranks = np.array(ranks)
-    print(f"  {'popularity':<22} median rank {np.median(ranks):>6.0f}   "
-          f"hit@10 {np.mean(ranks<=10):.1%}   hit@50 {np.mean(ranks<=50):.1%}")
 
-    # ---- bundle for the seeker page ------------------------------------
-    covocab = {
-        "vocab_rows": [int(r) for r in vocab],
-        "deck_freq": {str(r): int(c) for r, c in deck_freq.items()},
-        "fmt_freq": {fmt: {str(r): int(c) for r, c in counts.items()}
-                     for fmt, counts in fmt_freq.items()},
-    }
-    (OUT / "covocab.json").write_text(json.dumps(covocab), encoding="utf-8")
-    print("\nwrote covectors.npy, covocab.json, synergy_pairs.json")
-
-    # Qualitative check for the casual-archetype gap: what does the model
-    # now recommend next to Blood Artist?
+    # Qualitative: the casual-archetype gap.
     row = name_to_row.get("blood artist")
     if row is not None:
-        sims = blended @ blended[row]
-        print(f"\nBlood Artist neighbors (in {deck_freq.get(row, 0)} train decks):")
-        for j in np.argsort(-sims)[1:11]:
-            print(f"  {sims[j]:.3f}  {meta[j]['name']}")
+        for label, (vectors, freq, _f) in results.items():
+            sims = vectors @ vectors[row]
+            names = ", ".join(meta[j]["name"] for j in np.argsort(-sims)[1:9])
+            print(f"\nBlood Artist [{label}] (in {freq.get(row, 0)} decks): {names}")
 
 
 if __name__ == "__main__":

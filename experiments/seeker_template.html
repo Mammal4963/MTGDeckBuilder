@@ -74,6 +74,10 @@
 <main>
   <div class="controls">
     <input id="search" type="search" placeholder="find a card to add… e.g. Blood Artist">
+    <select id="source" title="which decks the synergy model learned from">
+      <option value="60">learned from 60-card decks</option>
+      <option value="cmd">learned from Commander decks</option>
+    </select>
     <select id="format">
       <option value="">any format</option>
     </select>
@@ -98,16 +102,25 @@ const DATA = __DATA__;
 const N = DATA.names.length;
 const DIM = DATA.dim;
 
-/* decode int8 vectors + per-card norms */
-const raw = atob("__VECS__");
-const V = new Int8Array(N*DIM);
-for (let i=0;i<raw.length;i++) V[i] = (raw.charCodeAt(i)<<24)>>24;
-const NORM = new Float32Array(N);
-for (let i=0;i<N;i++){
-  let s=0; const o=i*DIM;
-  for (let d=0;d<DIM;d++) s += V[o+d]*V[o+d];
-  NORM[i] = Math.sqrt(s)||1;
+/* decode int8 vectors + per-card norms, one set per learned space */
+function decode(b64){
+  const raw = atob(b64);
+  const vecs = new Int8Array(N*DIM);
+  for (let i=0;i<raw.length;i++) vecs[i] = (raw.charCodeAt(i)<<24)>>24;
+  const norms = new Float32Array(N);
+  for (let i=0;i<N;i++){
+    let s=0; const o=i*DIM;
+    for (let d=0;d<DIM;d++) s += vecs[o+d]*vecs[o+d];
+    norms[i] = Math.sqrt(s)||1;
+  }
+  return {vecs, norms};
 }
+const SPACES = {
+  "60":  {...decode("__VECS60__"), freq: DATA.freq60},
+  "cmd": {...decode("__VECSCMD__"), freq: DATA.freqcmd},
+};
+let source = "60";
+let V = SPACES["60"].vecs, NORM = SPACES["60"].norms, FREQ = SPACES["60"].freq;
 const dot=(a,b)=>{let s=0;const oa=a*DIM,ob=b*DIM;
   for(let d=0;d<DIM;d++)s+=V[oa+d]*V[ob+d];return s;};
 const cos=(a,b)=>dot(a,b)/(NORM[a]*NORM[b]);
@@ -145,10 +158,11 @@ function removePick(i){
 function candidateOk(i, colorMask, fmtBit){
   if (picks.includes(i)) return false;
   if (DATA.colors[i] & 32) return false;              /* lands out of ranking */
-  if (fmtBit && !(DATA.legal[i] & fmtBit)) return false;
+  if (source==="cmd" && !(DATA.legal[i] & DATA.commanderBit)) return false;
+  if (source!=="cmd" && fmtBit && !(DATA.legal[i] & fmtBit)) return false;
   if ($("incolors").checked && picks.length &&
       (DATA.colors[i] & ~32 & ~colorMask)) return false;
-  if ($("proven").checked && !DATA.freq[i]) return false;
+  if ($("proven").checked && !FREQ[i]) return false;
   return true;
 }
 
@@ -176,7 +190,7 @@ function render(){
       if (c>best){best=c;bestP=p;}
     }
     s/=picks.length;
-    s += Math.log1p(DATA.freq[i])*0.012;   /* gentle popularity prior */
+    s += Math.log1p(FREQ[i])*0.012;        /* gentle popularity prior */
     scores.push([s,i,bestP]);
   }
   scores.sort((a,b)=>b[0]-a[0]);
@@ -188,7 +202,7 @@ function render(){
       <span class="name"><a href="${scry(DATA.names[i])}" target="_blank"
           rel="noopener" onclick="event.stopPropagation()">${esc(DATA.names[i])}</a>
         <span class="why">· pairs with ${esc(DATA.names[bp])}</span>
-        ${DATA.freq[i]? "": '<span class="badge">unproven</span>'}</span>
+        ${FREQ[i]? "": '<span class="badge">unproven</span>'}</span>
       <span class="bar-track"><span class="bar" style="width:${(100*Math.max(0,s)/max).toFixed(0)}%"></span></span>
       <span class="sc">${s.toFixed(2)}</span>
       <span class="type" style="grid-column: 2 / -1">${esc(DATA.types[i])}</span>
@@ -217,6 +231,12 @@ $("search").addEventListener("input", renderSearch);
 $("clear").onclick=()=>{picks.length=0;render();};
 ["format","incolors","proven"].forEach(id=>
   $(id).addEventListener("change", render));
+$("source").addEventListener("change", ()=>{
+  source = $("source").value;
+  V = SPACES[source].vecs; NORM = SPACES[source].norms; FREQ = SPACES[source].freq;
+  $("format").style.display = source==="cmd" ? "none" : "";
+  render();
+});
 render();
 </script>
 </body>
