@@ -98,9 +98,15 @@ def _parse_text(lines: List[str]) -> Collection:
     return collection
 
 
-def load_collection(path: Path) -> Collection:
-    with open(path, encoding="utf-8-sig") as fh:
-        lines = fh.read().splitlines()
-    if path.suffix.lower() == ".csv" or _looks_like_csv(lines):
+def parse_collection(text: str, assume_csv: bool = False) -> Collection:
+    """Parse collection text (plain list or CSV export) into a Collection."""
+    lines = text.splitlines()
+    if assume_csv or _looks_like_csv(lines):
         return _parse_csv(lines)
     return _parse_text(lines)
+
+
+def load_collection(path: Path) -> Collection:
+    with open(path, encoding="utf-8-sig") as fh:
+        text = fh.read()
+    return parse_collection(text, assume_csv=path.suffix.lower() == ".csv")

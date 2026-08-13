@@ -10,9 +10,32 @@ already own the pieces for, and then builds a tuned list — ramp package, card
 draw, removal, and a land count matched to the mana curve — explaining why
 every card made the cut.
 
-Pure Python, no dependencies, works offline.
+Pure Python, no dependencies. Use it as a website or from the command line.
 
-## Quick start
+## The website
+
+The repo root is a static site (`index.html`, `app.js`, `style.css`) that runs
+the same Python engine in your browser via [Pyodide](https://pyodide.org)
+(Python compiled to WebAssembly) — there is no server. Paste or upload your
+collection; the page looks up just those cards through the
+[Scryfall API](https://scryfall.com/docs/api) and builds the deck locally.
+
+### Deploying on Cloudflare Pages
+
+The site is plain static files with no build step. In the Pages project
+settings for this repo use:
+
+- **Framework preset:** None
+- **Build command:** *(leave empty)*
+- **Build output directory:** `/`
+
+Every push to the production branch redeploys it. Any other static host
+(GitHub Pages, Netlify, `python -m http.server`) works the same way — the
+only requirement is that the `mtg_deckbuilder/*.py` files and
+`examples/sample_collection.txt` are served alongside `index.html`, which
+they are by default.
+
+## Command-line quick start
 
 No install needed (Python 3.9+). Try it immediately on the bundled sample:
 
@@ -151,13 +174,17 @@ python -m unittest discover -s tests
 ## Repository layout
 
 ```
+index.html        the website (static, no build step)
+app.js            frontend: Pyodide boot, Scryfall lookups, rendering
+style.css         site styles (light/dark via system theme)
 mtg_deckbuilder/
   carddata.py     card model + Scryfall bulk loading
   collection.py   collection file parsing (txt / CSV)
   tags.py         keyword & theme extraction rules
   synergy.py      theme scoring, hidden-deck discovery
   deckbuilder.py  deck assembly, ramp package, land tuning
-  fetch.py        Scryfall bulk-data download
+  webapi.py       JSON interface the website calls via Pyodide
+  fetch.py        Scryfall bulk-data download (CLI only)
   cli.py          the mtgdeck command
 examples/         sample card DB + sample collection
 tests/            unit tests (no network needed)

@@ -146,10 +146,11 @@ class CardDatabase:
                 self.by_name.setdefault(_norm(card.front_name), card)
 
     @classmethod
-    def load(cls, path: Path) -> "CardDatabase":
+    def from_entries(cls, entries: Iterable[dict]) -> "CardDatabase":
+        """Build a database from raw Scryfall card objects (dicts)."""
         cards = []
         seen = set()
-        for entry in _read_bulk_file(Path(path)):
+        for entry in entries:
             # Skip non-playable layouts (tokens, art cards, ...)
             if entry.get("layout") in {"token", "double_faced_token", "art_series", "emblem"}:
                 continue
@@ -159,6 +160,10 @@ class CardDatabase:
             seen.add(name)
             cards.append(Card.from_scryfall(entry))
         return cls(cards)
+
+    @classmethod
+    def load(cls, path: Path) -> "CardDatabase":
+        return cls.from_entries(_read_bulk_file(Path(path)))
 
     def get(self, name: str) -> Optional[Card]:
         return self.by_name.get(_norm(name))
