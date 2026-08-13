@@ -87,6 +87,29 @@ class WebApiTests(unittest.TestCase):
         ]
         self.assertTrue(exceeded, "playsets mode never used more copies than owned")
 
+    def test_build_pauper_uses_commons_only(self):
+        response = self.call(
+            "build", pauper=True, playsets=True, colors="BR", theme="sacrifice"
+        )
+        self.assertTrue(response["ok"], response.get("error"))
+        deck = response["result"]
+        self.assertEqual(deck["total"], 60)
+        # Regression: the playset top-up used to overshoot and log
+        # "-2 extra lands added".
+        for note in deck["notes"]:
+            self.assertNotIn("-", note.split("->")[-1], f"bad note: {note}")
+        db = {e["name"]: e for e in self.entries}
+        for cat in deck["categories"]:
+            for card in cat["cards"]:
+                entry = db.get(card["name"])
+                if entry is None:      # synthesized basic land
+                    continue
+                rarity = entry.get("rarity", "")
+                self.assertIn(
+                    rarity, ("common", ""),
+                    f"{card['name']} is {rarity}, not pauper-legal",
+                )
+
     def test_build_commander(self):
         response = self.call("build", commander="Krenko, Mob Boss")
         self.assertTrue(response["ok"], response.get("error"))

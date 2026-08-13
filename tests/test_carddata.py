@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from mtg_deckbuilder.carddata import CardDatabase
+from mtg_deckbuilder.carddata import Card, CardDatabase
 
 from tests.helpers import SAMPLE_DB, sample_db
 
@@ -57,6 +57,19 @@ class CardDataTests(unittest.TestCase):
                 fh.write(lines)
             db_gz = CardDatabase.load(gz)
             self.assertEqual(len(db_gz), len(self.db))
+
+    def test_pauper_legality(self):
+        # With explicit legalities, they win over rarity.
+        legal = Card(name="A", rarity="rare", legalities={"pauper": "legal"})
+        illegal = Card(name="B", rarity="common", legalities={"pauper": "not_legal"})
+        self.assertTrue(legal.is_pauper_legal)
+        self.assertFalse(illegal.is_pauper_legal)
+        # Without legalities (trimmed data), rarity decides; basics always legal.
+        self.assertTrue(Card(name="C", rarity="common").is_pauper_legal)
+        self.assertFalse(Card(name="D", rarity="mythic").is_pauper_legal)
+        self.assertTrue(
+            Card(name="Wastes", type_line="Basic Land").is_pauper_legal
+        )
 
     def test_color_identity_fit(self):
         vito = self.db.get("Vito, Thorn of the Dusk Rose")

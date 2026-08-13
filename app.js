@@ -14,7 +14,7 @@ const ENGINE_FILES = [
 const SCRYFALL_COLLECTION_URL = "https://api.scryfall.com/cards/collection";
 const SCRYFALL_NAMED_URL = "https://api.scryfall.com/cards/named";
 const CHUNK = 75;                       // Scryfall's per-request identifier cap
-const CACHE_PREFIX = "mtgdeck:v2:";     // v2: card images added to cache entries
+const CACHE_PREFIX = "mtgdeck:v3:";     // v3: prices + pauper legality added
 const CACHE_TTL_MS = 7 * 24 * 3600 * 1000;
 
 // Only the fields the engine reads; keeps localStorage and the JS<->Python
@@ -24,6 +24,7 @@ const CARD_FIELDS = [
   "type_line", "oracle_text", "keywords", "power", "toughness",
   "produced_mana", "rarity",
 ];
+const LEGALITY_FIELDS = ["pauper"];   // the only legality the engine uses
 const FACE_FIELDS = ["name", "mana_cost", "type_line", "oracle_text", "power", "toughness"];
 
 const $ = (id) => document.getElementById(id);
@@ -48,6 +49,7 @@ function saveUiState() {
       theme: $("theme").value,
       commander: $("commander").value,
       playsets: $("playsets").checked,
+      pauper: $("pauper").checked,
     }));
   } catch { /* storage full or blocked — nothing to do */ }
 }
@@ -71,6 +73,7 @@ function restoreUiState() {
   if (state.colors) $("colors").value = state.colors;
   if (state.commander) $("commander").value = state.commander;
   $("playsets").checked = !!state.playsets;
+  $("pauper").checked = !!state.pauper;
   // The theme select's options are filled once the engine loads; boot()
   // re-applies the saved theme after that.
 }
@@ -139,6 +142,12 @@ function cachePut(name, card) {
 function slimCard(card) {
   const out = {};
   for (const f of CARD_FIELDS) if (card[f] !== undefined) out[f] = card[f];
+  if (card.legalities) {
+    out.legalities = {};
+    for (const f of LEGALITY_FIELDS) out.legalities[f] = card.legalities[f];
+  }
+  const usd = card.prices?.usd ?? card.prices?.usd_foil ?? card.prices?.usd_etched;
+  if (usd) out.price_usd = usd;
   if (card.image_uris?.normal) out.images = [card.image_uris.normal];
   if (Array.isArray(card.card_faces)) {
     out.card_faces = card.card_faces.map((face) => {
@@ -156,15 +165,17 @@ function slimCard(card) {
   return out;
 }
 
-// name (normalized) -> [image urls]; filled from every Scryfall response.
+// name (normalized) -> [image urls] / usd price; filled from every response.
 const imageIndex = new Map();
+const priceIndex = new Map();
 
 function indexImages(cards) {
   for (const card of cards) {
-    if (!card.images) continue;
-    imageIndex.set(normalize(card.name), card.images);
-    if (card.name.includes(" // ")) {
-      imageIndex.set(normalize(frontFace(card.name)), card.images);
+    const keys = [normalize(card.name)];
+    if (card.name.includes(" // ")) keys.push(normalize(frontFace(card.name)));
+    for (const key of keys) {
+      if (card.images) imageIndex.set(key, card.images);
+      if (card.price_usd) priceIndex.set(key, parseFloat(card.price_usd));
     }
   }
 }
@@ -269,6 +280,7 @@ async function runAction(action) {
     if (action !== "analyze") {
       request.format = $("format").value;
       request.playsets = $("playsets").checked;
+      request.pauper = $("pauper").checked;
     }
     if (action === "build") {
       request.colors = $("colors").value.trim();
@@ -347,6 +359,13 @@ async function showCardModal(name) {
 }
 
 document.addEventListener("click", (event) => {
+  const why = event.target.closest(".why-btn");
+  if (why) {
+    const note = why.closest("li").querySelector(".why-note");
+    const nowHidden = note.classList.toggle("hidden");
+    why.setAttribute("aria-expanded", String(!nowHidden));
+    return;
+  }
   const link = event.target.closest(".card-link");
   if (link) { showCardModal(link.dataset.card); return; }
   if (event.target.closest("#card-modal-close") ||
@@ -371,17 +390,43 @@ function renderDeck(deck, notFound) {
   const title = deck.commander
     ? `Commander — ${escapeHtml(deck.theme_name)}`
     : `60-card — ${escapeHtml(deck.theme_name)}`;
+
+  let priced = 0, unpriced = 0, totalPrice = 0;
+  const priceOf = (name) => priceIndex.get(normalize(name));
+  for (const cat of deck.categories) {
+    for (const card of cat.cards) {
+      const usd = priceOf(card.name);
+      if (usd === undefined) unpriced += card.count;
+      else { priced += card.count; totalPrice += usd * card.count; }
+    }
+  }
+
   const categories = deck.categories.map((cat) => `
     <div class="category">
       <h3>${escapeHtml(cat.name)} <span class="count">(${cat.count})</span></h3>
-      <ul>${cat.cards.map((card) => `
-        <li title="${escapeHtml(card.reasons.join("; "))}">
-          <span class="card-count">${card.count}</span>
-          <span class="card-name">${cardLink(card.name)}</span>
-          ${manaPips(card.mana_cost)}
-        </li>`).join("")}
+      <ul>${cat.cards.map((card) => {
+        const usd = priceOf(card.name);
+        return `
+        <li>
+          <div class="card-row">
+            <span class="card-count">${card.count}</span>
+            <span class="card-name">${cardLink(card.name)}</span>
+            ${manaPips(card.mana_cost)}
+            ${usd !== undefined ? `<span class="price">$${usd.toFixed(2)}</span>` : ""}
+            <button type="button" class="why-btn" aria-label="Why was this picked?"
+              aria-expanded="false">?</button>
+          </div>
+          <div class="why-note hidden">${escapeHtml(card.reasons.join("; ") || "solid playable")}</div>
+        </li>`;
+      }).join("")}
       </ul>
     </div>`).join("");
+
+  const priceNote = priced
+    ? `<p class="result-note">Estimated price: <strong>$${totalPrice.toFixed(2)}</strong>` +
+      (unpriced ? ` <span class="sub">(${unpriced} cards without price data, mostly basics)</span>` : "") +
+      ` — Scryfall market prices, per copy.</p>`
+    : "";
 
   resultsEl.innerHTML = `
     <div class="panel">
@@ -389,13 +434,14 @@ function renderDeck(deck, notFound) {
         <span class="sub">· ${deck.total} cards</span></h2>
       ${deck.commander ? `<p class="result-note">Commander: <strong>${escapeHtml(deck.commander)}</strong></p>` : ""}
       ${deck.notes.map((n) => `<p class="result-note">${escapeHtml(n)}</p>`).join("")}
+      ${priceNote}
       ${missingNote(deck.missing, notFound)}
       <div class="deck-toolbar">
         <button type="button" id="copy-deck">Copy decklist</button>
         <button type="button" id="download-deck">Download .txt</button>
       </div>
       <div class="category-grid">${categories}</div>
-      <p class="result-note">Click a card to see it; hover for why it was picked.</p>
+      <p class="result-note">Tap a card name to see the card, or ? for why it was picked.</p>
     </div>`;
 
   $("copy-deck").addEventListener("click", async () => {
@@ -511,7 +557,7 @@ $("collection").addEventListener("input", () => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveUiState, 400);
 });
-for (const id of ["format", "colors", "theme", "commander", "playsets"]) {
+for (const id of ["format", "colors", "theme", "commander", "playsets", "pauper"]) {
   $(id).addEventListener("change", saveUiState);
 }
 

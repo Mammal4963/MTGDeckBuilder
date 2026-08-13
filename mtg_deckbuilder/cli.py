@@ -28,6 +28,7 @@ from .fetch import (
 )
 from .synergy import (
     THEME_NAMES,
+    filter_pauper,
     find_commander_decks,
     find_sixty_card_decks,
     pretend_playsets,
@@ -132,6 +133,8 @@ def cmd_analyze(args) -> int:
 
 def cmd_suggest(args) -> int:
     _db, pool = _load(args)
+    if args.pauper:
+        pool = filter_pauper(pool)
     if args.playsets:
         pool = pretend_playsets(pool)
     if args.format == "commander":
@@ -187,6 +190,8 @@ def cmd_suggest(args) -> int:
 
 def cmd_build(args) -> int:
     db, pool = _load(args)
+    if args.pauper:
+        pool = filter_pauper(pool)
     if args.playsets:
         pool = pretend_playsets(pool)
 
@@ -297,6 +302,10 @@ def build_parser() -> argparse.ArgumentParser:
         "--playsets", action="store_true",
         help="pretend you own 4 of every card (proxy-friendly)",
     )
+    p.add_argument(
+        "--pauper", action="store_true",
+        help="commons only (Pauper-legal cards)",
+    )
     p.set_defaults(func=cmd_suggest)
 
     p = sub.add_parser("build", help="build and tune a deck from the collection")
@@ -312,6 +321,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--playsets", action="store_true",
         help="pretend you own 4 of every card (proxy-friendly)",
+    )
+    p.add_argument(
+        "--pauper", action="store_true",
+        help="commons only (Pauper-legal cards)",
     )
     p.add_argument(
         "--explain", action="store_true",

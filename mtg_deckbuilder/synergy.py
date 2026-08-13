@@ -88,6 +88,13 @@ def resolve_pool(collection: Collection, db: CardDatabase) -> Tuple[List[Tuple[C
     return pool, missing
 
 
+def filter_pauper(
+    pool: List[Tuple[Card, int]]
+) -> List[Tuple[Card, int]]:
+    """Keep only Pauper-legal (commons-only) cards."""
+    return [(card, count) for card, count in pool if card.is_pauper_legal]
+
+
 def pretend_playsets(
     pool: List[Tuple[Card, int]]
 ) -> List[Tuple[Card, int]]:

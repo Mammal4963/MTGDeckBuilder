@@ -160,9 +160,22 @@ button.ghost, .file-label {
 }
 .category h3 .count { color: var(--muted); font-weight: 400; }
 .category ul { list-style: none; margin: 0; padding: 0; }
-.category li {
-  display: flex; align-items: baseline; gap: 0.45rem;
-  padding: 0.14rem 0; font-size: 0.92rem;
+.category li { padding: 0.14rem 0; font-size: 0.92rem; }
+.card-row { display: flex; align-items: baseline; gap: 0.45rem; }
+.price { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.why-btn {
+  margin-left: auto;
+  width: 1.25rem; height: 1.25rem; padding: 0; line-height: 1;
+  border-radius: 50%; font-size: 0.72rem; font-weight: 700;
+  color: var(--muted); background: transparent;
+  flex-shrink: 0; align-self: center;
+}
+.why-btn[aria-expanded="true"], .why-btn:hover { color: var(--accent); border-color: var(--accent); }
+.why-note {
+  margin: 0.1rem 0 0.25rem 1.55rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.82rem; color: var(--muted);
+  background: var(--accent-soft); border-radius: 6px;
 }
 .card-count { color: var(--muted); min-width: 1.1em; text-align: right; }
 .card-name { flex: 1 1 auto; }

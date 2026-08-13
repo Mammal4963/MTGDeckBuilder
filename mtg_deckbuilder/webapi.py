@@ -18,6 +18,7 @@ from .collection import parse_collection
 from .deckbuilder import Deck, DeckBuildError, build_deck
 from .synergy import (
     THEME_NAMES,
+    filter_pauper,
     find_commander_decks,
     find_sixty_card_decks,
     pretend_playsets,
@@ -40,10 +41,12 @@ def collection_names(text: str) -> str:
 
 
 def _pool(
-    text: str, entries: List[dict], playsets: bool = False
+    text: str, entries: List[dict], playsets: bool = False, pauper: bool = False
 ) -> Tuple[CardDatabase, List[Tuple[Card, int]], List[str]]:
     db = CardDatabase.from_entries(entries)
     pool, missing = resolve_pool(parse_collection(text), db)
+    if pauper:
+        pool = filter_pauper(pool)
     if playsets:
         pool = pretend_playsets(pool)
     return db, pool, missing
@@ -137,7 +140,8 @@ def _do_analyze(req: Dict) -> Dict:
 
 def _do_suggest(req: Dict) -> Dict:
     _db, pool, missing = _pool(
-        req["collection"], req["cards"], bool(req.get("playsets"))
+        req["collection"], req["cards"],
+        bool(req.get("playsets")), bool(req.get("pauper")),
     )
     fmt = req.get("format", "60")
     top = req.get("top", 8)
@@ -167,8 +171,11 @@ def _do_suggest(req: Dict) -> Dict:
 
 def _do_build(req: Dict) -> Dict:
     db, pool, missing = _pool(
-        req["collection"], req["cards"], bool(req.get("playsets"))
+        req["collection"], req["cards"],
+        bool(req.get("playsets")), bool(req.get("pauper")),
     )
+    if req.get("pauper") and not pool:
+        raise DeckBuildError("no Pauper-legal (common) cards in this collection")
 
     commander = None
     commander_name = (req.get("commander") or "").strip()

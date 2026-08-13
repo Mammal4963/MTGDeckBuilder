@@ -35,6 +35,7 @@ class Card:
     toughness: Optional[str] = None
     produced_mana: Tuple[str, ...] = ()
     rarity: str = ""
+    legalities: Dict[str, str] = field(default_factory=dict)
     tags: Dict[str, int] = field(default_factory=dict)
 
     # ---- derived helpers -------------------------------------------------
@@ -82,6 +83,17 @@ class Card:
         return "Legendary" in self.types and self.is_creature
 
     @property
+    def is_pauper_legal(self) -> bool:
+        """Legal in Pauper (commons only).
+
+        Uses Scryfall's real legality when available; trimmed-down data
+        without legalities falls back to the printed rarity.
+        """
+        if self.legalities:
+            return self.legalities.get("pauper") == "legal"
+        return self.rarity == "common" or self.is_basic_land
+
+    @property
     def numeric_power(self) -> Optional[int]:
         try:
             return int(self.power) if self.power is not None else None
@@ -124,6 +136,7 @@ class Card:
             toughness=toughness,
             produced_mana=tuple(d.get("produced_mana") or ()),
             rarity=d.get("rarity", ""),
+            legalities=dict(d.get("legalities") or {}),
         )
 
 

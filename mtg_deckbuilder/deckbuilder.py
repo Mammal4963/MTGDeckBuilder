@@ -388,8 +388,24 @@ def build_deck(
         f"-> {lands_target} lands."
     )
 
-    # Trim or extend nonlands so lands fit exactly.
+    # Trim or extend nonlands so lands fit exactly. Extending first: the
+    # top-up fill takes whole playsets and may overshoot, which the trim
+    # below then corrects.
     nonland_target = deck_size - lands_target
+    if selection.nonland_count < nonland_target:
+        shortfall = nonland_target - selection.nonland_count
+        _fill_scored(
+            selection, shortfall, "Flex",
+            lambda c: _goodstuff_score(c) + 5.0,  # take anything playable
+            lambda c: ["fills out the deck"], nonland_target,
+        )
+        still_short = nonland_target - selection.nonland_count
+        if still_short > 0:
+            lands_target += still_short
+            nonland_target = deck_size - lands_target
+            deck.notes.append(
+                f"Pool ran out of playables; {still_short} extra lands added."
+            )
     if selection.nonland_count > nonland_target:
         removable = sorted(
             (dc for dc in selection.picked.values() if dc.category in ("Flex", "Theme")),
@@ -410,19 +426,6 @@ def build_deck(
         selection.picked = {
             name: dc for name, dc in selection.picked.items() if dc.count > 0
         }
-    elif selection.nonland_count < nonland_target:
-        shortfall = nonland_target - selection.nonland_count
-        _fill_scored(
-            selection, shortfall, "Flex",
-            lambda c: _goodstuff_score(c) + 5.0,  # take anything playable
-            lambda c: ["fills out the deck"], nonland_target,
-        )
-        still_short = nonland_target - selection.nonland_count
-        if still_short:
-            lands_target += still_short
-            deck.notes.append(
-                f"Pool ran out of playables; {still_short} extra lands added."
-            )
 
     # Note multi-copy picks in the explanations, from the final counts.
     if not singleton:
