@@ -218,7 +218,10 @@ async function runAction(action) {
     setStatus(action === "build" ? "Building the deck…" :
       action === "suggest" ? "Searching for decks…" : "Analyzing…");
     const request = { action, collection: text, cards };
-    if (action !== "analyze") request.format = $("format").value;
+    if (action !== "analyze") {
+      request.format = $("format").value;
+      request.playsets = $("playsets").checked;
+    }
     if (action === "build") {
       request.colors = $("colors").value.trim();
       request.theme = $("theme").value;

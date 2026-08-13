@@ -164,6 +164,18 @@ class DeckBuilderTests(unittest.TestCase):
             for reason in deck_card.reasons:
                 self.assertNotIn("consistency", reason)
 
+    def test_pretend_playsets_keeps_basic_land_counts(self):
+        from mtg_deckbuilder.synergy import pretend_playsets
+
+        boosted = dict(
+            (c.name, n) for c, n in pretend_playsets(self.pool)
+        )
+        for card, count in self.pool:
+            if card.is_basic_land:
+                self.assertEqual(boosted[card.name], count)
+            else:
+                self.assertEqual(boosted[card.name], max(count, 4))
+
     def test_every_nonland_pick_has_a_reason(self):
         deck = self.build_krenko()
         for deck_card in deck.cards:

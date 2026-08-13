@@ -20,6 +20,7 @@ from .synergy import (
     THEME_NAMES,
     find_commander_decks,
     find_sixty_card_decks,
+    pretend_playsets,
     resolve_pool,
     score_themes,
 )
@@ -39,10 +40,12 @@ def collection_names(text: str) -> str:
 
 
 def _pool(
-    text: str, entries: List[dict]
+    text: str, entries: List[dict], playsets: bool = False
 ) -> Tuple[CardDatabase, List[Tuple[Card, int]], List[str]]:
     db = CardDatabase.from_entries(entries)
     pool, missing = resolve_pool(parse_collection(text), db)
+    if playsets:
+        pool = pretend_playsets(pool)
     return db, pool, missing
 
 
@@ -133,7 +136,9 @@ def _do_analyze(req: Dict) -> Dict:
 
 
 def _do_suggest(req: Dict) -> Dict:
-    _db, pool, missing = _pool(req["collection"], req["cards"])
+    _db, pool, missing = _pool(
+        req["collection"], req["cards"], bool(req.get("playsets"))
+    )
     fmt = req.get("format", "60")
     top = req.get("top", 8)
     if fmt == "commander":
@@ -161,7 +166,9 @@ def _do_suggest(req: Dict) -> Dict:
 
 
 def _do_build(req: Dict) -> Dict:
-    db, pool, missing = _pool(req["collection"], req["cards"])
+    db, pool, missing = _pool(
+        req["collection"], req["cards"], bool(req.get("playsets"))
+    )
 
     commander = None
     commander_name = (req.get("commander") or "").strip()

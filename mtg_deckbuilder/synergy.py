@@ -88,6 +88,19 @@ def resolve_pool(collection: Collection, db: CardDatabase) -> Tuple[List[Tuple[C
     return pool, missing
 
 
+def pretend_playsets(
+    pool: List[Tuple[Card, int]]
+) -> List[Tuple[Card, int]]:
+    """Treat every card as at least a playset, as if proxies were allowed.
+
+    Basic lands keep their real count (the builder adds basics freely anyway).
+    """
+    return [
+        (card, count if card.is_basic_land else max(count, 4))
+        for card, count in pool
+    ]
+
+
 def _theme_contributions(card: Card) -> Dict[Tuple[str, str], float]:
     """Theme contributions of one card, including cross-feeds and changelings."""
     out: Dict[Tuple[str, str], float] = {}

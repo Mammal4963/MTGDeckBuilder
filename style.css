@@ -107,6 +107,11 @@ textarea:focus, input:focus, select:focus {
   padding: 0.42rem 0.55rem; font-size: 0.95rem;
 }
 .hidden { display: none !important; }
+.options label.check {
+  flex-direction: row; align-items: center; gap: 0.4rem;
+  padding-bottom: 0.5rem; cursor: pointer;
+}
+.options label.check input { accent-color: var(--accent); }
 
 .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 

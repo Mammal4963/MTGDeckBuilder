@@ -30,6 +30,7 @@ from .synergy import (
     THEME_NAMES,
     find_commander_decks,
     find_sixty_card_decks,
+    pretend_playsets,
     resolve_pool,
     score_themes,
 )
@@ -131,6 +132,8 @@ def cmd_analyze(args) -> int:
 
 def cmd_suggest(args) -> int:
     _db, pool = _load(args)
+    if args.playsets:
+        pool = pretend_playsets(pool)
     if args.format == "commander":
         ideas = find_commander_decks(pool, top=args.top)
         if not ideas:
@@ -184,6 +187,8 @@ def cmd_suggest(args) -> int:
 
 def cmd_build(args) -> int:
     db, pool = _load(args)
+    if args.playsets:
+        pool = pretend_playsets(pool)
 
     commander = None
     if args.commander:
@@ -288,6 +293,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("collection")
     p.add_argument("--format", choices=["60", "commander"], default="60")
     p.add_argument("--top", type=int, default=8)
+    p.add_argument(
+        "--playsets", action="store_true",
+        help="pretend you own 4 of every card (proxy-friendly)",
+    )
     p.set_defaults(func=cmd_suggest)
 
     p = sub.add_parser("build", help="build and tune a deck from the collection")
@@ -300,6 +309,10 @@ def build_parser() -> argparse.ArgumentParser:
         "(default: auto-pick the best combo for the collection)",
     )
     p.add_argument("--theme", help="force a theme key (see `analyze`)")
+    p.add_argument(
+        "--playsets", action="store_true",
+        help="pretend you own 4 of every card (proxy-friendly)",
+    )
     p.add_argument(
         "--explain", action="store_true",
         help="annotate every card with why it was picked",

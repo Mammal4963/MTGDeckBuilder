@@ -69,6 +69,24 @@ class WebApiTests(unittest.TestCase):
         )
         self.assertTrue(deck["export_text"].splitlines())
 
+    def test_build_playsets_pretends_four_of_everything(self):
+        response = self.call("build", playsets=True, colors="BR", theme="sacrifice")
+        self.assertTrue(response["ok"], response.get("error"))
+        deck = response["result"]
+        self.assertEqual(deck["total"], 60)
+        # Cards owned as singles in the sample collection (e.g. Viscera Seer,
+        # 1x) can now appear as multiples; at least one pick must exceed the
+        # owned count.
+        from mtg_deckbuilder.collection import parse_collection
+        owned = dict(parse_collection(self.collection_text).items())
+        exceeded = [
+            c["name"]
+            for cat in deck["categories"] if cat["name"] != "Lands"
+            for c in cat["cards"]
+            if c["count"] > owned.get(c["name"], 0)
+        ]
+        self.assertTrue(exceeded, "playsets mode never used more copies than owned")
+
     def test_build_commander(self):
         response = self.call("build", commander="Krenko, Mob Boss")
         self.assertTrue(response["ok"], response.get("error"))
