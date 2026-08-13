@@ -433,7 +433,8 @@ function renderDeck(deck, notFound) {
       <h2>${title} ${colorChips(deck.color_label)}
         <span class="sub">· ${deck.total} cards</span></h2>
       ${deck.commander ? `<p class="result-note">Commander: <strong>${escapeHtml(deck.commander)}</strong></p>` : ""}
-      ${deck.notes.map((n) => `<p class="result-note">${escapeHtml(n)}</p>`).join("")}
+      ${deck.notes.map((n) =>
+        `<p class="${n.startsWith("⚠") ? "warn" : "result-note"}">${escapeHtml(n)}</p>`).join("")}
       ${priceNote}
       ${missingNote(deck.missing, notFound)}
       <div class="deck-toolbar">

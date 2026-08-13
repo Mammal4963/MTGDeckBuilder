@@ -66,8 +66,10 @@ RULES: List[Rule] = [
     Rule("card_selection", r"\bscry \d", 1),
     Rule("card_selection", r"look at the top [^.\n]* of your library", 1),
 
-    Rule("removal", r"destroy target (?:[a-z-]+ )*(?:creature|artifact|enchantment|planeswalker|permanent)", 2),
-    Rule("removal", r"exile target (?:[a-z-]+ )*(?:creature|artifact|enchantment|planeswalker|permanent)", 2),
+    # Not removal: "... you control" (blink/sac tricks) and "... card from a
+    # graveyard" (graveyard hate). "you don't control" still counts.
+    Rule("removal", r"destroy target (?:[a-z-]+ )*(?:creature|artifact|enchantment|planeswalker|permanent)(?! you (?:control|own))(?! cards? )", 2),
+    Rule("removal", r"exile target (?:[a-z-]+ )*(?:creature|artifact|enchantment|planeswalker|permanent)(?! you (?:control|own))(?! cards? )", 2),
     Rule("removal", r"deals? (?:\d+|x) damage to (?:any target|target creature|target attacking|each of up to)", 2),
     Rule("removal", r"target creature gets? [+-]?\d*x?/-", 2),   # -N/-N effects
     Rule("removal", r"\bfights? (?:target|up to|another target)", 1),
@@ -128,7 +130,10 @@ RULES: List[Rule] = [
     Rule("graveyard:enabler", rf"\bmills? {_N} cards?", 2),
     Rule("graveyard:enabler", r"put(?:s)? the top [^.\n]* of (?:your|their) library into (?:your|their) graveyard", 2),
     Rule("graveyard:enabler", r"discard (?:a|two|three|your) cards?", 1),
-    Rule("graveyard:payoff", r"return [^.\n]* from (?:your|a) graveyard to (?:your hand|the battlefield)", 2),
+    # Reanimation is a real payoff; bare recursion to hand is a value engine
+    # that only matters if the deck has targets, so it counts for less.
+    Rule("graveyard:payoff", r"return [^.\n]* from (?:your|a) graveyard to the battlefield", 2),
+    Rule("graveyard:payoff", r"return [^.\n]* from (?:your|a) graveyard to your hand", 1),
     Rule("graveyard:payoff", r"put target [^.\n]*card from (?:a|your) graveyard onto the battlefield", 2),
     Rule("graveyard:payoff", r"(?:for each|equal to the number of) [^.\n]*cards? in your graveyard", 3),
     Rule("graveyard:payoff", r"cast [^.\n]* from your graveyard", 2),

@@ -104,5 +104,46 @@ class TagExtractionTests(unittest.TestCase):
         self.assertIn("sacrifice:payoff", self.tags_of("Blood Artist"))
 
 
+    def test_blink_and_graveyard_hate_are_not_removal(self):
+        from mtg_deckbuilder.carddata import Card
+
+        blink = Card(
+            name="Time Trick", type_line="Instant",
+            oracle_text="Exile target permanent you control, then return it "
+                        "to the battlefield.",
+        )
+        self.assertNotIn("removal", tag_card(blink))
+
+        hate = Card(
+            name="Yard Eater", type_line="Creature — Insect",
+            oracle_text="When Yard Eater enters the battlefield, exile target "
+                        "creature card from a graveyard. You gain 2 life.",
+            power="3", toughness="5",
+        )
+        self.assertNotIn("removal", tag_card(hate))
+
+        # Real removal still counts, including "you don't control".
+        murder = Card(name="Off", type_line="Instant",
+                      oracle_text="Destroy target creature.")
+        self.assertIn("removal", tag_card(murder))
+        edict = Card(name="Away", type_line="Instant",
+                     oracle_text="Exile target creature you don't control.")
+        self.assertIn("removal", tag_card(edict))
+
+    def test_recursion_to_hand_is_weak_graveyard_payoff(self):
+        from mtg_deckbuilder.carddata import Card
+
+        to_hand = Card(
+            name="Churny", type_line="Instant",
+            oracle_text="Return a creature card from your graveyard to your hand.",
+        )
+        self.assertEqual(tag_card(to_hand).get("graveyard:payoff"), 1)
+        reanimate = Card(
+            name="Rise Again", type_line="Sorcery",
+            oracle_text="Return target creature card from your graveyard "
+                        "to the battlefield.",
+        )
+        self.assertEqual(tag_card(reanimate).get("graveyard:payoff"), 2)
+
 if __name__ == "__main__":
     unittest.main()

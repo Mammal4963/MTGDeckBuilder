@@ -119,6 +119,32 @@ def _goodstuff_score(card: Card) -> float:
 
 _PIP_RE = re.compile(r"\{([WUBRG])(?:/[WUBRGP])?\}")
 
+# Burn that can hit the opponent's face counts toward closing out a game.
+_DIRECT_DAMAGE_RE = re.compile(
+    r"deals? (\d+|x) damage to (?:any target|target player|target opponent"
+    r"|each opponent|each player)"
+)
+_EVASION_KEYWORDS = {"flying", "menace", "trample", "shadow", "fear", "intimidate"}
+
+
+def _threat_power(card: Card) -> float:
+    """How much one copy of this card advances actually winning the game.
+
+    Creatures that can attack for meaningful damage count their power (plus
+    a little for evasion); walls, utility dorks, and pure value pieces count
+    nothing. Direct damage that can go upstairs counts most of its damage.
+    """
+    total = 0.0
+    keywords = {k.lower() for k in card.keywords}
+    if card.is_creature and "defender" not in keywords:
+        power = card.numeric_power or 0
+        if power >= 2:
+            total += power + (1.0 if keywords & _EVASION_KEYWORDS else 0.0)
+    match = _DIRECT_DAMAGE_RE.search(card.oracle_text.lower())
+    if match and match.group(1).isdigit():
+        total += min(int(match.group(1)), 5) * 0.8
+    return total
+
 
 # ---------------------------------------------------------------------------
 # The builder
@@ -358,6 +384,48 @@ def build_deck(
         lambda c: _theme_weight(c, theme) * 2.0 - c.mana_value * 0.15,
         theme_reasons, nonland_target,
     )
+
+    # ------------------------------------------------------------------
+    # Win-condition pass: a synergy engine with no way to close out a
+    # game is not a deck. Top up attackers/burn until the list can
+    # realistically deal 20.
+    # ------------------------------------------------------------------
+    threat_target = 16.0 if fmt == "60" else 26.0
+
+    def deck_threat_power() -> float:
+        return sum(
+            _threat_power(dc.card) * dc.count
+            for dc in selection.picked.values()
+        )
+
+    while (
+        deck_threat_power() < threat_target
+        and selection.nonland_count < nonland_target
+    ):
+        best: Optional[Tuple[float, Card]] = None
+        for card in selection.candidates():
+            power = _threat_power(card)
+            if power <= 0:
+                continue
+            score = (
+                power * 1.5
+                + _theme_weight(card, theme) * 0.8
+                + selection.consistency_bonus(card, 0.4)
+                - card.mana_value * 0.3
+                - selection.curve_penalty(card, nonland_target)
+            )
+            if best is None or score > best[0]:
+                best = (score, card)
+        if best is None:
+            break
+        _score, card = best
+        reasons = [
+            f"threat: {card.power}-power attacker" if card.is_creature
+            else "threat: direct damage"
+        ]
+        if selection.take(card, "Threats", reasons, 1 if singleton else 4) == 0:
+            break
+
     _fill_scored(
         selection, nonland_target - selection.nonland_count, "Flex",
         _goodstuff_score, lambda c: ["solid playable"], nonland_target,
@@ -434,6 +502,16 @@ def build_deck(
                 deck_card.reasons = deck_card.reasons + [
                     f"{deck_card.count} copies for consistency"
                 ]
+
+    final_threat = sum(
+        _threat_power(dc.card) * dc.count for dc in selection.picked.values()
+    )
+    if final_threat < threat_target * 0.75:
+        deck.notes.append(
+            f"⚠ Low threat density (attack power ~{final_threat:.0f}): this "
+            "pool has few creatures or burn that can actually win the game. "
+            "Expect long games - consider adding attackers."
+        )
 
     deck.cards.extend(selection.picked.values())
 

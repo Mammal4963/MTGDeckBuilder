@@ -227,7 +227,7 @@ def cmd_build(args) -> int:
     if deck.commander:
         print(f"\n## Commander\n1 {deck.commander.name}")
 
-    order = ["Ramp", "Card Draw", "Removal", "Board Wipes", "Theme", "Flex", "Lands"]
+    order = ["Ramp", "Card Draw", "Removal", "Board Wipes", "Theme", "Threats", "Flex", "Lands"]
     grouped = deck.by_category()
     for category in order:
         if category not in grouped:

@@ -7,6 +7,7 @@ from mtg_deckbuilder.deckbuilder import (
     _fill_scored,
     _goodstuff_score,
     _Selection,
+    _threat_power,
     build_deck,
 )
 from mtg_deckbuilder.synergy import resolve_pool
@@ -175,6 +176,45 @@ class DeckBuilderTests(unittest.TestCase):
                 self.assertEqual(boosted[card.name], count)
             else:
                 self.assertEqual(boosted[card.name], max(count, 4))
+
+    def test_threat_power_scoring(self):
+        attacker = Card(name="Bear", type_line="Creature — Bear",
+                        power="2", toughness="2")
+        self.assertGreater(_threat_power(attacker), 0)
+        wall = Card(name="Wall", type_line="Creature — Wall",
+                    keywords=("Defender",), power="0", toughness="4")
+        self.assertEqual(_threat_power(wall), 0)
+        chip = Card(name="Sprite", type_line="Creature — Faerie",
+                    power="1", toughness="1")
+        self.assertEqual(_threat_power(chip), 0)
+        burn = Card(name="Zap", type_line="Instant",
+                    oracle_text="Zap deals 3 damage to any target.")
+        self.assertGreater(_threat_power(burn), 0)
+        flyer = Card(name="Hawk", type_line="Creature — Bird",
+                     keywords=("Flying",), power="2", toughness="1")
+        self.assertGreater(_threat_power(flyer), _threat_power(attacker))
+
+    def test_threatless_pool_gets_a_warning(self):
+        def spell(name, text):
+            return Card(name=name, mana_cost="{1}{U}", mana_value=2.0,
+                        color_identity=("U",), type_line="Instant",
+                        oracle_text=text)
+        pool = [
+            (spell("Deny", "Counter target spell."), 4),
+            (spell("Ponderous", "Draw two cards."), 4),
+            (spell("Grasp", "Destroy target creature."), 4),
+            (spell("Twitch", "Untap target permanent. Draw a card."), 4),
+        ]
+        deck = build_deck(pool, fmt="60", colors=["U"], theme="spells")
+        self.assertTrue(
+            any(note.startswith("⚠") for note in deck.notes),
+            f"expected a low-threat warning, notes: {deck.notes}",
+        )
+
+    def test_deck_with_attackers_gets_no_threat_warning(self):
+        deck = build_deck(self.pool, fmt="60", colors=["B", "R"], theme="sacrifice")
+        self.assertFalse(any(note.startswith("⚠") for note in deck.notes),
+                         f"unexpected warning: {deck.notes}")
 
     def test_every_nonland_pick_has_a_reason(self):
         deck = self.build_krenko()

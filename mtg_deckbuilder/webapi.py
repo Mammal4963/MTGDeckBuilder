@@ -27,7 +27,10 @@ from .synergy import (
 )
 from .tags import tag_card
 
-CATEGORY_ORDER = ["Ramp", "Card Draw", "Removal", "Board Wipes", "Theme", "Flex", "Lands"]
+CATEGORY_ORDER = [
+    "Ramp", "Card Draw", "Removal", "Board Wipes",
+    "Theme", "Threats", "Flex", "Lands",
+]
 
 
 def _color_label(colors) -> str:
