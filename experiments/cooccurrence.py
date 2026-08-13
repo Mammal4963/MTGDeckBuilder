@@ -56,26 +56,39 @@ def main() -> None:
             name_to_row.setdefault(norm(m["name"].split(" // ")[0]), i)
     is_land = np.array([("Land" in m["type_line"]) for m in meta])
 
-    decks = []
+    def to_rows(pairs):
+        rows = {name_to_row[norm(n)] for n, _q in pairs if norm(n) in name_to_row}
+        return sorted(r for r in rows if not is_land[r])
+
+    # MTGO tournament decks (train/test split kept identical to phase 3
+    # so results stay comparable).
+    deck_rows = []
     with gzip.open(ROOT / "data" / "decks" / "mtgo-decks.jsonl.gz", "rt") as fh:
         for line in fh:
-            decks.append(json.loads(line))
-
-    # Deck -> distinct nonland embedding rows.
-    deck_rows = []
-    for deck in decks:
-        rows = {name_to_row[norm(n)] for n, _q in deck["main"]
-                if norm(n) in name_to_row}
-        rows = sorted(r for r in rows if not is_land[r])
-        if len(rows) >= 8:
-            deck_rows.append((deck["format"], rows))
+            deck = json.loads(line)
+            rows = to_rows(deck["main"])
+            if len(rows) >= 8:
+                deck_rows.append((deck["format"], rows))
 
     order = RNG.permutation(len(deck_rows))
     n_test = int(len(deck_rows) * TEST_FRAC)
     test_idx = set(order[:n_test].tolist())
     train = [deck_rows[i] for i in range(len(deck_rows)) if i not in test_idx]
     test = [deck_rows[i] for i in sorted(test_idx)]
-    print(f"{len(train)} train / {len(test)} test decks")
+
+    # Casual corpus (Archidekt), train-only: teaches the archetypes
+    # tournament play never shows (aristocrats, tribal, lifegain...).
+    casual_path = ROOT / "data" / "decks" / "archidekt-decks.jsonl.gz"
+    n_casual = 0
+    if casual_path.exists():
+        with gzip.open(casual_path, "rt") as fh:
+            for line in fh:
+                deck = json.loads(line)
+                rows = to_rows(deck["cards"])
+                if len(rows) >= 15:
+                    train.append((deck["format"], rows))
+                    n_casual += 1
+    print(f"{len(train)} train ({n_casual} casual) / {len(test)} test decks")
 
     # ---- vocab & pair counts (train only) ------------------------------
     deck_freq = Counter()
@@ -88,22 +101,34 @@ def main() -> None:
     v_index = {r: i for i, r in enumerate(vocab)}
     print(f"vocab: {len(vocab)} cards seen in >= {MIN_DECKS} train decks")
 
-    pair_counts = Counter()
+    # Weighted pairs: every deck contributes roughly equal total pair
+    # mass, so a 100-card Commander list doesn't out-vote a 60-card deck
+    # (a 60-card deck has ~300 pairs; Commander decks ~2000).
+    NV = len(vocab)
+    pair_w: dict = defaultdict(float)     # weighted mass (for PPMI)
+    pair_decks = Counter()                # integer deck counts (for display)
     for _fmt, rows in train:
         vrows = [v_index[r] for r in rows if r in v_index]
-        for a in range(len(vrows)):
-            for b in range(a + 1, len(vrows)):
-                i, j = vrows[a], vrows[b]
-                pair_counts[(i, j) if i < j else (j, i)] += 1
+        n = len(vrows)
+        if n < 2:
+            continue
+        w = min(1.0, 350.0 / (n * (n - 1) / 2))
+        for a in range(n):
+            for b in range(a + 1, n):
+                i, j = (vrows[a], vrows[b]) if vrows[a] < vrows[b] else (vrows[b], vrows[a])
+                key = i * NV + j
+                pair_w[key] += w
+                pair_decks[key] += 1
 
     # ---- PPMI + SVD ----------------------------------------------------
-    n_pairs = sum(pair_counts.values())
-    card_pair_totals = Counter()
-    for (i, j), c in pair_counts.items():
-        card_pair_totals[i] += c
-        card_pair_totals[j] += c
+    n_pairs = sum(pair_w.values())
+    card_pair_totals = defaultdict(float)
+    for key, c in pair_w.items():
+        card_pair_totals[key // NV] += c
+        card_pair_totals[key % NV] += c
     rows_ix, cols_ix, vals = [], [], []
-    for (i, j), c in pair_counts.items():
+    for key, c in pair_w.items():
+        i, j = key // NV, key % NV
         pmi = np.log(c * n_pairs / (card_pair_totals[i] * card_pair_totals[j]))
         if pmi > 0:
             rows_ix += [i, j]
@@ -165,9 +190,10 @@ def main() -> None:
 
     # ---- synergy disagreement list -------------------------------------
     pairs_list = []
-    for (i, j), c in pair_counts.items():
+    for key, c in pair_decks.items():
         if c < 8:
             continue
+        i, j = key // NV, key % NV
         co_sim = float(V[i] @ V[j])
         text_sim = float(emb[vocab[i]] @ emb[vocab[j]])
         pairs_list.append({
@@ -245,6 +271,15 @@ def main() -> None:
     }
     (OUT / "covocab.json").write_text(json.dumps(covocab), encoding="utf-8")
     print("\nwrote covectors.npy, covocab.json, synergy_pairs.json")
+
+    # Qualitative check for the casual-archetype gap: what does the model
+    # now recommend next to Blood Artist?
+    row = name_to_row.get("blood artist")
+    if row is not None:
+        sims = blended @ blended[row]
+        print(f"\nBlood Artist neighbors (in {deck_freq.get(row, 0)} train decks):")
+        for j in np.argsort(-sims)[1:11]:
+            print(f"  {sims[j]:.3f}  {meta[j]['name']}")
 
 
 if __name__ == "__main__":
