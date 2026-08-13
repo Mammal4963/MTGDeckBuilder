@@ -6,7 +6,11 @@ dist/
 .venv/
 venv/
 
-# Downloaded card data (large)
+# Downloaded card data (large) - the committed snapshot lives in data/
 oracle-cards*.json
 default-cards*.json
 .mtgdeck-cache/
+
+# Experiment outputs that are large or regenerable from committed inputs
+experiments/output/*.npy
+experiments/output/*.npz

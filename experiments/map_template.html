@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTG Card Embedding Map</title>
+<style>
+  /* Dark-surface viz (dataviz reference palette, dark steps). */
+  :root {
+    --surface-1: #1a1a19;
+    --surface-2: #242422;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --border: #3c3b36;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--surface-1); color: var(--text-primary);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+  }
+  #bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 5;
+    display: flex; gap: 0.9rem; align-items: center; flex-wrap: wrap;
+    padding: 0.55rem 0.9rem;
+    background: color-mix(in srgb, var(--surface-1) 88%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  #bar h1 { font-size: 0.95rem; margin: 0 0.4rem 0 0; font-weight: 600; }
+  #bar .n { color: var(--text-secondary); font-size: 0.8rem; }
+  select, input[type=search], button {
+    background: var(--surface-2); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.28rem 0.5rem; font-size: 0.85rem;
+  }
+  #legend {
+    position: fixed; right: 0.75rem; top: 3.4rem; z-index: 5;
+    background: color-mix(in srgb, var(--surface-1) 90%, transparent);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.5rem 0.7rem; max-width: 15rem;
+  }
+  #legend .item {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.12rem 0.2rem; cursor: pointer; border-radius: 5px;
+    font-size: 0.83rem; color: var(--text-secondary);
+  }
+  #legend .item:hover { background: var(--surface-2); }
+  #legend .item.active { color: var(--text-primary); font-weight: 600; }
+  #legend .sw { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  #legend .count { margin-left: auto; font-size: 0.75rem; }
+  #tip {
+    position: fixed; z-index: 6; pointer-events: none; display: none;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 0.4rem 0.6rem; max-width: 18rem;
+    font-size: 0.82rem; box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+  }
+  #tip .t { font-weight: 600; color: var(--text-primary); }
+  #tip .s { color: var(--text-secondary); }
+  #hint {
+    position: fixed; left: 0.75rem; bottom: 0.6rem; z-index: 5;
+    color: var(--text-secondary); font-size: 0.75rem;
+  }
+  canvas { display: block; cursor: grab; }
+</style>
+</head>
+<body>
+<div id="bar">
+  <h1>MTG card embedding map</h1>
+  <label class="n">color by
+    <select id="mode">
+      <option value="role">function (regex tagger)</option>
+      <option value="color">card color identity</option>
+      <option value="type">card type</option>
+    </select>
+  </label>
+  <input id="search" type="search" placeholder="highlight cards… e.g. bolt" size="22">
+  <button id="reset">Reset view</button>
+  <span class="n" id="count"></span>
+</div>
+<div id="legend"></div>
+<div id="tip"></div>
+<div id="hint">drag to pan · scroll to zoom · hover for card · click a dot for Scryfall · click legend to isolate</div>
+<canvas id="c"></canvas>
+
+<script>
+const DATA = __DATA__;
+const N = DATA.x.length;
+
+/* Categories & palettes (dataviz reference palette, dark-mode steps;
+   color-identity mode uses MTG's own domain colors - hover + isolate
+   provide the non-color fallback). */
+const CATS = {
+  role: {
+    labels: ["removal & wipes","counterspell","ramp","card draw",
+             "tutor","recursion","card selection","other"],
+    colors: ["#e66767","#3987e5","#008300","#199e70",
+             "#c98500","#9085e9","#d55181","#57565080"],
+    key: "role",
+  },
+  color: {
+    labels: ["white","blue","black","red","green","multicolor","colorless","land"],
+    colors: ["#d9d0a1","#3987e5","#9085e9","#e66767","#008300",
+             "#c98500","#8a8880","#8a6d4e"],
+    key: "color",
+  },
+  type: {
+    labels: ["creature","land","instant","sorcery","planeswalker",
+             "artifact","enchantment","other"],
+    colors: ["#3987e5","#8a6d4e","#199e70","#008300","#d55181",
+             "#c98500","#9085e9","#e66767"],
+    key: "type",
+  },
+};
+
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+const tip = document.getElementById("tip");
+let mode = "role";
+let isolate = null;          // active category index or null
+let highlight = null;        // Set of point indexes matching search, or null
+let view = null;             // {cx, cy, scale}
+
+/* bounds */
+let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+for (let i=0;i<N;i++){
+  if (DATA.x[i]<minX)minX=DATA.x[i]; if (DATA.x[i]>maxX)maxX=DATA.x[i];
+  if (DATA.y[i]<minY)minY=DATA.y[i]; if (DATA.y[i]>maxY)maxY=DATA.y[i];
+}
+
+function resetView(){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  const scale = 0.92 * Math.min(w/(maxX-minX), h/(maxY-minY));
+  view = { cx:(minX+maxX)/2, cy:(minY+maxY)/2, scale };
+}
+function toScreen(x,y){
+  return [ (x-view.cx)*view.scale + canvas.clientWidth/2,
+           (y-view.cy)*view.scale + canvas.clientHeight/2 ];
+}
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = innerWidth*dpr; canvas.height = innerHeight*dpr;
+  canvas.style.width = innerWidth+"px"; canvas.style.height = innerHeight+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if (!view) resetView();
+  draw();
+}
+
+function draw(){
+  const cat = CATS[mode];
+  const vals = DATA[cat.key];
+  ctx.fillStyle = "#1a1a19";
+  ctx.fillRect(0,0,canvas.clientWidth,canvas.clientHeight);
+  const r = Math.max(1.1, Math.min(2.4, view.scale*0.035));
+  for (let pass=0; pass<2; pass++){
+    for (let i=0;i<N;i++){
+      const v = vals[i];
+      const dim = (isolate!==null && v!==isolate) ||
+                  (highlight && !highlight.has(i));
+      if ((pass===0) !== dim) continue;      /* dim first, lit on top */
+      const [sx,sy] = toScreen(DATA.x[i], DATA.y[i]);
+      if (sx<-4||sy<-4||sx>canvas.clientWidth+4||sy>canvas.clientHeight+4) continue;
+      ctx.globalAlpha = dim ? 0.07 : 0.8;
+      ctx.fillStyle = cat.colors[v];
+      ctx.beginPath();
+      ctx.arc(sx, sy, dim ? r*0.8 : r, 0, 6.2832);
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* legend */
+function buildLegend(){
+  const cat = CATS[mode];
+  const counts = new Array(cat.labels.length).fill(0);
+  DATA[cat.key].forEach(v=>counts[v]++);
+  const el = document.getElementById("legend");
+  el.innerHTML = cat.labels.map((label,i)=>`
+    <div class="item${isolate===i?" active":""}" data-i="${i}">
+      <span class="sw" style="background:${cat.colors[i]}"></span>
+      ${label}<span class="count">${counts[i].toLocaleString()}</span>
+    </div>`).join("");
+  el.querySelectorAll(".item").forEach(item=>{
+    item.onclick = ()=>{
+      const i = Number(item.dataset.i);
+      isolate = (isolate===i)? null : i;
+      buildLegend(); draw();
+    };
+  });
+}
+
+/* interaction */
+let dragging=false, lastX=0, lastY=0, moved=0;
+canvas.addEventListener("pointerdown", e=>{
+  dragging=true; moved=0; lastX=e.clientX; lastY=e.clientY;
+  canvas.style.cursor="grabbing";
+});
+addEventListener("pointerup", e=>{
+  if (dragging && moved<4){
+    const i = nearest(e.clientX, e.clientY, 8);
+    if (i>=0) open("https://scryfall.com/search?q="+
+      encodeURIComponent('!"'+DATA.name[i]+'"'), "_blank");
+  }
+  dragging=false; canvas.style.cursor="grab";
+});
+addEventListener("pointermove", e=>{
+  if (dragging){
+    moved += Math.abs(e.clientX-lastX)+Math.abs(e.clientY-lastY);
+    view.cx -= (e.clientX-lastX)/view.scale;
+    view.cy -= (e.clientY-lastY)/view.scale;
+    lastX=e.clientX; lastY=e.clientY;
+    draw();
+  } else hover(e.clientX, e.clientY);
+});
+canvas.addEventListener("wheel", e=>{
+  e.preventDefault();
+  const k = Math.exp(-e.deltaY*0.0016);
+  const [mx,my] = [e.clientX, e.clientY];
+  const wx = (mx-canvas.clientWidth/2)/view.scale + view.cx;
+  const wy = (my-canvas.clientHeight/2)/view.scale + view.cy;
+  view.scale *= k;
+  view.cx = wx - (mx-canvas.clientWidth/2)/view.scale;
+  view.cy = wy - (my-canvas.clientHeight/2)/view.scale;
+  draw();
+}, {passive:false});
+
+function nearest(px, py, radius){
+  let best=-1, bestD=radius*radius;
+  const vals = DATA[CATS[mode].key];
+  for (let i=0;i<N;i++){
+    if (isolate!==null && vals[i]!==isolate) continue;
+    if (highlight && !highlight.has(i)) continue;
+    const [sx,sy]=toScreen(DATA.x[i],DATA.y[i]);
+    const d=(sx-px)*(sx-px)+(sy-py)*(sy-py);
+    if (d<bestD){bestD=d;best=i;}
+  }
+  return best;
+}
+
+function hover(px,py){
+  const i = nearest(px,py,10);
+  if (i<0){ tip.style.display="none"; return; }
+  const cat = CATS.role;
+  tip.innerHTML = `<div class="t">${DATA.name[i]} ${DATA.cost[i]||""}</div>`+
+    `<div class="s">${DATA.tl[i]}</div>`+
+    `<div class="s">${cat.labels[DATA.role[i]]}</div>`;
+  tip.style.display="block";
+  tip.style.left = Math.min(px+14, innerWidth-300)+"px";
+  tip.style.top = Math.min(py+14, innerHeight-90)+"px";
+}
+
+document.getElementById("mode").onchange = e=>{
+  mode = e.target.value; isolate=null; buildLegend(); draw();
+};
+document.getElementById("reset").onclick = ()=>{ resetView(); draw(); };
+document.getElementById("search").oninput = e=>{
+  const q = e.target.value.trim().toLowerCase();
+  if (!q){ highlight=null; }
+  else {
+    highlight = new Set();
+    for (let i=0;i<N;i++)
+      if (DATA.name[i].toLowerCase().includes(q)) highlight.add(i);
+  }
+  draw();
+};
+
+document.getElementById("count").textContent =
+  N.toLocaleString()+" cards · MiniLM rules-text embeddings · UMAP";
+addEventListener("resize", resize);
+resize();
+buildLegend();
+</script>
+</body>
+</html>
