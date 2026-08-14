@@ -81,14 +81,27 @@
     padding: 0.5rem 0.6rem; font: 0.85rem/1.5 ui-monospace, Menlo, Consolas, monospace; }
   .coll-actions { display: flex; gap: 1rem; margin-top: 0.4rem; align-items: center; }
   .file-label { cursor: pointer; text-decoration: underline dotted; }
+  #find-decks { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  #idea-list { margin: 0.6rem 0 0.2rem; }
+  .idea-row { display: grid; grid-template-columns: 2rem 1fr 10rem 6.5rem;
+    gap: 0.7rem; align-items: center; padding: 0.45rem 0.6rem;
+    border-radius: 8px; }
+  .idea-row:hover { background: var(--surface-2); }
+  .idea-row .core { font-weight: 600; }
+  .idea-row .fmt, .idea-row .miss { color: var(--text-secondary); font-size: 0.8rem; }
+  .idea-row .cov-track { background: var(--bar-track); height: 0.5rem;
+    border-radius: 4px; overflow: hidden; }
+  .idea-row .cov { background: var(--bar); height: 100%; }
+  .idea-row button { font-size: 0.85rem; padding: 0.3rem 0.7rem; }
 </style>
 </head>
 <body>
 <header>
   <h1>Deck Seeker</h1>
-  <p>Pick a card you want to build around — the pool collapses to cards that
-     belong in the same deck, learned from tournament decklists. Keep picking;
-     it keeps collapsing. <a href="/">card map</a> · <a href="deck-map.html">deck map</a></p>
+  <p>Two ways in: load your collection and <em>Find decks I can build</em> for a
+     ranked list of what you already own — or pick any card to build around and
+     watch the options collapse. Either way you can adjust the picked cards and
+     rebuild. <a href="/">card map</a> · <a href="deck-map.html">deck map</a></p>
 </header>
 <main>
   <div class="controls">
@@ -118,9 +131,12 @@
         <label class="chk file-label">upload file
           <input id="coll-file" type="file" accept=".txt,.csv,text/plain,text/csv" hidden>
         </label>
+        <button id="find-decks" class="primary-ish"
+          title="Rank the archetypes your collection can already build">Find decks I can build</button>
       </div>
     </div>
   </details>
+  <div id="idea-list"></div>
   <div id="search-results"></div>
   <div id="picks"></div>
   <div id="deck-out" hidden></div>
@@ -517,6 +533,81 @@ function renderDeck(picked,lands){
 }
 
 $("build").addEventListener("click", buildDeck);
+
+/* ---- deck discovery: rank corpus decks by collection coverage ---- */
+function findDecks(){
+  refreshOwned();
+  if (!owned || !owned.size){
+    $("idea-list").innerHTML =
+      '<p class="muted">Load a collection first (paste it above).</p>';
+    return;
+  }
+  const cents = deckCentroids();
+  const scored = [];
+  for (let d=0; d<DATA.decks60.length; d++){
+    const rec = DATA.decks60[d];
+    let need=0, have=0;
+    const ownedCore=[], missing=[];
+    for (const [row,qty] of rec.c){
+      need += qty;
+      const got = Math.min(owned.get(row)||0, qty);
+      have += got;
+      if (got>0) ownedCore.push([row, got]);
+      else missing.push([row, qty]);
+    }
+    if (need < 15 || have === 0) continue;
+    scored.push({d, cov: have/need, ownedCore, missing});
+  }
+  scored.sort((a,b)=>b.cov-a.cov);
+
+  /* archetype dedupe: skip decks nearly identical to an already-kept one */
+  const kept=[];
+  for (const s of scored){
+    if (kept.length >= 10) break;
+    let dup=false;
+    for (const k of kept){
+      let sim=0;
+      const oa=s.d*DIM, ob=k.d*DIM;
+      for (let m=0;m<DIM;m++) sim += cents[oa+m]*cents[ob+m];
+      if (sim > 0.92){ dup=true; break; }
+    }
+    if (!dup) kept.push(s);
+  }
+
+  const label = (s)=>{
+    const core=[...s.ownedCore].sort((a,b)=>b[1]-a[1]).slice(0,3)
+      .map(([r,_q])=>DATA.names[r]);
+    return core.join(" · ");
+  };
+  const fmtName=(s)=>DATA.decks60[s.d].f.replace("casual-","");
+  $("idea-list").innerHTML =
+    `<p class="muted">Decks hiding in your collection — ranked by how much of a
+      real deck you already own:</p>` +
+    kept.map((s,k)=>`
+    <div class="idea-row" data-k="${k}">
+      <span class="rank" style="color:var(--text-secondary);font-size:0.8rem;text-align:right">${k+1}</span>
+      <span><span class="core">${esc(label(s))}</span>
+        <span class="fmt"> · ${esc(fmtName(s))}</span><br>
+        <span class="miss">${s.missing.length
+          ? "missing: " + s.missing.slice(0,4).map(([r,q])=>q+" "+DATA.names[r]).map(esc).join(", ")
+            + (s.missing.length>4 ? " …" : "")
+          : "you own every card"}</span></span>
+      <span class="cov-track"><span class="cov" style="width:${Math.round(100*s.cov)}%"></span></span>
+      <button type="button" data-k="${k}">Build it (${Math.round(100*s.cov)}%)</button>
+    </div>`).join("");
+  document.querySelectorAll("#idea-list button").forEach(b=>{
+    b.onclick=()=>{
+      const s = kept[Number(b.dataset.k)];
+      picks.length=0;
+      [...s.ownedCore].sort((a,b)=>b[1]-a[1]).slice(0,3)
+        .forEach(([r,_q])=>picks.push(r));
+      $("use-coll").checked = true;
+      render();
+      buildDeck();
+    };
+  });
+}
+$("find-decks").addEventListener("click", (e)=>{e.preventDefault(); findDecks();});
 
 let collTimer=null;
 $("coll-text").addEventListener("input", ()=>{
