@@ -1,0 +1,67 @@
+{
+ "format": "legacy",
+ "deck": "/tmp/claude-0/-home-user-MTGDeckBuilder/6e07b8e8-48d2-56ad-84cc-9478073b7720/scratchpad/tainted-aether.txt",
+ "results": [
+  {
+   "variant": "base",
+   "wins": 0,
+   "games": 12,
+   "winrate": 0.0,
+   "ci95": 0.0
+  },
+  {
+   "variant": "cand_0",
+   "wins": 1,
+   "games": 12,
+   "winrate": 0.083,
+   "ci95": 0.156,
+   "swap": "-4 Echoing Truth +4 Brainstorm",
+   "h2h_vs_base": "20/40 (50% \u00b115%)"
+  },
+  {
+   "variant": "cand_1",
+   "wins": 0,
+   "games": 12,
+   "winrate": 0.0,
+   "ci95": 0.0,
+   "swap": "-2 Sign in Blood +2 Force of Will",
+   "h2h_vs_base": "24/40 (60% \u00b115%)"
+  },
+  {
+   "variant": "cand_2",
+   "wins": 0,
+   "games": 12,
+   "winrate": 0.0,
+   "ci95": 0.0,
+   "swap": "-4 Phyrexian Arena +4 Ponder",
+   "h2h_vs_base": "17/40 (42% \u00b115%)"
+  },
+  {
+   "variant": "cand_3",
+   "wins": 1,
+   "games": 12,
+   "winrate": 0.083,
+   "ci95": 0.156,
+   "swap": "-4 Echoing Truth +4 Thoughtseize",
+   "h2h_vs_base": "12/40 (30% \u00b114%)"
+  },
+  {
+   "variant": "try_0",
+   "wins": 0,
+   "games": 12,
+   "winrate": 0.0,
+   "ci95": 0.0,
+   "swap": "+3 Crypt Ghast (user)",
+   "h2h_vs_base": "25/40 (62% \u00b115%)"
+  },
+  {
+   "variant": "try_1",
+   "wins": 0,
+   "games": 12,
+   "winrate": 0.0,
+   "ci95": 0.0,
+   "swap": "+4 Aether Vial (user)",
+   "h2h_vs_base": "18/40 (45% \u00b115%)"
+  }
+ ]
+}
