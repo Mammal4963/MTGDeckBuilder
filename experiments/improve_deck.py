@@ -120,20 +120,91 @@ class Improver:
 
     # ---------------- proposer ----------------
 
-    def propose(self, deck: dict, n_swaps: int, locked: set):
-        """deck: {row: qty}. Returns list of (cut_row, add_row, qty)."""
+    def _neighborhood(self, deck: dict, exclude=None):
+        """Shared retrieval: centroid, neighbor decks, weighted presence."""
         nonland = {r: q for r, q in deck.items() if not self.is_land[r]}
         centroid = sum(self.vecs[r] * q for r, q in nonland.items())
         centroid /= max(np.linalg.norm(centroid), 1e-9)
-
         sims = self.centroids @ centroid
+        if exclude:
+            sims = sims.copy()
+            for i in exclude:
+                sims[i] = -1
         neighbors = np.argsort(-sims)[:40]
         presence = defaultdict(float)
         for d in neighbors:
-            w = sims[d]
+            w = max(float(sims[d]), 0.0)
             for r in self.corpus[d]["rows"]:
                 if not self.is_land[r]:
                     presence[r] += w
+        return nonland, centroid, sims, neighbors, presence
+
+    def rank_adds(self, deck: dict, top: int, version: str = "v2",
+                  exclude=None):
+        """Ranked candidate additions. v1 = presence+centroid (nearest
+        blueprint). v2 = lift + core synergy + gap residual - redundancy."""
+        nonland, centroid, sims, neighbors, presence = self._neighborhood(
+            deck, exclude)
+        max_p = max(presence.values()) if presence else 1.0
+
+        if version == "v1":
+            adds = []
+            for r, p in sorted(presence.items(), key=lambda kv: -kv[1]):
+                if r in deck or not self.legal(r) or not self.playable(r):
+                    continue
+                adds.append((r, 2 * p / max_p + float(self.vecs[r] @ centroid)))
+                if len(adds) >= top:
+                    break
+            return adds, centroid, presence
+
+        # ---- v2 ----
+        if not hasattr(self, "_fmt_freq"):
+            counts = defaultdict(int)
+            for d in self.corpus:
+                for r in d["rows"]:
+                    if not self.is_land[r]:
+                        counts[r] += 1
+            self._fmt_freq = {r: c / max(len(self.corpus), 1)
+                              for r, c in counts.items()}
+        n_neigh = max(len(neighbors), 1)
+
+        # the deck's identity: its most central playsets
+        core = sorted(nonland, key=lambda r: -(nonland[r] *
+                      float(self.vecs[r] @ centroid)))[:6]
+        core_vecs = self.vecs[core]
+
+        # what similar decks have that this deck lacks
+        neigh_centroid = self.centroids[neighbors].mean(0)
+        residual = neigh_centroid - centroid
+        rn = np.linalg.norm(residual)
+        residual = residual / rn if rn > 1e-6 else residual
+
+        deck_vecs = self.vecs[list(nonland)]
+
+        scored = []
+        for r, p in presence.items():
+            if r in deck or not self.legal(r) or not self.playable(r):
+                continue
+            neigh_rate = p / max_p
+            fmt_rate = self._fmt_freq.get(r, 0.0)
+            lift = math.log((p / n_neigh + 0.02) / (fmt_rate + 0.02))
+            core_syn = float(np.sort(core_vecs @ self.vecs[r])[-3:].mean())
+            gap = float(self.vecs[r] @ residual)
+            redundancy = float((deck_vecs @ self.vecs[r]).max())
+            # v2b: keep v1's presence backbone; core-synergy replaces
+            # centroid-sim; lift and gap are gentle correctives.
+            score = (2.0 * neigh_rate + 1.0 * core_syn + 0.3 * lift
+                     + 0.4 * gap - 0.2 * max(0.0, redundancy - 0.7))
+            scored.append((r, score))
+        scored.sort(key=lambda rs: -rs[1])
+        return scored[:top], centroid, presence
+
+    def propose(self, deck: dict, n_swaps: int, locked: set,
+                version: str = "v2"):
+        """deck: {row: qty}. Returns list of (cut_row, add_row, qty)."""
+        adds, centroid, presence = self.rank_adds(
+            deck, n_swaps * 2, version=version)
+        nonland = {r: q for r, q in deck.items() if not self.is_land[r]}
         max_p = max(presence.values()) if presence else 1.0
 
         def cut_score(r):
@@ -142,15 +213,6 @@ class Improver:
         cuts = sorted(
             (r for r in nonland if norm(self.meta[r]["name"]) not in locked),
             key=cut_score)[:max(3, n_swaps // 2)]
-
-        adds = []
-        for r, p in sorted(presence.items(), key=lambda kv: -kv[1]):
-            if r in deck or not self.legal(r) or not self.playable(r):
-                continue
-            score = 2 * p / max_p + float(self.vecs[r] @ centroid)
-            adds.append((r, score))
-            if len(adds) >= n_swaps * 2:
-                break
 
         swaps, used_adds = [], set()
         for cut in cuts:
@@ -270,6 +332,7 @@ def main():
                     help='user swap to test, e.g. "3 Crypt Ghast" (repeatable)')
     ap.add_argument("--h2h", type=int, default=0,
                     help="head-to-head games: each variant vs base directly")
+    ap.add_argument("--proposer", choices=["v1", "v2"], default="v1")
     args = ap.parse_args()
 
     imp = Improver(args.format)
@@ -295,7 +358,8 @@ def main():
         return
 
     locked = {norm(n) for n in args.lock}
-    swaps, presence = imp.propose(deck, args.candidates, locked)
+    swaps, presence = imp.propose(deck, args.candidates, locked,
+                                  version=args.proposer)
     print("\nproposed swaps:")
     for cut, add, qty in swaps:
         print(f"  -{qty} {imp.meta[cut]['name']:<28} +{qty} {imp.meta[add]['name']}")

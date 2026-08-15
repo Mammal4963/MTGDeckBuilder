@@ -83,3 +83,30 @@ Design implications for the product:
    difference when CIs separate, and always label the AI-pilot caveat.
 3. Prefer sim verdicts for large/archetype-level changes over
    single-swap deltas; aggregate over multiple gauntlets.
+
+## Proposer refinement experiments (2026-08-15)
+
+Hypothesis tested: "nearest studied blueprint" (v1: neighbor presence +
+centroid similarity) is mean-reverting - it suggests format staples to
+every deck. Built v2 (lift over format popularity + synergy to the
+deck's core cards + gap residual - redundancy) and benchmarked both on
+180 degraded corpus decks (rank the removed real playset; near-duplicate
+lists excluded from retrieval).
+
+- Pure v2 (lift-led): much worse at repair (legacy MRR 0.394 -> 0.084).
+  The repair task's ground truth IS a popular staple; lift buries
+  exactly that signal.
+- Reweighted v2b (presence backbone + gentle correctives): ties v1 on
+  repair but its suggestions converge back to v1's staples list.
+  Interpolating the weights just interpolates the failure modes.
+
+Conclusion: archetype completion and brew enhancement are DIFFERENT
+TASKS. v1 stays default (benchmark-validated). The brew path that
+showed qualitative promise: query the COMMANDER co-occurrence space for
+partners of the deck's core (casual synergy knowledge lives there, not
+in tournament lists) - on the Tainted Aether deck it surfaces punisher
+enchantments instead of Brainstorm/FoW. Currently data-starved (core
+cards in <=8 of 1,887 cmd decks, so vectors are text projections);
+the fix is scaling the casual corpus by ~10-50x, then auto-selecting
+mode by neighborhood similarity (meta-adjacent deck -> archetype mode;
+low max-similarity brew -> core-synergy mode, cmd-space).
