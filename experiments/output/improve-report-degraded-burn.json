@@ -1,0 +1,37 @@
+{
+ "format": "pauper",
+ "deck": "/tmp/claude-0/-home-user-MTGDeckBuilder/6e07b8e8-48d2-56ad-84cc-9478073b7720/scratchpad/degraded-burn.txt",
+ "results": [
+  {
+   "variant": "base",
+   "wins": 34,
+   "games": 60,
+   "winrate": 0.567,
+   "ci95": 0.125
+  },
+  {
+   "variant": "cand_1",
+   "wins": 29,
+   "games": 60,
+   "winrate": 0.483,
+   "ci95": 0.126,
+   "swap": "-3 Canyon Minotaur +3 Fireblast"
+  },
+  {
+   "variant": "cand_2",
+   "wins": 22,
+   "games": 60,
+   "winrate": 0.367,
+   "ci95": 0.122,
+   "swap": "-4 Kessig Flamebreather +4 Galvanic Blast"
+  },
+  {
+   "variant": "cand_3",
+   "wins": 28,
+   "games": 60,
+   "winrate": 0.467,
+   "ci95": 0.126,
+   "swap": "-4 Goblin Piker +4 Clockwork Percussionist"
+  }
+ ]
+}
