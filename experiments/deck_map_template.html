@@ -46,7 +46,20 @@
   #tip .s { color: var(--text-secondary); }
   #hint { position: fixed; left: 0.75rem; bottom: 0.6rem; z-index: 5;
     color: var(--text-secondary); font-size: 0.75rem; }
-  canvas { display: block; cursor: grab; }
+  #bar input[type=search] { max-width: 42vw; }
+  #bar select { max-width: 44vw; }
+  canvas { display: block; width: 100vw; height: 100vh; cursor: grab; touch-action: none; }
+  #tip { pointer-events: auto; }
+  @media (max-width: 640px) {
+    #bar { gap: 0.45rem; padding: 0.4rem 0.6rem; }
+    #bar h1 { font-size: 0.85rem; }
+    #bar input, #bar button { font-size: 16px; padding: 0.3rem 0.5rem; }
+    #bar input[type=search] { flex: 1 1 7rem; width: 7rem; }
+    #legend { top: auto; bottom: 0.6rem; max-height: 34vh; overflow-y: auto;
+      font-size: 0.78rem; max-width: 12rem; padding: 0.4rem 0.5rem; }
+    #count { display: none; }
+    #hint { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -89,13 +102,18 @@ const toScreen=(x,y)=>[(x-view.cx)*view.scale+canvas.clientWidth/2,
                        (y-view.cy)*view.scale+canvas.clientHeight/2];
 
 function resize(){
-  const dpr = window.devicePixelRatio||1;
-  canvas.width=innerWidth*dpr; canvas.height=innerHeight*dpr;
-  canvas.style.width=innerWidth+"px"; canvas.style.height=innerHeight+"px";
+  /* CSS (100vw/100vh) owns the element size so it always tracks the real
+     layout viewport; JS only syncs the backing store. Setting an explicit
+     px width from innerWidth here used to freeze a pre-viewport value on
+     mobile and blow the page up to device-pixel width. */
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  canvas.width = w*dpr; canvas.height = h*dpr;
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  if (!view) resetView();
+  if (!view || !userAdjusted) resetView();
   draw();
 }
+new ResizeObserver(()=>resize()).observe(canvas);
 
 function draw(){
   ctx.fillStyle="#1a1a19";
@@ -132,25 +150,62 @@ function buildLegend(){
   });
 }
 
-let dragging=false,lastX=0,lastY=0;
-canvas.addEventListener("pointerdown",e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;
-  canvas.style.cursor="grabbing";});
-addEventListener("pointerup",()=>{dragging=false;canvas.style.cursor="grab";});
+let dragging=false,lastX=0,lastY=0,moved=0;
+const pointers=new Map();
+let pinchDist=0;
+let userAdjusted=false;
+function zoomAt(mx,my,k){
+  userAdjusted=true;
+  const wx=(mx-canvas.clientWidth/2)/view.scale+view.cx;
+  const wy=(my-canvas.clientHeight/2)/view.scale+view.cy;
+  view.scale*=k;
+  view.cx=wx-(mx-canvas.clientWidth/2)/view.scale;
+  view.cy=wy-(my-canvas.clientHeight/2)/view.scale;
+  draw();
+}
+canvas.addEventListener("pointerdown",e=>{
+  pointers.set(e.pointerId,[e.clientX,e.clientY]);
+  if (pointers.size===1){
+    dragging=true; moved=0; lastX=e.clientX; lastY=e.clientY;
+    canvas.style.cursor="grabbing";
+  } else {
+    dragging=false;
+    const p=[...pointers.values()];
+    pinchDist=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);
+  }
+});
+addEventListener("pointerup",e=>{
+  if (pointers.size===1 && dragging && moved<6 && e.target===canvas
+      && e.pointerType==="touch"){
+    hover(e.clientX, e.clientY);      /* tap shows the deck tooltip */
+  }
+  pointers.delete(e.pointerId);
+  if (!pointers.size){dragging=false;pinchDist=0;canvas.style.cursor="grab";}
+});
+addEventListener("pointercancel",e=>{
+  pointers.delete(e.pointerId);
+  if (!pointers.size){dragging=false;pinchDist=0;}
+});
 addEventListener("pointermove",e=>{
+  if (pointers.has(e.pointerId)) pointers.set(e.pointerId,[e.clientX,e.clientY]);
+  if (pointers.size===2){
+    const p=[...pointers.values()];
+    const d=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);
+    if (pinchDist>0 && d>0)
+      zoomAt((p[0][0]+p[1][0])/2,(p[0][1]+p[1][1])/2,d/pinchDist);
+    pinchDist=d;
+    return;
+  }
   if (dragging){
+    userAdjusted=true;
+    moved+=Math.abs(e.clientX-lastX)+Math.abs(e.clientY-lastY);
     view.cx-=(e.clientX-lastX)/view.scale; view.cy-=(e.clientY-lastY)/view.scale;
     lastX=e.clientX; lastY=e.clientY; draw();
-  } else hover(e.clientX,e.clientY);
+  } else if (e.pointerType!=="touch") hover(e.clientX,e.clientY);
 });
 canvas.addEventListener("wheel",e=>{
   e.preventDefault();
-  const k=Math.exp(-e.deltaY*0.0016);
-  const wx=(e.clientX-canvas.clientWidth/2)/view.scale+view.cx;
-  const wy=(e.clientY-canvas.clientHeight/2)/view.scale+view.cy;
-  view.scale*=k;
-  view.cx=wx-(e.clientX-canvas.clientWidth/2)/view.scale;
-  view.cy=wy-(e.clientY-canvas.clientHeight/2)/view.scale;
-  draw();
+  zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*0.0016));
 },{passive:false});
 
 function nearest(px,py,radius){
@@ -175,7 +230,7 @@ function hover(px,py){
   tip.style.top=Math.min(py+14,innerHeight-100)+"px";
 }
 
-document.getElementById("reset").onclick=()=>{resetView();draw();};
+document.getElementById("reset").onclick=()=>{userAdjusted=false;resetView();draw();};
 document.getElementById("search").oninput=e=>{
   const q=e.target.value.trim().toLowerCase();
   if (!q){highlight=null;}

@@ -21,10 +21,11 @@
   main { max-width: 62rem; margin: 0 auto; padding: 0.75rem 1.25rem 3rem; }
   .controls { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;
     margin: 0.6rem 0 0.8rem; }
-  input[type=search], select, button {
+  input[type=search], select, button, textarea {
     background: var(--surface-2); color: var(--text-primary);
     border: 1px solid var(--border); border-radius: 7px;
-    padding: 0.45rem 0.6rem; font-size: 0.95rem; }
+    padding: 0.45rem 0.6rem; font-size: 16px;
+    touch-action: manipulation; }
   input[type=search] { flex: 1 1 16rem; }
   label.chk { color: var(--text-secondary); font-size: 0.85rem;
     display: flex; gap: 0.35rem; align-items: center; }
@@ -93,6 +94,32 @@
     border-radius: 4px; overflow: hidden; }
   .idea-row .cov { background: var(--bar); height: 100%; }
   .idea-row button { font-size: 0.85rem; padding: 0.3rem 0.7rem; }
+  @media (max-width: 640px) {
+    header { padding: 0.8rem 0.9rem 0.2rem; }
+    header h1 { font-size: 1.15rem; }
+    header p { font-size: 0.82rem; }
+    main { padding: 0.5rem 0.9rem 2.5rem; }
+    .controls { gap: 0.5rem; }
+    input[type=search] { flex: 1 1 100%; }
+    #source, #format { flex: 1 1 40%; }
+    #build, #clear { flex: 1 1 40%; padding: 0.6rem 0.5rem; }
+    /* suggestion rows: drop the bar column, keep score */
+    .row { grid-template-columns: 1.6rem 1fr 2.8rem; gap: 0.5rem;
+      padding: 0.55rem 0.4rem; }
+    .row .bar-track { display: none; }
+    #search-results .row { grid-template-columns: 1fr; }
+    #search-results .row .type { display: none; }
+    /* deck ideas: coverage bar drops to its own line, button stays tappable */
+    .idea-row { grid-template-columns: 1fr 6.2rem; gap: 0.4rem 0.6rem;
+      padding: 0.55rem 0.4rem; }
+    .idea-row .rank { display: none; }
+    .idea-row .cov-track { grid-column: 1 / -1; }
+    .idea-row button { padding: 0.55rem 0.4rem; }
+    #deck-out { padding: 0.7rem 0.8rem; }
+    #deck-out .cols { grid-template-columns: 1fr; }
+    .coll-actions { flex-wrap: wrap; gap: 0.6rem; }
+    #find-decks { flex: 1 1 100%; padding: 0.6rem; }
+  }
 </style>
 </head>
 <body>
@@ -454,6 +481,22 @@ function buildDeck(){
     curCurve[Math.min(7,DATA.mv[best])]+=copies;
     total+=copies;
     cands.splice(bestIdx,1);
+  }
+
+  /* neighbor pool exhausted (small collections): fall back to the rest of
+     the owned cards ranked by synergy, instead of flooding with basics */
+  if (restrict && total<nonlandTarget){
+    const extra=[...owned.keys()]
+      .filter(r=>!(DATA.colors[r]&32) && !picked.has(r) && okCard(r))
+      .map(r=>[cos_vec(r,seedVec),r]).sort((a,b)=>b[0]-a[0]);
+    for (const [_s,r] of extra){
+      if (total>=nonlandTarget) break;
+      const copies=Math.min(maxCopies(r),nonlandTarget-total);
+      if (copies<=0) continue;
+      picked.set(r,copies);
+      curCurve[Math.min(7,DATA.mv[r])]+=copies;
+      total+=copies;
+    }
   }
 
   /* lands: neighbors' nonbasics, then basics covering every pip color */
