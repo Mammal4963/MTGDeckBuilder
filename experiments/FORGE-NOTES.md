@@ -110,3 +110,38 @@ cards in <=8 of 1,887 cmd decks, so vectors are text projections);
 the fix is scaling the casual corpus by ~10-50x, then auto-selecting
 mode by neighborhood similarity (meta-adjacent deck -> archetype mode;
 low max-similarity brew -> core-synergy mode, cmd-space).
+
+## Combo head: fine-tune on Commander Spellbook (2026-08-15)
+
+The pair-synergy model (AUC 0.784 on "same deck?") cannot tell a
+mechanical combo from ordinary synergy - miner v0 therefore surfaced
+"unplayed archetype fits". Fix: Commander Spellbook's bulk export
+(105,692 verified combos, one 27 MB download they publish precisely so
+nobody crawls the API) distilled to `data/combos/spellbook-combos.jsonl.gz`
+(2.5 MB), then a second bilinear head (`combo_model.py`, same frozen
+MiniLM embeddings, rank 128) trained: positives = pairs inside a
+verified combo (size <= 4); negatives = 50% deck-co-played non-combo
+pairs (the hard case) + 50% random. Card-holdout split (10% of combo
+cards never seen in training).
+
+- **Combo head AUC 0.846 vs hard negatives** (combo vs deck-synergy,
+  held-out cards); 0.877 vs random.
+- Pair-synergy baseline on the same test: **0.334** vs hard negatives -
+  below chance, because it actively prefers synergy pairs. The two
+  heads measure genuinely different things.
+- Showcase (excluded from training): Splinter Twin + Deceiver Exarch
+  98.0%, Heliod + Ballista 99.0%, Sanguine Bond + Exquisite Blood
+  99.1%, Basalt Monolith + Rings 99.5%; Guttersnipe + Bolt (synergy,
+  no combo) 37.0%, nonsense pair 2.9%. Known miss: Thassa's Oracle +
+  Demonic Consultation 31.6% - hidden-information/library semantics
+  compress poorly in text embeddings.
+
+Miner v1 (`mine_combos.py`) now scores with the combo head; novelty =
+not catalogued in Spellbook (deck co-play is reported, not excluded).
+Output character changed exactly as hoped: instead of archetype fits it
+proposes activation/untap engines and death-trigger loops - e.g.
+Dynaheir, Invoker Adept + tap-ability creatures (ability-copy engines),
+Stone-Seeder Hierophant + Copy Land (land-untap mana), Magnanimous
+Magistrate + Shimatsu the Bloodcloaked (sac/reanimate loop). These are
+mechanically coherent hypotheses, unverified as wins - Forge sim or
+manual review is the verification lane.

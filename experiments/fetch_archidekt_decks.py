@@ -28,13 +28,14 @@ DELAY = 1.0
 # 16 historic. 60-card formats are size-filtered to exclude the cubes,
 # binders and wantlists that share those categories.
 QUERIES = [
-    ("commander-popular", "deckFormat=3&orderBy=-viewCount", 900, (60, 120)),
-    ("commander-recent", "deckFormat=3&orderBy=-createdAt", 400, (60, 120)),
-    ("standard-popular", "deckFormat=1&orderBy=-viewCount", 400, (55, 90)),
-    ("modern-popular", "deckFormat=2&orderBy=-viewCount", 400, (55, 90)),
-    ("pauper-popular", "deckFormat=6&orderBy=-viewCount", 400, (55, 90)),
-    ("historic-popular", "deckFormat=16&orderBy=-viewCount", 300, (55, 90)),
-    ("legacy-popular", "deckFormat=4&orderBy=-viewCount", 200, (55, 90)),
+    # -createdAt pages arbitrarily deep (verified), so the recent firehose
+    # is the scaling lane; popular queries top up the evergreen lists.
+    ("commander-recent-deep", "deckFormat=3&orderBy=-createdAt", 999999, (60, 120)),
+    ("standard-recent", "deckFormat=1&orderBy=-createdAt", 3000, (55, 90)),
+    ("modern-recent", "deckFormat=2&orderBy=-createdAt", 3000, (55, 90)),
+    ("pauper-recent", "deckFormat=6&orderBy=-createdAt", 3000, (55, 90)),
+    ("historic-recent", "deckFormat=16&orderBy=-createdAt", 2000, (55, 90)),
+    ("legacy-recent", "deckFormat=4&orderBy=-createdAt", 2000, (55, 90)),
 ]
 FORMAT_NAMES = {3: "commander", 1: "casual-standard", 2: "casual-modern",
                 4: "casual-legacy", 6: "casual-pauper", 16: "casual-historic"}
@@ -76,6 +77,11 @@ def deck_cards(detail: dict):
 
 
 def main() -> None:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--max-new", type=int, default=3000,
+                    help="stop after fetching this many new decks")
+    args = ap.parse_args()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     seen = set()
     n_existing = 0
@@ -87,9 +93,13 @@ def main() -> None:
         print(f"resuming: {n_existing} decks already fetched")
 
     todo = []
+    budget = args.max_new
     for label, query, want, (lo, hi) in QUERIES:
+        if len(todo) >= budget:
+            break
+        want = min(want, budget - len(todo))
         got, page = 0, 1
-        while got < want and page <= (want // 50) + 4:
+        while got < want and page <= (want // 40) + 6:
             data = fetch_json(f"{API}/decks/v3/?{query}&pageSize=50&page={page}")
             time.sleep(DELAY)
             if not data or not data.get("results"):

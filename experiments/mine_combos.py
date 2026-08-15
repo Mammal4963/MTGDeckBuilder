@@ -1,10 +1,16 @@
 """Novel combo candidate mining (task: circle back to combo discovery).
 
-Use the trained pair-synergy model to score card pairs that have NEVER
-been observed together in any corpus deck. High predicted synergy +
-zero observed co-play = the model believes in a pairing nobody in our
-data has tried. Functional near-reprints (text cosine > 0.9) are
-excluded - "Cancel + Counterspell" is redundancy, not a combo.
+v1: score with the COMBO HEAD (combo_model.py, fine-tuned on Commander
+Spellbook ground truth) instead of the pair-synergy model. v0 used the
+synergy model and - as documented in FORGE-NOTES - surfaced "unplayed
+archetype fits", not mechanical combos; the combo head is trained to
+make exactly that distinction (AUC 0.846 vs deck-synergy negatives on
+held-out cards, where the synergy model scores 0.334).
+
+Novelty = the pair is NOT catalogued in Spellbook. Observed deck
+co-play no longer disqualifies a pair (a real undiscovered combo may
+well be co-played coincidentally) - it's reported as a column instead.
+Functional near-reprints (text cosine > 0.9) are still excluded.
 
 Writes output/combo-candidates.json, prints the top 30.
 """
@@ -34,7 +40,7 @@ def norm(name: str) -> str:
 def main():
     emb = np.load(OUT / "embeddings.npy").astype(np.float32)
     meta = json.loads((OUT / "cards_meta.json").read_text())
-    pm = np.load(OUT / "pair_model.npz")
+    pm = np.load(OUT / "combo_model.npz")
     P = emb @ pm["A"].T
     Q = emb @ pm["B"].T
     bias = float(pm["bias"][0])
@@ -42,6 +48,18 @@ def main():
     for i, m in enumerate(meta):
         name_to_row.setdefault(norm(m["name"]), i)
     is_land = np.array([("Land" in m["type_line"]) for m in meta])
+
+    # known Spellbook pairs = already catalogued, not novel
+    known = set()
+    with gzip.open(ROOT / "data/combos/spellbook-combos.jsonl.gz", "rt") as fh:
+        for line in fh:
+            c = json.loads(line)
+            rows = sorted({name_to_row[norm(n)] for n in c["cards"]
+                           if norm(n) in name_to_row})
+            for i_a in range(len(rows)):
+                for i_b in range(i_a + 1, len(rows)):
+                    known.add(rows[i_a] * len(meta) + rows[i_b])
+    print(f"{len(known)} catalogued Spellbook pairs")
 
     # observed co-play + play counts
     observed = set()
@@ -97,33 +115,36 @@ def main():
                 if a >= b:
                     continue
                 key = a * len(meta) + b
-                if key in observed:
-                    continue
+                if key in known:
+                    continue                        # already catalogued
                 if play_count[a] == 0 and play_count[b] == 0:
                     continue                        # need one foot in reality
-                cands.append((float(s[li, lj]) + bias, a, b))
+                cands.append((float(s[li, lj]) + bias, a, b,
+                              key in observed))
     cands.sort(key=lambda x: -x[0])
 
     seen_cards = set()
     unique = []
-    for s, a, b in cands:
+    for s, a, b, coplayed in cands:
         if a in seen_cards and b in seen_cards:
             continue
         seen_cards.update((a, b))
-        unique.append((s, a, b))
+        unique.append((s, a, b, coplayed))
         if len(unique) >= 100:
             break
 
     out = [{"score": round(s, 2),
             "a": meta[a]["name"], "a_type": meta[a]["type_line"],
             "b": meta[b]["name"], "b_type": meta[b]["type_line"],
-            "a_played": int(play_count[a]), "b_played": int(play_count[b])}
-           for s, a, b in unique]
+            "a_played": int(play_count[a]), "b_played": int(play_count[b]),
+            "coplayed": bool(coplayed)}
+           for s, a, b, coplayed in unique]
     (OUT / "combo-candidates.json").write_text(json.dumps(out, indent=1))
-    print("\nTop predicted never-played-together pairs:")
+    print("\nTop combo-head candidates not catalogued in Spellbook:")
     for e in out[:30]:
+        tag = "co-played" if e["coplayed"] else "never together"
         print(f"  {e['score']:5.2f}  {e['a']} ({e['a_played']}x)  +  "
-              f"{e['b']} ({e['b_played']}x)")
+              f"{e['b']} ({e['b_played']}x)  [{tag}]")
     print(f"\nwrote {OUT / 'combo-candidates.json'}")
 
 

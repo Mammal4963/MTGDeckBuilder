@@ -1,902 +1,1002 @@
 [
  {
-  "score": 6.53,
-  "a": "Queen's Bay Paladin",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 0,
-  "b_played": 13
- },
- {
-  "score": 6.49,
-  "a": "Wild Growth",
-  "a_type": "Enchantment \u2014 Aura",
-  "b": "Lush Growth",
-  "b_type": "Enchantment \u2014 Aura",
-  "a_played": 131,
-  "b_played": 0
- },
- {
-  "score": 6.43,
-  "a": "Crypt Creeper",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 3
- },
- {
-  "score": 6.29,
-  "a": "Lush Growth",
-  "a_type": "Enchantment \u2014 Aura",
-  "b": "Overgrowth",
-  "b_type": "Enchantment \u2014 Aura",
-  "a_played": 0,
-  "b_played": 25
- },
- {
-  "score": 6.27,
-  "a": "Queen's Bay Paladin",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Pulse Tracker",
-  "b_type": "Creature \u2014 Vampire Rogue",
-  "a_played": 0,
-  "b_played": 6
+  "score": 6.45,
+  "a": "Thousand-Year Elixir",
+  "a_type": "Artifact",
+  "b": "Jinnie Fay, Jetmir's Second",
+  "b_type": "Legendary Creature \u2014 Elf Druid",
+  "a_played": 42,
+  "b_played": 7,
+  "coplayed": false
  },
  {
   "score": 6.26,
-  "a": "Crypt Creeper",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Liliana's Elite",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 2
+  "a": "Jinnie Fay, Jetmir's Second",
+  "a_type": "Legendary Creature \u2014 Elf Druid",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 7,
+  "b_played": 1,
+  "coplayed": false
  },
  {
-  "score": 6.23,
-  "a": "Elvish Guidance",
-  "a_type": "Enchantment \u2014 Aura",
-  "b": "Lush Growth",
-  "b_type": "Enchantment \u2014 Aura",
-  "a_played": 6,
-  "b_played": 0
- },
- {
-  "score": 6.18,
-  "a": "Blood Artist",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Queen's Bay Paladin",
-  "b_type": "Creature \u2014 Vampire Knight",
-  "a_played": 129,
-  "b_played": 0
- },
- {
-  "score": 6.14,
-  "a": "Queen's Bay Paladin",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Sanctum Seeker",
-  "b_type": "Creature \u2014 Vampire Knight",
-  "a_played": 0,
-  "b_played": 23
- },
- {
-  "score": 6.08,
-  "a": "Crypt Creeper",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Ghoulraiser",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 3
+  "score": 6.16,
+  "a": "Springjack Shepherd",
+  "a_type": "Creature \u2014 Kithkin Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 6.07,
-  "a": "Crypt Creeper",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Lord of the Undead",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 14
+  "a": "Thousand-Year Elixir",
+  "a_type": "Artifact",
+  "b": "Thranduil the Strategist",
+  "b_type": "Legendary Creature \u2014 Elf Noble",
+  "a_played": 42,
+  "b_played": 6,
+  "coplayed": true
  },
  {
-  "score": 6.02,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Festering Mummy",
-  "b_type": "Creature \u2014 Zombie",
+  "score": 6.07,
+  "a": "Back to Basics",
+  "a_type": "Enchantment",
+  "b": "Stone-Seeder Hierophant",
+  "b_type": "Creature \u2014 Human Druid",
+  "a_played": 14,
+  "b_played": 11,
+  "coplayed": false
+ },
+ {
+  "score": 6.05,
+  "a": "Extravagant Replication",
+  "a_type": "Enchantment",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 22,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 6.05,
+  "a": "Patrol Signaler",
+  "a_type": "Creature \u2014 Kithkin Soldier",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 6.04,
+  "a": "Kirol, Attentive First-Year",
+  "a_type": "Legendary Creature \u2014 Vampire Cleric",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 5,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.95,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Magnanimous Magistrate",
+  "b_type": "Creature \u2014 Human Advisor",
   "a_played": 3,
-  "b_played": 6
+  "b_played": 0,
+  "coplayed": false
  },
  {
-  "score": 6.01,
-  "a": "Vicious Conquistador",
-  "a_type": "Creature \u2014 Vampire Soldier",
-  "b": "Queen's Bay Paladin",
-  "b_type": "Creature \u2014 Vampire Knight",
+  "score": 5.95,
+  "a": "Ghired, Mirror of the Wilds",
+  "a_type": "Legendary Creature \u2014 Human Shaman",
+  "b": "Chained Brute",
+  "b_type": "Creature \u2014 Devil",
   "a_played": 4,
-  "b_played": 0
+  "b_played": 0,
+  "coplayed": false
  },
  {
-  "score": 5.99,
-  "a": "Famished Ghoul",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
+  "score": 5.93,
+  "a": "Eternal Acrobat Toast",
+  "a_type": "Stickers",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
   "a_played": 0,
-  "b_played": 3
- },
- {
-  "score": 5.97,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Relentless Dead",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 3,
-  "b_played": 11
- },
- {
-  "score": 5.94,
-  "a": "Queen's Bay Paladin",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Kalitas, Traitor of Ghet",
-  "b_type": "Legendary Creature \u2014 Vampire Warrior",
-  "a_played": 0,
-  "b_played": 12
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.92,
-  "a": "Wild Growth",
-  "a_type": "Enchantment \u2014 Aura",
-  "b": "Living Terrain",
-  "b_type": "Enchantment \u2014 Aura",
-  "a_played": 131,
-  "b_played": 0
+  "a": "Stone-Seeder Hierophant",
+  "a_type": "Creature \u2014 Human Druid",
+  "b": "Deep Water",
+  "b_type": "Enchantment",
+  "a_played": 11,
+  "b_played": 0,
+  "coplayed": false
  },
  {
-  "score": 5.91,
-  "a": "Cackling Fiend",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 3
- },
- {
-  "score": 5.87,
-  "a": "Queen's Bay Paladin",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Vermin Gorger",
-  "b_type": "Creature \u2014 Vampire",
-  "a_played": 0,
-  "b_played": 2
+  "score": 5.9,
+  "a": "Incubation Druid",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Thousand-Year Elixir",
+  "b_type": "Artifact",
+  "a_played": 62,
+  "b_played": 42,
+  "coplayed": true
  },
  {
   "score": 5.84,
-  "a": "Queen's Bay Paladin",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Master of Dark Rites",
-  "b_type": "Creature \u2014 Vampire Cleric",
-  "a_played": 0,
-  "b_played": 12
+  "a": "Esix, Fractal Bloom",
+  "a_type": "Legendary Creature \u2014 Fractal",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 7,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.84,
+  "a": "Narset's Reversal",
+  "a_type": "Instant",
+  "b": "Teach by Example",
+  "b_type": "Instant",
+  "a_played": 57,
+  "b_played": 10,
+  "coplayed": false
+ },
+ {
+  "score": 5.83,
+  "a": "Dynaheir, Invoker Adept",
+  "a_type": "Legendary Creature \u2014 Human Wizard",
+  "b": "Rubinia Soulsinger",
+  "b_type": "Legendary Creature \u2014 Faerie",
+  "a_played": 1,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.82,
+  "a": "Ghired, Mirror of the Wilds",
+  "a_type": "Legendary Creature \u2014 Human Shaman",
+  "b": "Saheeli, the Sun's Brilliance",
+  "b_type": "Legendary Creature \u2014 Human Artificer",
+  "a_played": 4,
+  "b_played": 8,
+  "coplayed": false
  },
  {
   "score": 5.79,
-  "a": "Gluttonous Guest",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 1,
-  "b_played": 13
- },
- {
-  "score": 5.78,
-  "a": "Vampire Neonate",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 1,
-  "b_played": 13
- },
- {
-  "score": 5.76,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Zombie Mob",
-  "b_type": "Creature \u2014 Zombie",
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Iron Apprentice",
+  "b_type": "Artifact Creature \u2014 Construct",
   "a_played": 3,
-  "b_played": 0
+  "b_played": 7,
+  "coplayed": true
  },
  {
   "score": 5.74,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Gempalm Polluter",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 3,
-  "b_played": 7
- },
- {
-  "score": 5.74,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Whipstitched Zombie",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 3,
-  "b_played": 0
- },
- {
-  "score": 5.74,
-  "a": "Crypt Creeper",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Fade from Memory",
-  "b_type": "Instant",
+  "a": "Magnanimous Magistrate",
+  "a_type": "Creature \u2014 Human Advisor",
+  "b": "Mondrak, Glory Dominus",
+  "b_type": "Legendary Creature \u2014 Phyrexian Horror",
   "a_played": 0,
-  "b_played": 1
- },
- {
-  "score": 5.74,
-  "a": "Yixlid Jailer",
-  "a_type": "Creature \u2014 Zombie Wizard",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 3
- },
- {
-  "score": 5.74,
-  "a": "Queen's Bay Paladin",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Kalastria Highborn",
-  "b_type": "Creature \u2014 Vampire Shaman",
-  "a_played": 0,
-  "b_played": 6
- },
- {
-  "score": 5.74,
-  "a": "Glass-Cast Heart",
-  "a_type": "Artifact",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 7,
-  "b_played": 13
- },
- {
-  "score": 5.73,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Zombie Cannibal",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 3,
-  "b_played": 0
- },
- {
-  "score": 5.73,
-  "a": "Dusk Legion Zealot",
-  "a_type": "Creature \u2014 Vampire Soldier",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 21,
-  "b_played": 13
+  "b_played": 69,
+  "coplayed": false
  },
  {
   "score": 5.72,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Cyclopean Mummy",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 3,
-  "b_played": 0
- },
- {
-  "score": 5.71,
-  "a": "Sanguine Syphoner",
-  "a_type": "Creature \u2014 Vampire Warlock",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 3,
-  "b_played": 13
- },
- {
-  "score": 5.69,
-  "a": "Wight of Precinct Six",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Maggot Carrier",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 3,
-  "b_played": 1
- },
- {
-  "score": 5.69,
-  "a": "Scarab Feast",
-  "a_type": "Instant",
-  "b": "Cremate",
-  "b_type": "Instant",
-  "a_played": 0,
-  "b_played": 9
- },
- {
-  "score": 5.68,
-  "a": "Elvish Guidance",
-  "a_type": "Enchantment \u2014 Aura",
-  "b": "Prismatic Omen",
-  "b_type": "Enchantment",
-  "a_played": 6,
-  "b_played": 11
- },
- {
-  "score": 5.67,
-  "a": "Crypt Creeper",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Gravecrawler",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 49
- },
- {
-  "score": 5.67,
-  "a": "Vengeful Bloodwitch",
-  "a_type": "Creature \u2014 Vampire Warlock",
-  "b": "Queen's Bay Paladin",
-  "b_type": "Creature \u2014 Vampire Knight",
-  "a_played": 18,
-  "b_played": 0
- },
- {
-  "score": 5.66,
-  "a": "Susurian Voidborn",
-  "a_type": "Creature \u2014 Vampire Soldier",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
+  "a": "Copy Land",
+  "a_type": "Enchantment",
+  "b": "Stone-Seeder Hierophant",
+  "b_type": "Creature \u2014 Human Druid",
   "a_played": 5,
-  "b_played": 13
+  "b_played": 11,
+  "coplayed": false
+ },
+ {
+  "score": 5.7,
+  "a": "Yedora, Grave Gardener",
+  "a_type": "Legendary Creature \u2014 Treefolk Druid",
+  "b": "Thousand-Year Elixir",
+  "b_type": "Artifact",
+  "a_played": 12,
+  "b_played": 42,
+  "coplayed": false
+ },
+ {
+  "score": 5.7,
+  "a": "Stone-Seeder Hierophant",
+  "a_type": "Creature \u2014 Human Druid",
+  "b": "Wakeroot Elemental",
+  "b_type": "Creature \u2014 Elemental",
+  "a_played": 11,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.7,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Arcbound Ravager",
+  "b_type": "Artifact Creature \u2014 Beast",
+  "a_played": 3,
+  "b_played": 30,
+  "coplayed": false
+ },
+ {
+  "score": 5.69,
+  "a": "Ertha Jo, Frontier Mentor",
+  "a_type": "Legendary Creature \u2014 Kor Advisor",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 4,
+  "b_played": 1,
+  "coplayed": true
+ },
+ {
+  "score": 5.67,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Malevolent Noble",
+  "b_type": "Creature \u2014 Human Noble",
+  "a_played": 3,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.67,
+  "a": "Alirios, Enraptured",
+  "a_type": "Legendary Creature \u2014 Human",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 0,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.63,
-  "a": "Mental Misstep",
-  "a_type": "Instant",
-  "b": "Nix",
-  "b_type": "Instant",
-  "a_played": 107,
-  "b_played": 0
+  "a": "The Fire Crystal",
+  "a_type": "Legendary Artifact",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 25,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.63,
+  "a": "Oboro Breezecaller",
+  "a_type": "Creature \u2014 Moonfolk Wizard",
+  "b": "Copy Land",
+  "b_type": "Enchantment",
+  "a_played": 4,
+  "b_played": 5,
+  "coplayed": false
  },
  {
   "score": 5.61,
-  "a": "Joiner Adept",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Priest of Titania",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 1,
-  "b_played": 67
- },
- {
-  "score": 5.57,
-  "a": "Mephitic Draught",
-  "a_type": "Artifact",
-  "b": "Witch's Cauldron",
-  "b_type": "Artifact",
-  "a_played": 7,
-  "b_played": 6
- },
- {
-  "score": 5.57,
-  "a": "Acolyte of Aclazotz",
-  "a_type": "Creature \u2014 Vampire Cleric",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 1,
-  "b_played": 13
- },
- {
-  "score": 5.57,
-  "a": "Joiner Adept",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Llanowar Elves",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 1,
-  "b_played": 398
- },
- {
-  "score": 5.57,
-  "a": "Joiner Adept",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Fyndhorn Elves",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 1,
-  "b_played": 114
- },
- {
-  "score": 5.57,
-  "a": "Joiner Adept",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Elvish Mystic",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 1,
-  "b_played": 200
- },
- {
-  "score": 5.55,
-  "a": "Mental Misstep",
-  "a_type": "Instant",
-  "b": "Flash Counter",
-  "b_type": "Instant",
-  "a_played": 107,
-  "b_played": 0
- },
- {
-  "score": 5.55,
-  "a": "Grim Physician",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 1,
-  "b_played": 3
- },
- {
-  "score": 5.54,
-  "a": "Shadowfeed",
-  "a_type": "Instant",
-  "b": "Cremate",
-  "b_type": "Instant",
+  "a": "Shimatsu the Bloodcloaked",
+  "a_type": "Legendary Creature \u2014 Demon Spirit",
+  "b": "Mondrak, Glory Dominus",
+  "b_type": "Legendary Creature \u2014 Phyrexian Horror",
   "a_played": 0,
-  "b_played": 9
+  "b_played": 69,
+  "coplayed": false
+ },
+ {
+  "score": 5.59,
+  "a": "Heidar, Rimewind Master",
+  "a_type": "Legendary Creature \u2014 Human Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 2,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.58,
+  "a": "Yarok's Wavecrasher",
+  "a_type": "Creature \u2014 Elemental",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 0,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.58,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Hammerhead, Maggia Boss",
+  "b_type": "Legendary Creature \u2014 Human Rogue Villain",
+  "a_played": 3,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.58,
+  "a": "Orthion, Hero of Lavabrink",
+  "a_type": "Legendary Creature \u2014 Human Soldier",
+  "b": "Ghired, Mirror of the Wilds",
+  "b_type": "Legendary Creature \u2014 Human Shaman",
+  "a_played": 12,
+  "b_played": 4,
+  "coplayed": true
+ },
+ {
+  "score": 5.56,
+  "a": "Captain of the Mists",
+  "a_type": "Creature \u2014 Human Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.56,
+  "a": "Prize Wall",
+  "a_type": "Creature \u2014 Wall",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.56,
+  "a": "Feldon of the Third Path",
+  "a_type": "Legendary Creature \u2014 Human Artificer",
+  "b": "Magnanimous Magistrate",
+  "b_type": "Creature \u2014 Human Advisor",
+  "a_played": 33,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.56,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Hundred-Battle Veteran",
+  "b_type": "Creature \u2014 Zombie Warrior",
+  "a_played": 3,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.56,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Winding Constrictor",
+  "b_type": "Creature \u2014 Snake",
+  "a_played": 3,
+  "b_played": 18,
+  "coplayed": false
+ },
+ {
+  "score": 5.55,
+  "a": "Jinnie Fay, Jetmir's Second",
+  "a_type": "Legendary Creature \u2014 Elf Druid",
+  "b": "Metalhead",
+  "b_type": "Legendary Artifact Creature \u2014 Robot Turtle",
+  "a_played": 7,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.55,
+  "a": "Brudiclad, Telchor Engineer",
+  "a_type": "Legendary Artifact Creature \u2014 Phyrexian Artificer",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 18,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.54,
-  "a": "Heritage Druid",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Woodland Mystic",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 11,
-  "b_played": 1
- },
- {
-  "score": 5.52,
-  "a": "Vampire Spawn",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 4,
-  "b_played": 13
- },
- {
-  "score": 5.52,
-  "a": "Songs of the Damned",
+  "a": "Display of Power",
   "a_type": "Instant",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 12,
-  "b_played": 3
+  "b": "Narset's Reversal",
+  "b_type": "Instant",
+  "a_played": 6,
+  "b_played": 57,
+  "coplayed": false
+ },
+ {
+  "score": 5.53,
+  "a": "Minotaur de Force",
+  "a_type": "Creature \u2014 Minotaur Performer",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.53,
+  "a": "Clachan Festival",
+  "a_type": "Kindred Enchantment \u2014 Kithkin",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 0,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.53,
+  "a": "Myojin of Cryptic Dreams",
+  "a_type": "Legendary Creature \u2014 Spirit",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 7,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.52,
-  "a": "Ghoulraiser",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Despoiler of Souls",
-  "b_type": "Creature \u2014 Horror",
+  "a": "Celestial Dawn",
+  "a_type": "Enchantment",
+  "b": "Stone-Seeder Hierophant",
+  "b_type": "Creature \u2014 Human Druid",
   "a_played": 3,
-  "b_played": 0
+  "b_played": 11,
+  "coplayed": false
  },
  {
   "score": 5.51,
-  "a": "Dispel",
-  "a_type": "Instant",
-  "b": "Nix",
-  "b_type": "Instant",
-  "a_played": 129,
-  "b_played": 0
- },
- {
-  "score": 5.49,
-  "a": "Mental Misstep",
-  "a_type": "Instant",
-  "b": "Cancel",
-  "b_type": "Instant",
-  "a_played": 107,
-  "b_played": 7
- },
- {
-  "score": 5.49,
-  "a": "Vampire Opportunist",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
+  "a": "Kithkeeper",
+  "a_type": "Creature \u2014 Elemental",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
   "a_played": 0,
-  "b_played": 13
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.49,
+  "a": "Familiar Beeble Mascot",
+  "a_type": "Stickers",
+  "b": "Thousand-Year Elixir",
+  "b_type": "Artifact",
+  "a_played": 0,
+  "b_played": 42,
+  "coplayed": false
  },
  {
   "score": 5.48,
-  "a": "Vengeful Dead",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 10,
-  "b_played": 3
- },
- {
-  "score": 5.47,
-  "a": "Rotten Reunion",
-  "a_type": "Instant",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 13,
-  "b_played": 3
- },
- {
-  "score": 5.47,
-  "a": "Cruel Celebrant",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Queen's Bay Paladin",
-  "b_type": "Creature \u2014 Vampire Knight",
-  "a_played": 39,
-  "b_played": 0
+  "a": "Leech Bonder",
+  "a_type": "Creature \u2014 Merfolk Soldier",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 2,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.46,
-  "a": "Qutrub Forayer",
-  "a_type": "Creature \u2014 Zombie Horror",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 3
+  "a": "Feldon of the Third Path",
+  "a_type": "Legendary Creature \u2014 Human Artificer",
+  "b": "Neurok Replica",
+  "b_type": "Artifact Creature \u2014 Wizard",
+  "a_played": 33,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.46,
+  "a": "Machine God's Effigy",
+  "a_type": "Artifact",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 12,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.45,
-  "a": "Cremate",
-  "a_type": "Instant",
-  "b": "Shadow of the Grave",
-  "b_type": "Instant",
-  "a_played": 9,
-  "b_played": 3
+  "a": "Jetfire, Ingenious Scientist // Jetfire, Air Guardian",
+  "a_type": "Legendary Artifact Creature \u2014 Robot // Legendary Artifact \u2014 Vehicle",
+  "b": "Neurok Replica",
+  "b_type": "Artifact Creature \u2014 Wizard",
+  "a_played": 2,
+  "b_played": 0,
+  "coplayed": false
  },
  {
   "score": 5.44,
-  "a": "Blood Hustler",
-  "a_type": "Creature \u2014 Vampire Rogue",
-  "b": "Pulse Tracker",
-  "b_type": "Creature \u2014 Vampire Rogue",
+  "a": "Spellweaver Duo",
+  "a_type": "Creature \u2014 Human Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
   "a_played": 0,
-  "b_played": 6
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.44,
+  "a": "Fain, the Broker",
+  "a_type": "Legendary Creature \u2014 Human Warlock",
+  "b": "Magnanimous Magistrate",
+  "b_type": "Creature \u2014 Human Advisor",
+  "a_played": 18,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.44,
+  "a": "Ghired, Mirror of the Wilds",
+  "a_type": "Legendary Creature \u2014 Human Shaman",
+  "b": "Riptide Chronologist",
+  "b_type": "Creature \u2014 Human Wizard",
+  "a_played": 4,
+  "b_played": 0,
+  "coplayed": false
  },
  {
   "score": 5.43,
-  "a": "Mental Misstep",
-  "a_type": "Instant",
-  "b": "Last Word",
-  "b_type": "Instant",
-  "a_played": 107,
-  "b_played": 1
+  "a": "Earthcraft",
+  "a_type": "Enchantment",
+  "b": "Wakeroot Elemental",
+  "b_type": "Creature \u2014 Elemental",
+  "a_played": 13,
+  "b_played": 1,
+  "coplayed": false
  },
  {
-  "score": 5.4,
-  "a": "Exsanguinator Cavalry",
-  "a_type": "Creature \u2014 Vampire Knight",
-  "b": "Pulse Tracker",
-  "b_type": "Creature \u2014 Vampire Rogue",
-  "a_played": 6,
-  "b_played": 6
- },
- {
-  "score": 5.4,
-  "a": "Vindictive Vampire",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Pulse Tracker",
-  "b_type": "Creature \u2014 Vampire Rogue",
-  "a_played": 9,
-  "b_played": 6
- },
- {
-  "score": 5.4,
-  "a": "Noxious Ghoul",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
+  "score": 5.42,
+  "a": "Back to Basics",
+  "a_type": "Enchantment",
+  "b": "Benthic Explorers",
+  "b_type": "Creature \u2014 Merfolk Scout",
   "a_played": 14,
-  "b_played": 3
+  "b_played": 1,
+  "coplayed": false
  },
  {
-  "score": 5.39,
-  "a": "Nocturnal Feeder",
-  "a_type": "Creature \u2014 Vampire Rogue",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 1,
-  "b_played": 13
+  "score": 5.41,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Grakmaw, Skyclave Ravager",
+  "b_type": "Legendary Creature \u2014 Hydra Horror",
+  "a_played": 3,
+  "b_played": 1,
+  "coplayed": false
  },
  {
-  "score": 5.39,
-  "a": "Hungry Ghoul",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 0,
-  "b_played": 3
- },
- {
-  "score": 5.37,
-  "a": "Rofellos, Llanowar Emissary",
-  "a_type": "Legendary Creature \u2014 Elf Druid",
-  "b": "Woodland Mystic",
-  "b_type": "Creature \u2014 Elf Druid",
+  "score": 5.41,
+  "a": "Ghired, Mirror of the Wilds",
+  "a_type": "Legendary Creature \u2014 Human Shaman",
+  "b": "Teardrop Kami",
+  "b_type": "Creature \u2014 Spirit",
   "a_played": 4,
-  "b_played": 1
+  "b_played": 2,
+  "coplayed": false
+ },
+ {
+  "score": 5.41,
+  "a": "The Enigma Jewel // Locus of Enlightenment",
+  "a_type": "Legendary Artifact // Legendary Artifact",
+  "b": "Stone-Seeder Hierophant",
+  "b_type": "Creature \u2014 Human Druid",
+  "a_played": 9,
+  "b_played": 11,
+  "coplayed": false
+ },
+ {
+  "score": 5.41,
+  "a": "Order of Whiteclay",
+  "a_type": "Creature \u2014 Kithkin Cleric",
+  "b": "Neurok Replica",
+  "b_type": "Artifact Creature \u2014 Wizard",
+  "a_played": 3,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.4,
+  "a": "Esika's Chariot",
+  "a_type": "Legendary Artifact \u2014 Vehicle",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 58,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.4,
+  "a": "Builder's Talent",
+  "a_type": "Enchantment \u2014 Class",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 3,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.39,
+  "a": "Saint Traft and Rem Karolus",
+  "a_type": "Legendary Creature \u2014 Spirit Human",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 2,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.38,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Arcee, Sharpshooter // Arcee, Acrobatic Coupe",
+  "b_type": "Legendary Artifact Creature \u2014 Robot // Legendary Artifact \u2014 Vehicle",
+  "a_played": 3,
+  "b_played": 2,
+  "coplayed": false
  },
  {
   "score": 5.37,
-  "a": "Heritage Druid",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Leaf Gilder",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 11,
-  "b_played": 2
+  "a": "Keeper of the Beasts",
+  "a_type": "Creature \u2014 Human Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 0,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.36,
-  "a": "Mental Misstep",
-  "a_type": "Instant",
-  "b": "Force Spike",
-  "b_type": "Instant",
-  "a_played": 107,
-  "b_played": 14
+  "a": "Kemba, Kha Enduring",
+  "a_type": "Legendary Creature \u2014 Cat Cleric",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 2,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.36,
-  "a": "High-Society Hunter",
-  "a_type": "Creature \u2014 Vampire Noble",
-  "b": "Queen's Bay Paladin",
-  "b_type": "Creature \u2014 Vampire Knight",
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Sparring Construct",
+  "b_type": "Artifact Creature \u2014 Construct",
   "a_played": 3,
-  "b_played": 0
+  "b_played": 0,
+  "coplayed": false
  },
  {
   "score": 5.36,
-  "a": "Bishop of the Bloodstained",
-  "a_type": "Creature \u2014 Vampire Cleric",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 3,
-  "b_played": 13
+  "a": "Mistmeadow Vanisher",
+  "a_type": "Creature \u2014 Kithkin Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.35,
-  "a": "Stronghold Assassin",
-  "a_type": "Creature \u2014 Phyrexian Zombie Assassin",
-  "b": "Liliana's Elite",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 5,
-  "b_played": 2
- },
- {
-  "score": 5.34,
-  "a": "Heritage Druid",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Fyndhorn Elder",
-  "b_type": "Creature \u2014 Elf Druid",
+  "a": "Stone-Seeder Hierophant",
+  "a_type": "Creature \u2014 Human Druid",
+  "b": "Prismatic Omen",
+  "b_type": "Enchantment",
   "a_played": 11,
-  "b_played": 2
+  "b_played": 12,
+  "coplayed": false
  },
  {
-  "score": 5.34,
-  "a": "Heritage Druid",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Greenweaver Druid",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 11,
-  "b_played": 2
- },
- {
-  "score": 5.34,
-  "a": "Tithe Drinker",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 9,
-  "b_played": 13
- },
- {
-  "score": 5.34,
-  "a": "Undead Augur",
-  "a_type": "Creature \u2014 Zombie Wizard",
-  "b": "Maggot Carrier",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 27,
-  "b_played": 1
+  "score": 5.35,
+  "a": "Magnanimous Magistrate",
+  "a_type": "Creature \u2014 Human Advisor",
+  "b": "Zodiark, Umbral God",
+  "b_type": "Legendary Creature \u2014 God",
+  "a_played": 0,
+  "b_played": 4,
+  "coplayed": false
  },
  {
   "score": 5.33,
-  "a": "Vengeant Vampire",
-  "a_type": "Creature \u2014 Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 0,
-  "b_played": 13
+  "a": "Deekah, Fractal Theorist",
+  "a_type": "Legendary Creature \u2014 Human Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 12,
+  "b_played": 1,
+  "coplayed": false
  },
  {
-  "score": 5.32,
-  "a": "Heritage Druid",
+  "score": 5.33,
+  "a": "Renet, Temporal Apprentice",
+  "a_type": "Legendary Creature \u2014 Human Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.33,
+  "a": "Brigid, Clachan's Heart // Brigid, Doun's Mind",
+  "a_type": "Legendary Creature \u2014 Kithkin Warrior // Legendary Creature \u2014 Kithkin Soldier",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 8,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.33,
+  "a": "Joiner Adept",
   "a_type": "Creature \u2014 Elf Druid",
-  "b": "Wirewood Elf",
-  "b_type": "Creature \u2014 Elf Druid",
-  "a_played": 11,
-  "b_played": 1
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.32,
-  "a": "Glittering Frost",
-  "a_type": "Snow Enchantment \u2014 Aura",
-  "b": "Lush Growth",
-  "b_type": "Enchantment \u2014 Aura",
+  "a": "Dualcaster Mage",
+  "a_type": "Creature \u2014 Human Wizard",
+  "b": "Narset's Reversal",
+  "b_type": "Instant",
+  "a_played": 32,
+  "b_played": 57,
+  "coplayed": true
+ },
+ {
+  "score": 5.32,
+  "a": "Skyclave Shadowcat",
+  "a_type": "Creature \u2014 Cat Horror",
+  "b": "Myr Scrapling",
+  "b_type": "Artifact Creature \u2014 Myr",
   "a_played": 2,
-  "b_played": 0
+  "b_played": 3,
+  "coplayed": false
  },
  {
   "score": 5.32,
-  "a": "Ghastly Remains",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
+  "a": "Fain, the Broker",
+  "a_type": "Legendary Creature \u2014 Human Warlock",
+  "b": "Solid Ground",
+  "b_type": "Enchantment",
+  "a_played": 18,
+  "b_played": 3,
+  "coplayed": false
+ },
+ {
+  "score": 5.32,
+  "a": "Magnanimous Magistrate",
+  "a_type": "Creature \u2014 Human Advisor",
+  "b": "Bartolom\u00e9 del Presidio",
+  "b_type": "Legendary Creature \u2014 Vampire Knight",
   "a_played": 0,
-  "b_played": 3
+  "b_played": 32,
+  "coplayed": false
  },
  {
-  "score": 5.31,
-  "a": "Lich",
-  "a_type": "Enchantment",
-  "b": "Queen's Bay Paladin",
-  "b_type": "Creature \u2014 Vampire Knight",
-  "a_played": 1,
-  "b_played": 0
+  "score": 5.32,
+  "a": "Goblin Marshal",
+  "a_type": "Creature \u2014 Goblin Warrior",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 0,
+  "b_played": 1,
+  "coplayed": false
  },
  {
-  "score": 5.31,
-  "a": "Festering Mummy",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Unbreathing Horde",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 6,
-  "b_played": 3
- },
- {
-  "score": 5.29,
-  "a": "Skymarch Bloodletter",
-  "a_type": "Creature \u2014 Vampire Soldier",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
+  "score": 5.32,
+  "a": "Jetfire, Ingenious Scientist // Jetfire, Air Guardian",
+  "a_type": "Legendary Artifact Creature \u2014 Robot // Legendary Artifact \u2014 Vehicle",
+  "b": "Gigastorm Titan",
+  "b_type": "Creature \u2014 Elemental",
   "a_played": 2,
-  "b_played": 13
+  "b_played": 1,
+  "coplayed": false
  },
  {
-  "score": 5.29,
-  "a": "Dispel",
-  "a_type": "Instant",
-  "b": "Minor Misstep",
-  "b_type": "Instant",
-  "a_played": 129,
-  "b_played": 4
+  "score": 5.31,
+  "a": "Kelpie Guide",
+  "a_type": "Creature \u2014 Beast",
+  "b": "Deep Water",
+  "b_type": "Enchantment",
+  "a_played": 13,
+  "b_played": 0,
+  "coplayed": false
  },
  {
-  "score": 5.29,
-  "a": "Counterspell",
-  "a_type": "Instant",
-  "b": "Nix",
-  "b_type": "Instant",
-  "a_played": 558,
-  "b_played": 0
- },
- {
-  "score": 5.29,
-  "a": "Cryptbreaker",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Liliana's Elite",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 21,
-  "b_played": 2
- },
- {
-  "score": 5.28,
-  "a": "Silversmote Ghoul",
-  "a_type": "Creature \u2014 Zombie Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
-  "a_played": 11,
-  "b_played": 13
- },
- {
-  "score": 5.28,
-  "a": "Tainted Adversary",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Festering Mummy",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 6,
-  "b_played": 6
- },
- {
-  "score": 5.28,
-  "a": "Phyrexian Delver",
-  "a_type": "Creature \u2014 Phyrexian Zombie",
-  "b": "Liliana's Elite",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 16,
-  "b_played": 2
- },
- {
-  "score": 5.27,
-  "a": "Fade from Memory",
-  "a_type": "Instant",
-  "b": "Coffin Purge",
-  "b_type": "Instant",
+  "score": 5.31,
+  "a": "Ashnod's Transmogrant",
+  "a_type": "Artifact",
+  "b": "Magnanimous Magistrate",
+  "b_type": "Creature \u2014 Human Advisor",
   "a_played": 1,
-  "b_played": 3
+  "b_played": 0,
+  "coplayed": false
  },
  {
-  "score": 5.27,
-  "a": "Blood Host",
+  "score": 5.3,
+  "a": "Bloodflow Connoisseur",
   "a_type": "Creature \u2014 Vampire",
-  "b": "Vein Ripper",
-  "b_type": "Creature \u2014 Vampire Assassin",
+  "b": "Magnanimous Magistrate",
+  "b_type": "Creature \u2014 Human Advisor",
+  "a_played": 4,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.3,
+  "a": "Freed from the Real",
+  "a_type": "Enchantment \u2014 Aura",
+  "b": "Thousand-Year Elixir",
+  "b_type": "Artifact",
+  "a_played": 25,
+  "b_played": 42,
+  "coplayed": true
+ },
+ {
+  "score": 5.3,
+  "a": "Myr Scrapling",
+  "a_type": "Artifact Creature \u2014 Myr",
+  "b": "Yuna, Grand Summoner",
+  "b_type": "Legendary Creature \u2014 Human Cleric",
+  "a_played": 3,
+  "b_played": 16,
+  "coplayed": false
+ },
+ {
+  "score": 5.3,
+  "a": "Jinnie Fay, Jetmir's Second",
+  "a_type": "Legendary Creature \u2014 Elf Druid",
+  "b": "Steelfin Whale",
+  "b_type": "Creature \u2014 Whale",
+  "a_played": 7,
+  "b_played": 4,
+  "coplayed": false
+ },
+ {
+  "score": 5.29,
+  "a": "Seedborn Muse",
+  "a_type": "Creature \u2014 Spirit",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 74,
+  "b_played": 1,
+  "coplayed": true
+ },
+ {
+  "score": 5.29,
+  "a": "Shimatsu the Bloodcloaked",
+  "a_type": "Legendary Creature \u2014 Demon Spirit",
+  "b": "Idol of False Gods",
+  "b_type": "Kindred Artifact \u2014 Eldrazi",
   "a_played": 0,
-  "b_played": 13
+  "b_played": 9,
+  "coplayed": false
+ },
+ {
+  "score": 5.29,
+  "a": "Elvish Hydromancer",
+  "a_type": "Creature \u2014 Elf Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 0,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.29,
+  "a": "Exhibition Magician",
+  "a_type": "Creature \u2014 Human Wizard",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 0,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.28,
+  "a": "Fain, the Broker",
+  "a_type": "Legendary Creature \u2014 Human Warlock",
+  "b": "Case of the Filched Falcon",
+  "b_type": "Enchantment \u2014 Case",
+  "a_played": 18,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.28,
+  "a": "Hofri Ghostforge",
+  "a_type": "Legendary Creature \u2014 Dwarf Cleric",
+  "b": "Magnanimous Magistrate",
+  "b_type": "Creature \u2014 Human Advisor",
+  "a_played": 10,
+  "b_played": 0,
+  "coplayed": false
+ },
+ {
+  "score": 5.28,
+  "a": "Leafkin Druid",
+  "a_type": "Creature \u2014 Elemental Druid",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 10,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.26,
-  "a": "Mental Misstep",
-  "a_type": "Instant",
-  "b": "Disrupt",
+  "a": "Icebreaker Kraken",
+  "a_type": "Snow Creature \u2014 Kraken",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 5,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.26,
+  "a": "Prosperous Partnership",
+  "a_type": "Enchantment",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 11,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.25,
+  "a": "Rootha, Mercurial Artist",
+  "a_type": "Legendary Creature \u2014 Orc Shaman",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 2,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.25,
+  "a": "Ether",
+  "a_type": "Artifact",
+  "b": "Narset's Reversal",
   "b_type": "Instant",
-  "a_played": 107,
-  "b_played": 5
- },
- {
-  "score": 5.25,
-  "a": "Misinformation",
-  "a_type": "Instant",
-  "b": "Cremate",
-  "b_type": "Instant",
-  "a_played": 0,
-  "b_played": 9
- },
- {
-  "score": 5.25,
-  "a": "Negate",
-  "a_type": "Instant",
-  "b": "Nix",
-  "b_type": "Instant",
-  "a_played": 263,
-  "b_played": 0
- },
- {
-  "score": 5.25,
-  "a": "Carrion Feeder",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Unbreathing Horde",
-  "b_type": "Creature \u2014 Zombie",
-  "a_played": 76,
-  "b_played": 3
- },
- {
-  "score": 5.25,
-  "a": "Woodland Mystic",
-  "a_type": "Creature \u2014 Elf Druid",
-  "b": "Llanowar Druid",
-  "b_type": "Creature \u2014 Elf Druid",
   "a_played": 1,
-  "b_played": 3
+  "b_played": 57,
+  "coplayed": false
+ },
+ {
+  "score": 5.25,
+  "a": "Breaching Hippocamp",
+  "a_type": "Creature \u2014 Horse Fish",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 1,
+  "b_played": 1,
+  "coplayed": false
+ },
+ {
+  "score": 5.25,
+  "a": "Prowl, Stoic Strategist // Prowl, Pursuit Vehicle",
+  "a_type": "Legendary Artifact Creature \u2014 Robot // Legendary Artifact \u2014 Vehicle",
+  "b": "Dynaheir, Invoker Adept",
+  "b_type": "Legendary Creature \u2014 Human Wizard",
+  "a_played": 2,
+  "b_played": 1,
+  "coplayed": false
  },
  {
   "score": 5.24,
-  "a": "Wild Growth",
-  "a_type": "Enchantment \u2014 Aura",
-  "b": "Living Lands",
-  "b_type": "Enchantment",
-  "a_played": 131,
-  "b_played": 1
- },
- {
-  "score": 5.24,
-  "a": "Undead Servant",
-  "a_type": "Creature \u2014 Zombie",
-  "b": "Wight of Precinct Six",
-  "b_type": "Creature \u2014 Zombie",
+  "a": "Mistcaller",
+  "a_type": "Creature \u2014 Merfolk Wizard",
+  "b": "Neurok Replica",
+  "b_type": "Artifact Creature \u2014 Wizard",
   "a_played": 1,
-  "b_played": 3
+  "b_played": 0,
+  "coplayed": false
  }
 ]
