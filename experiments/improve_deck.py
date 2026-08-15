@@ -19,6 +19,9 @@ required, decks live in ~/.forge/decks/constructed, ~2.6 s/game.
 from __future__ import annotations
 
 import argparse
+import functools
+
+print = functools.partial(__builtins__.print if not isinstance(__builtins__, dict) else print, flush=True)
 import json
 import math
 import re
@@ -216,7 +219,10 @@ def run_match(deck_a: str, deck_b: str, games: int, timeout_s: int):
     except subprocess.TimeoutExpired as exc:
         out = (exc.stdout or b"").decode("utf-8", "replace") if isinstance(exc.stdout, bytes) \
             else (exc.stdout or "")
-    wins_a = len(re.findall(rf"Ai\(1\)-{re.escape(deck_a)} has won", out))
+    # Count only "Game Result" lines: Forge also prints "Game Outcome"
+    # win lines, which double-counts if matched naively.
+    wins_a = len(re.findall(
+        rf"Game Result.*Ai\(1\)-{re.escape(deck_a)} has won", out))
     done = len(re.findall(r"Game Result", out))
     return wins_a, done
 
@@ -244,7 +250,7 @@ def evaluate(variants, gauntlet_names, games_each, workers=2):
 def ci95(wins, games):
     if games == 0:
         return 0.0, 0.0
-    p = wins / games
+    p = min(1.0, wins / games)
     half = 1.96 * math.sqrt(p * (1 - p) / games)
     return p, half
 
