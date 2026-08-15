@@ -266,6 +266,10 @@ def main():
     ap.add_argument("--finalists", type=int, default=3)
     ap.add_argument("--lock", action="append", default=[],
                     help="card that must not be cut (repeatable)")
+    ap.add_argument("--try", dest="tries", action="append", default=[],
+                    help='user swap to test, e.g. "3 Crypt Ghast" (repeatable)')
+    ap.add_argument("--h2h", type=int, default=0,
+                    help="head-to-head games: each variant vs base directly")
     args = ap.parse_args()
 
     imp = Improver(args.format)
@@ -324,6 +328,45 @@ def main():
         write_dck(vname, newpairs)
         variant_swaps[vname] = (cut, add, qty)
 
+    # user-specified substitutions: cut the weakest unlocked slots to fit
+    nonland_rows = {r: q for r, q in deck.items() if not imp.is_land[r]}
+    centroid = sum(imp.vecs[r] * q for r, q in nonland_rows.items())
+    centroid /= max(np.linalg.norm(centroid), 1e-9)
+
+    def cut_order():
+        return sorted(
+            (r for r in nonland_rows if norm(imp.meta[r]["name"]) not in locked),
+            key=lambda r: float(imp.vecs[r] @ centroid)
+                + presence.get(r, 0) / max(max(presence.values(), default=1), 1e-9))
+
+    for ti, spec in enumerate(args.tries):
+        m = re.match(r"\s*(\d+)?\s*[xX]?\s*(.+?)\s*$", spec)
+        qty, cardname = int(m.group(1) or 4), m.group(2)
+        row = imp.name_to_row.get(norm(cardname))
+        if row is None or not imp.playable(row):
+            print(f"cannot test {cardname!r}: not found or not Forge-playable")
+            continue
+        pairs = list(deck_pairs)
+        removed, need = [], qty
+        for r in cut_order():
+            if need <= 0:
+                break
+            have = dict(pairs).get(imp.meta[r]["name"], 0)
+            take = min(have, need)
+            if take <= 0:
+                continue
+            pairs = [(n, q - take if norm(n) == norm(imp.meta[r]["name"]) else q)
+                     for n, q in pairs]
+            pairs = [(n, q) for n, q in pairs if q > 0]
+            removed.append(f"-{take} {imp.meta[r]['name']}")
+            need -= take
+        pairs.append((imp.meta[row]["name"], qty))
+        vname = f"try_{ti}"
+        write_dck(vname, pairs)
+        variant_swaps[vname] = (None, row, qty)
+        print(f"user variant {vname}: +{qty} {imp.meta[row]['name']} "
+              f"({', '.join(removed)})")
+
     print(f"\nstage 1: {len(variant_swaps)} variants x {len(gnames)} gauntlet "
           f"x {args.stage1} games")
     s1 = evaluate(list(variant_swaps), gnames, args.stage1)
@@ -332,10 +375,26 @@ def main():
     for v, (w, n) in ranked:
         print(f"  {v:<8} {w}/{n}  ({w/max(n,1):.0%})")
 
-    finalists = [v for v, _ in ranked if v != "base"][:args.finalists]
-    stage2_set = ["base"] + finalists
-    print(f"\nstage 2: {len(stage2_set)} variants x {len(gnames)} x {args.stage2} games")
-    s2 = evaluate(stage2_set, gnames, args.stage2)
+    if args.stage2 > 0:
+        finalists = [v for v, _ in ranked if v != "base"][:args.finalists]
+        stage2_set = ["base"] + finalists
+        print(f"\nstage 2: {len(stage2_set)} variants x {len(gnames)} x {args.stage2} games")
+        s2 = evaluate(stage2_set, gnames, args.stage2)
+    else:
+        stage2_set = list(variant_swaps)
+        s2 = {v: (0, 0) for v in stage2_set}
+
+    h2h = {}
+    if args.h2h > 0:
+        others = [v for v in variant_swaps if v != "base"]
+        print(f"\nhead-to-head: {len(others)} variants x {args.h2h} games vs base")
+        jobs = others
+        timeout_s = 90 + 25 * args.h2h
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            for v, (w, n) in zip(jobs, pool.map(
+                    lambda v: run_match(v, "base", args.h2h, timeout_s), jobs)):
+                h2h[v] = (w, n)
+                print(f"  {v} vs base: {w}/{n}")
 
     # combine stages for the final estimate
     report = []
@@ -347,7 +406,14 @@ def main():
                  "winrate": round(p, 3), "ci95": round(half, 3)}
         if variant_swaps[v]:
             cut, add, qty = variant_swaps[v]
-            entry["swap"] = f"-{qty} {imp.meta[cut]['name']} +{qty} {imp.meta[add]['name']}"
+            if cut is None:
+                entry["swap"] = f"+{qty} {imp.meta[add]['name']} (user)"
+            else:
+                entry["swap"] = f"-{qty} {imp.meta[cut]['name']} +{qty} {imp.meta[add]['name']}"
+        if v in h2h:
+            hw, hn = h2h[v]
+            hp, hh = ci95(hw, hn)
+            entry["h2h_vs_base"] = f"{hw}/{hn} ({hp:.0%} ±{hh:.0%})"
         report.append(entry)
 
     base_p = next(e["winrate"] for e in report if e["variant"] == "base")
@@ -355,8 +421,9 @@ def main():
     for e in sorted(report, key=lambda e: -e["winrate"]):
         delta = e["winrate"] - base_p
         swap = e.get("swap", "(baseline)")
+        h2h_note = f"   h2h vs base: {e['h2h_vs_base']}" if "h2h_vs_base" in e else ""
         print(f"  {e['winrate']:.1%} ±{e['ci95']:.1%}  ({delta:+.1%})  {swap}"
-              f"   [{e['wins']}/{e['games']}]")
+              f"   [{e['wins']}/{e['games']}]{h2h_note}")
 
     out = OUT / f"improve-report-{Path(args.deck).stem}.json"
     out.write_text(json.dumps({"format": args.format, "deck": args.deck,
