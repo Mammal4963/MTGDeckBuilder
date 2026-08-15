@@ -1,0 +1,902 @@
+[
+ {
+  "score": 6.53,
+  "a": "Queen's Bay Paladin",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 0,
+  "b_played": 13
+ },
+ {
+  "score": 6.49,
+  "a": "Wild Growth",
+  "a_type": "Enchantment \u2014 Aura",
+  "b": "Lush Growth",
+  "b_type": "Enchantment \u2014 Aura",
+  "a_played": 131,
+  "b_played": 0
+ },
+ {
+  "score": 6.43,
+  "a": "Crypt Creeper",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 6.29,
+  "a": "Lush Growth",
+  "a_type": "Enchantment \u2014 Aura",
+  "b": "Overgrowth",
+  "b_type": "Enchantment \u2014 Aura",
+  "a_played": 0,
+  "b_played": 25
+ },
+ {
+  "score": 6.27,
+  "a": "Queen's Bay Paladin",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Pulse Tracker",
+  "b_type": "Creature \u2014 Vampire Rogue",
+  "a_played": 0,
+  "b_played": 6
+ },
+ {
+  "score": 6.26,
+  "a": "Crypt Creeper",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Liliana's Elite",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 2
+ },
+ {
+  "score": 6.23,
+  "a": "Elvish Guidance",
+  "a_type": "Enchantment \u2014 Aura",
+  "b": "Lush Growth",
+  "b_type": "Enchantment \u2014 Aura",
+  "a_played": 6,
+  "b_played": 0
+ },
+ {
+  "score": 6.18,
+  "a": "Blood Artist",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Queen's Bay Paladin",
+  "b_type": "Creature \u2014 Vampire Knight",
+  "a_played": 129,
+  "b_played": 0
+ },
+ {
+  "score": 6.14,
+  "a": "Queen's Bay Paladin",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Sanctum Seeker",
+  "b_type": "Creature \u2014 Vampire Knight",
+  "a_played": 0,
+  "b_played": 23
+ },
+ {
+  "score": 6.08,
+  "a": "Crypt Creeper",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Ghoulraiser",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 6.07,
+  "a": "Crypt Creeper",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Lord of the Undead",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 14
+ },
+ {
+  "score": 6.02,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Festering Mummy",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 6
+ },
+ {
+  "score": 6.01,
+  "a": "Vicious Conquistador",
+  "a_type": "Creature \u2014 Vampire Soldier",
+  "b": "Queen's Bay Paladin",
+  "b_type": "Creature \u2014 Vampire Knight",
+  "a_played": 4,
+  "b_played": 0
+ },
+ {
+  "score": 5.99,
+  "a": "Famished Ghoul",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 5.97,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Relentless Dead",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 11
+ },
+ {
+  "score": 5.94,
+  "a": "Queen's Bay Paladin",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Kalitas, Traitor of Ghet",
+  "b_type": "Legendary Creature \u2014 Vampire Warrior",
+  "a_played": 0,
+  "b_played": 12
+ },
+ {
+  "score": 5.92,
+  "a": "Wild Growth",
+  "a_type": "Enchantment \u2014 Aura",
+  "b": "Living Terrain",
+  "b_type": "Enchantment \u2014 Aura",
+  "a_played": 131,
+  "b_played": 0
+ },
+ {
+  "score": 5.91,
+  "a": "Cackling Fiend",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 5.87,
+  "a": "Queen's Bay Paladin",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Vermin Gorger",
+  "b_type": "Creature \u2014 Vampire",
+  "a_played": 0,
+  "b_played": 2
+ },
+ {
+  "score": 5.84,
+  "a": "Queen's Bay Paladin",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Master of Dark Rites",
+  "b_type": "Creature \u2014 Vampire Cleric",
+  "a_played": 0,
+  "b_played": 12
+ },
+ {
+  "score": 5.79,
+  "a": "Gluttonous Guest",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 1,
+  "b_played": 13
+ },
+ {
+  "score": 5.78,
+  "a": "Vampire Neonate",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 1,
+  "b_played": 13
+ },
+ {
+  "score": 5.76,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Zombie Mob",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 0
+ },
+ {
+  "score": 5.74,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Gempalm Polluter",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 7
+ },
+ {
+  "score": 5.74,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Whipstitched Zombie",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 0
+ },
+ {
+  "score": 5.74,
+  "a": "Crypt Creeper",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Fade from Memory",
+  "b_type": "Instant",
+  "a_played": 0,
+  "b_played": 1
+ },
+ {
+  "score": 5.74,
+  "a": "Yixlid Jailer",
+  "a_type": "Creature \u2014 Zombie Wizard",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 5.74,
+  "a": "Queen's Bay Paladin",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Kalastria Highborn",
+  "b_type": "Creature \u2014 Vampire Shaman",
+  "a_played": 0,
+  "b_played": 6
+ },
+ {
+  "score": 5.74,
+  "a": "Glass-Cast Heart",
+  "a_type": "Artifact",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 7,
+  "b_played": 13
+ },
+ {
+  "score": 5.73,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Zombie Cannibal",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 0
+ },
+ {
+  "score": 5.73,
+  "a": "Dusk Legion Zealot",
+  "a_type": "Creature \u2014 Vampire Soldier",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 21,
+  "b_played": 13
+ },
+ {
+  "score": 5.72,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Cyclopean Mummy",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 0
+ },
+ {
+  "score": 5.71,
+  "a": "Sanguine Syphoner",
+  "a_type": "Creature \u2014 Vampire Warlock",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 3,
+  "b_played": 13
+ },
+ {
+  "score": 5.69,
+  "a": "Wight of Precinct Six",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Maggot Carrier",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 3,
+  "b_played": 1
+ },
+ {
+  "score": 5.69,
+  "a": "Scarab Feast",
+  "a_type": "Instant",
+  "b": "Cremate",
+  "b_type": "Instant",
+  "a_played": 0,
+  "b_played": 9
+ },
+ {
+  "score": 5.68,
+  "a": "Elvish Guidance",
+  "a_type": "Enchantment \u2014 Aura",
+  "b": "Prismatic Omen",
+  "b_type": "Enchantment",
+  "a_played": 6,
+  "b_played": 11
+ },
+ {
+  "score": 5.67,
+  "a": "Crypt Creeper",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Gravecrawler",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 49
+ },
+ {
+  "score": 5.67,
+  "a": "Vengeful Bloodwitch",
+  "a_type": "Creature \u2014 Vampire Warlock",
+  "b": "Queen's Bay Paladin",
+  "b_type": "Creature \u2014 Vampire Knight",
+  "a_played": 18,
+  "b_played": 0
+ },
+ {
+  "score": 5.66,
+  "a": "Susurian Voidborn",
+  "a_type": "Creature \u2014 Vampire Soldier",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 5,
+  "b_played": 13
+ },
+ {
+  "score": 5.63,
+  "a": "Mental Misstep",
+  "a_type": "Instant",
+  "b": "Nix",
+  "b_type": "Instant",
+  "a_played": 107,
+  "b_played": 0
+ },
+ {
+  "score": 5.61,
+  "a": "Joiner Adept",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Priest of Titania",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 1,
+  "b_played": 67
+ },
+ {
+  "score": 5.57,
+  "a": "Mephitic Draught",
+  "a_type": "Artifact",
+  "b": "Witch's Cauldron",
+  "b_type": "Artifact",
+  "a_played": 7,
+  "b_played": 6
+ },
+ {
+  "score": 5.57,
+  "a": "Acolyte of Aclazotz",
+  "a_type": "Creature \u2014 Vampire Cleric",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 1,
+  "b_played": 13
+ },
+ {
+  "score": 5.57,
+  "a": "Joiner Adept",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Llanowar Elves",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 1,
+  "b_played": 398
+ },
+ {
+  "score": 5.57,
+  "a": "Joiner Adept",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Fyndhorn Elves",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 1,
+  "b_played": 114
+ },
+ {
+  "score": 5.57,
+  "a": "Joiner Adept",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Elvish Mystic",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 1,
+  "b_played": 200
+ },
+ {
+  "score": 5.55,
+  "a": "Mental Misstep",
+  "a_type": "Instant",
+  "b": "Flash Counter",
+  "b_type": "Instant",
+  "a_played": 107,
+  "b_played": 0
+ },
+ {
+  "score": 5.55,
+  "a": "Grim Physician",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 1,
+  "b_played": 3
+ },
+ {
+  "score": 5.54,
+  "a": "Shadowfeed",
+  "a_type": "Instant",
+  "b": "Cremate",
+  "b_type": "Instant",
+  "a_played": 0,
+  "b_played": 9
+ },
+ {
+  "score": 5.54,
+  "a": "Heritage Druid",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Woodland Mystic",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 11,
+  "b_played": 1
+ },
+ {
+  "score": 5.52,
+  "a": "Vampire Spawn",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 4,
+  "b_played": 13
+ },
+ {
+  "score": 5.52,
+  "a": "Songs of the Damned",
+  "a_type": "Instant",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 12,
+  "b_played": 3
+ },
+ {
+  "score": 5.52,
+  "a": "Ghoulraiser",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Despoiler of Souls",
+  "b_type": "Creature \u2014 Horror",
+  "a_played": 3,
+  "b_played": 0
+ },
+ {
+  "score": 5.51,
+  "a": "Dispel",
+  "a_type": "Instant",
+  "b": "Nix",
+  "b_type": "Instant",
+  "a_played": 129,
+  "b_played": 0
+ },
+ {
+  "score": 5.49,
+  "a": "Mental Misstep",
+  "a_type": "Instant",
+  "b": "Cancel",
+  "b_type": "Instant",
+  "a_played": 107,
+  "b_played": 7
+ },
+ {
+  "score": 5.49,
+  "a": "Vampire Opportunist",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 0,
+  "b_played": 13
+ },
+ {
+  "score": 5.48,
+  "a": "Vengeful Dead",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 10,
+  "b_played": 3
+ },
+ {
+  "score": 5.47,
+  "a": "Rotten Reunion",
+  "a_type": "Instant",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 13,
+  "b_played": 3
+ },
+ {
+  "score": 5.47,
+  "a": "Cruel Celebrant",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Queen's Bay Paladin",
+  "b_type": "Creature \u2014 Vampire Knight",
+  "a_played": 39,
+  "b_played": 0
+ },
+ {
+  "score": 5.46,
+  "a": "Qutrub Forayer",
+  "a_type": "Creature \u2014 Zombie Horror",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 5.45,
+  "a": "Cremate",
+  "a_type": "Instant",
+  "b": "Shadow of the Grave",
+  "b_type": "Instant",
+  "a_played": 9,
+  "b_played": 3
+ },
+ {
+  "score": 5.44,
+  "a": "Blood Hustler",
+  "a_type": "Creature \u2014 Vampire Rogue",
+  "b": "Pulse Tracker",
+  "b_type": "Creature \u2014 Vampire Rogue",
+  "a_played": 0,
+  "b_played": 6
+ },
+ {
+  "score": 5.43,
+  "a": "Mental Misstep",
+  "a_type": "Instant",
+  "b": "Last Word",
+  "b_type": "Instant",
+  "a_played": 107,
+  "b_played": 1
+ },
+ {
+  "score": 5.4,
+  "a": "Exsanguinator Cavalry",
+  "a_type": "Creature \u2014 Vampire Knight",
+  "b": "Pulse Tracker",
+  "b_type": "Creature \u2014 Vampire Rogue",
+  "a_played": 6,
+  "b_played": 6
+ },
+ {
+  "score": 5.4,
+  "a": "Vindictive Vampire",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Pulse Tracker",
+  "b_type": "Creature \u2014 Vampire Rogue",
+  "a_played": 9,
+  "b_played": 6
+ },
+ {
+  "score": 5.4,
+  "a": "Noxious Ghoul",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 14,
+  "b_played": 3
+ },
+ {
+  "score": 5.39,
+  "a": "Nocturnal Feeder",
+  "a_type": "Creature \u2014 Vampire Rogue",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 1,
+  "b_played": 13
+ },
+ {
+  "score": 5.39,
+  "a": "Hungry Ghoul",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 5.37,
+  "a": "Rofellos, Llanowar Emissary",
+  "a_type": "Legendary Creature \u2014 Elf Druid",
+  "b": "Woodland Mystic",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 4,
+  "b_played": 1
+ },
+ {
+  "score": 5.37,
+  "a": "Heritage Druid",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Leaf Gilder",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 11,
+  "b_played": 2
+ },
+ {
+  "score": 5.36,
+  "a": "Mental Misstep",
+  "a_type": "Instant",
+  "b": "Force Spike",
+  "b_type": "Instant",
+  "a_played": 107,
+  "b_played": 14
+ },
+ {
+  "score": 5.36,
+  "a": "High-Society Hunter",
+  "a_type": "Creature \u2014 Vampire Noble",
+  "b": "Queen's Bay Paladin",
+  "b_type": "Creature \u2014 Vampire Knight",
+  "a_played": 3,
+  "b_played": 0
+ },
+ {
+  "score": 5.36,
+  "a": "Bishop of the Bloodstained",
+  "a_type": "Creature \u2014 Vampire Cleric",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 3,
+  "b_played": 13
+ },
+ {
+  "score": 5.35,
+  "a": "Stronghold Assassin",
+  "a_type": "Creature \u2014 Phyrexian Zombie Assassin",
+  "b": "Liliana's Elite",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 5,
+  "b_played": 2
+ },
+ {
+  "score": 5.34,
+  "a": "Heritage Druid",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Fyndhorn Elder",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 11,
+  "b_played": 2
+ },
+ {
+  "score": 5.34,
+  "a": "Heritage Druid",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Greenweaver Druid",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 11,
+  "b_played": 2
+ },
+ {
+  "score": 5.34,
+  "a": "Tithe Drinker",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 9,
+  "b_played": 13
+ },
+ {
+  "score": 5.34,
+  "a": "Undead Augur",
+  "a_type": "Creature \u2014 Zombie Wizard",
+  "b": "Maggot Carrier",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 27,
+  "b_played": 1
+ },
+ {
+  "score": 5.33,
+  "a": "Vengeant Vampire",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 0,
+  "b_played": 13
+ },
+ {
+  "score": 5.32,
+  "a": "Heritage Druid",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Wirewood Elf",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 11,
+  "b_played": 1
+ },
+ {
+  "score": 5.32,
+  "a": "Glittering Frost",
+  "a_type": "Snow Enchantment \u2014 Aura",
+  "b": "Lush Growth",
+  "b_type": "Enchantment \u2014 Aura",
+  "a_played": 2,
+  "b_played": 0
+ },
+ {
+  "score": 5.32,
+  "a": "Ghastly Remains",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 0,
+  "b_played": 3
+ },
+ {
+  "score": 5.31,
+  "a": "Lich",
+  "a_type": "Enchantment",
+  "b": "Queen's Bay Paladin",
+  "b_type": "Creature \u2014 Vampire Knight",
+  "a_played": 1,
+  "b_played": 0
+ },
+ {
+  "score": 5.31,
+  "a": "Festering Mummy",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Unbreathing Horde",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 6,
+  "b_played": 3
+ },
+ {
+  "score": 5.29,
+  "a": "Skymarch Bloodletter",
+  "a_type": "Creature \u2014 Vampire Soldier",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 2,
+  "b_played": 13
+ },
+ {
+  "score": 5.29,
+  "a": "Dispel",
+  "a_type": "Instant",
+  "b": "Minor Misstep",
+  "b_type": "Instant",
+  "a_played": 129,
+  "b_played": 4
+ },
+ {
+  "score": 5.29,
+  "a": "Counterspell",
+  "a_type": "Instant",
+  "b": "Nix",
+  "b_type": "Instant",
+  "a_played": 558,
+  "b_played": 0
+ },
+ {
+  "score": 5.29,
+  "a": "Cryptbreaker",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Liliana's Elite",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 21,
+  "b_played": 2
+ },
+ {
+  "score": 5.28,
+  "a": "Silversmote Ghoul",
+  "a_type": "Creature \u2014 Zombie Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 11,
+  "b_played": 13
+ },
+ {
+  "score": 5.28,
+  "a": "Tainted Adversary",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Festering Mummy",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 6,
+  "b_played": 6
+ },
+ {
+  "score": 5.28,
+  "a": "Phyrexian Delver",
+  "a_type": "Creature \u2014 Phyrexian Zombie",
+  "b": "Liliana's Elite",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 16,
+  "b_played": 2
+ },
+ {
+  "score": 5.27,
+  "a": "Fade from Memory",
+  "a_type": "Instant",
+  "b": "Coffin Purge",
+  "b_type": "Instant",
+  "a_played": 1,
+  "b_played": 3
+ },
+ {
+  "score": 5.27,
+  "a": "Blood Host",
+  "a_type": "Creature \u2014 Vampire",
+  "b": "Vein Ripper",
+  "b_type": "Creature \u2014 Vampire Assassin",
+  "a_played": 0,
+  "b_played": 13
+ },
+ {
+  "score": 5.26,
+  "a": "Mental Misstep",
+  "a_type": "Instant",
+  "b": "Disrupt",
+  "b_type": "Instant",
+  "a_played": 107,
+  "b_played": 5
+ },
+ {
+  "score": 5.25,
+  "a": "Misinformation",
+  "a_type": "Instant",
+  "b": "Cremate",
+  "b_type": "Instant",
+  "a_played": 0,
+  "b_played": 9
+ },
+ {
+  "score": 5.25,
+  "a": "Negate",
+  "a_type": "Instant",
+  "b": "Nix",
+  "b_type": "Instant",
+  "a_played": 263,
+  "b_played": 0
+ },
+ {
+  "score": 5.25,
+  "a": "Carrion Feeder",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Unbreathing Horde",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 76,
+  "b_played": 3
+ },
+ {
+  "score": 5.25,
+  "a": "Woodland Mystic",
+  "a_type": "Creature \u2014 Elf Druid",
+  "b": "Llanowar Druid",
+  "b_type": "Creature \u2014 Elf Druid",
+  "a_played": 1,
+  "b_played": 3
+ },
+ {
+  "score": 5.24,
+  "a": "Wild Growth",
+  "a_type": "Enchantment \u2014 Aura",
+  "b": "Living Lands",
+  "b_type": "Enchantment",
+  "a_played": 131,
+  "b_played": 1
+ },
+ {
+  "score": 5.24,
+  "a": "Undead Servant",
+  "a_type": "Creature \u2014 Zombie",
+  "b": "Wight of Precinct Six",
+  "b_type": "Creature \u2014 Zombie",
+  "a_played": 1,
+  "b_played": 3
+ }
+]

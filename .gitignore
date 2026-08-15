@@ -17,3 +17,4 @@ experiments/output/*.npz
 
 # Committed map artifacts (small, regenerable but useful)
 !experiments/output/coords.npy
+!experiments/output/pair_model.npz

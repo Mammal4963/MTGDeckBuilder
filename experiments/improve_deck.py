@@ -139,13 +139,72 @@ class Improver:
                     presence[r] += w
         return nonland, centroid, sims, neighbors, presence
 
+    def _load_brew_assets(self):
+        if hasattr(self, "_cmd_vecs"):
+            return
+        self._cmd_vecs = np.load(OUT / "covectors-cmd.npy")
+        cv = json.loads((OUT / "covocab-cmd.json").read_text())
+        self._cmd_freq = {int(k): v for k, v in cv["deck_freq"].items()}
+        pm = np.load(OUT / "pair_model.npz")
+        emb = np.load(OUT / "embeddings.npy").astype(np.float32)
+        self._pm_P = emb @ pm["A"].T      # [n, rank]
+        self._pm_Q = emb @ pm["B"].T
+        self._pm_bias = float(pm["bias"][0])
+
     def rank_adds(self, deck: dict, top: int, version: str = "v2",
                   exclude=None):
-        """Ranked candidate additions. v1 = presence+centroid (nearest
-        blueprint). v2 = lift + core synergy + gap residual - redundancy."""
+        """Ranked candidate additions.
+        v1 = presence+centroid (archetype completion; benchmark-validated)
+        v2 = lift + core synergy + gap residual - redundancy
+        brew = commander-space core partners + trained pair-synergy model
+        auto = v1 when the deck is near known archetypes, else brew."""
         nonland, centroid, sims, neighbors, presence = self._neighborhood(
             deck, exclude)
         max_p = max(presence.values()) if presence else 1.0
+
+        if version == "auto":
+            max_sim = float(sims.max()) if len(sims) else 0.0
+            version = "v1" if max_sim >= 0.80 else "brew"
+            print(f"[auto] nearest corpus deck similarity {max_sim:.2f} "
+                  f"-> {'archetype' if version == 'v1' else 'brew'} mode")
+
+        if version == "brew":
+            self._load_brew_assets()
+            deck_colors = set()
+            for r in deck:
+                card = self.db.get(self.meta[r]["name"])
+                if card:
+                    deck_colors |= set(card.color_identity)
+            core = sorted(nonland, key=lambda r: -(nonland[r] *
+                          float(self.vecs[r] @ centroid)))[:8]
+            core_arr = np.array(core)
+            # commander-space partners of the core (casual synergy lives
+            # there), grounded vectors weighted above text projections
+            cmd_core = self._cmd_vecs[core_arr]
+            cmd_sims = self._cmd_vecs @ cmd_core.T          # [n, core]
+            cmd_score = np.sort(cmd_sims, axis=1)[:, -3:].mean(1)
+            # trained pair-synergy of every card against the core
+            pm_s = (self._pm_P[core_arr] @ self._pm_Q.T
+                    + self._pm_Q[core_arr] @ self._pm_P.T)   # [core, n]
+            pm_score = pm_s.max(0) + self._pm_bias
+            pm_score = (pm_score - pm_score.mean()) / (pm_score.std() + 1e-9)
+
+            scored = []
+            for r in np.argsort(-cmd_score)[:4000]:
+                r = int(r)
+                if r in deck or self.is_land[r]:
+                    continue
+                if not self.legal(r) or not self.playable(r):
+                    continue
+                card = self.db.get(self.meta[r]["name"])
+                if card and not (set(card.color_identity) <= deck_colors):
+                    continue
+                grounded = 1.0 if self._cmd_freq.get(r, 0) >= 3 else 0.5
+                score = (2.0 * float(cmd_score[r]) * grounded
+                         + 0.5 * float(pm_score[r]))
+                scored.append((r, score))
+            scored.sort(key=lambda rs: -rs[1])
+            return scored[:top], centroid, presence
 
         if version == "v1":
             adds = []
@@ -332,7 +391,8 @@ def main():
                     help='user swap to test, e.g. "3 Crypt Ghast" (repeatable)')
     ap.add_argument("--h2h", type=int, default=0,
                     help="head-to-head games: each variant vs base directly")
-    ap.add_argument("--proposer", choices=["v1", "v2"], default="v1")
+    ap.add_argument("--proposer", choices=["v1", "v2", "brew", "auto"],
+                    default="auto")
     args = ap.parse_args()
 
     imp = Improver(args.format)
