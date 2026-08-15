@@ -41,10 +41,11 @@
     padding: 0.28rem 0.5rem; font-size: 0.85rem;
   }
   #legend {
-    position: fixed; right: 0.75rem; top: 3.4rem; z-index: 5;
+    position: fixed; right: 0.75rem; top: 5.2rem; z-index: 4;
     background: color-mix(in srgb, var(--surface-1) 90%, transparent);
     border: 1px solid var(--border); border-radius: 8px;
     padding: 0.5rem 0.7rem; max-width: 15rem;
+    max-height: calc(100vh - 6.2rem); overflow-y: auto;
   }
   #legend .item {
     display: flex; align-items: center; gap: 0.45rem;
@@ -122,9 +123,17 @@ const N = DATA.x.length;
 const CATS = {
   role: {
     labels: ["removal & wipes","counterspell","ramp","card draw",
-             "tutor","recursion","card selection","other"],
+             "tutor","recursion","card selection",
+             "aristocrats","graveyard & mill","blink & flicker",
+             "spellslinger","auras & equipment","tokens","+1/+1 counters",
+             "lifegain","artifacts matter","enchantments matter","tribal",
+             "other"],
     colors: ["#e66767","#3987e5","#008300","#199e70",
-             "#c98500","#9085e9","#d55181","#57565080"],
+             "#c98500","#9085e9","#d55181",
+             "#8e4585","#8a6d4e","#a8c7fa",
+             "#45c4d8","#97a233","#d4b85a","#6fbf4a",
+             "#d9d0a1","#7d94ad","#c05ccf","#e0995e",
+             "#57565080"],
     key: "role",
   },
   color: {
@@ -135,7 +144,7 @@ const CATS = {
   },
   type: {
     labels: ["creature","land","instant","sorcery","planeswalker",
-             "artifact","enchantment","other"],
+             "artifact","enchantment","sticker"],
     colors: ["#3987e5","#8a6d4e","#199e70","#008300","#d55181",
              "#c98500","#9085e9","#e66767"],
     key: "type",
