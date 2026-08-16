@@ -288,11 +288,39 @@ Dataset regeneration: FORGE_SIM_SERVER=1 python3
 experiments/pilot_bridge.py --collect --games 96 (the 27 MB jsonl is
 gitignored; ~10 min to rebuild).
 
-Next (rung 5): scale combat data 10-50x for the blocker head, serve
-combat decisions (Combat-object write path in Java), then per-deck
-self-play fine-tune - REINFORCE/CEM over this BC initialization with
-winrate + locked-card play rate objectives. The evolver then mutates
-the list while the pilot relearns it each generation.
+## Custom AI pilot, rung 5: the ladder is complete (2026-08-16)
+
+- **Combat write path** (PlayerControllerExt): replies `attack\tids`
+  and `block\tblocker:attacker,...` REPLACE the built-in AI's combat
+  declarations, each card legality-checked via CombatUtil
+  (canAttack/canBlock), illegal requests skipped, fail-open. The
+  policy now owns casts AND combat.
+- **Combat data scaled**: combat-dense collection (creature decks
+  only, both players observed, warm sim server) - 400 games ->
+  dataset 303,853 decisions incl. 7,502 attacker (37x) and 1,835
+  blocker (21x) events. Fixed en route: player-filter mismatch that
+  silently observed nobody; policy-port collisions (ephemeral ports).
+- **Retrain on 21x blocker data: blocker head 38.5% -> 53.2%.**
+  Attacker F1 reads 72.4% vs the old 82.1% but the numbers are not
+  comparable: the old test was ~20 easy events from lock-deck games,
+  the new one is 750 events from elves/stompy mirrors - a harder,
+  honest benchmark. Cast act-only 70.2% under an 8k act-sample CPU
+  cap.
+- **Self-play loop runs end to end** (self_play.py): sampled decisions
+  (temperature), one game per warm-server job for exact
+  trajectory-reward assignment, reward = win/loss + lock-bonus
+  (locked cards reaching battlefield), REINFORCE vs EMA baseline,
+  grad clipping, journaled checkpoints. Smoke: 2 iters x 8 games,
+  checkpoint saved.
+
+State of the ladder: geometry proposes -> evolver verifies in sim ->
+learned pilot plays casts and combat -> self-play improves the pilot
+beyond its teacher. Remaining work is COMPUTE, not construction:
+overnight self-play (10-100k games) and larger BC epochs belong on a
+GPU box (see the 3090 notes) - on this container everything runs, just
+small. Next experiments: pilot-vs-builtin A/B at real budgets, then
+evolver+pilot co-training (re-tune the pilot each accepted mutation,
+warm-started).
 
 ## Evolver methodology v2 (evolve_core.py) - lessons from run 1
 
