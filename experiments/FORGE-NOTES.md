@@ -202,6 +202,39 @@ later combat), delegate everything else to the built-in AI. Inject via
 a patched LobbyPlayerAi (Forge is GPL; build from source) with the
 policy served over a localhost socket by Python.
 
+## Custom AI pilot, rung 2: the bridge WORKS (2026-08-16)
+
+External-policy bridge built and proven end to end, no Forge rebuild
+required:
+
+- `experiments/forge_ext/`: two Java files compiled against the stock
+  2.0.14 jar. LobbyPlayerAi is CLASSPATH-SHADOWED (prepend the classes
+  dir to -cp and our copy wins over the jar's); it instantiates
+  PlayerControllerExt - a PlayerControllerAi subclass overriding only
+  chooseSpellAbilityToPlay(). Every "AI wants to cast X" decision
+  ships a compact state JSON (turn/phase/life/hand/battlefields/
+  proposals) over a localhost socket to Python; the reply can veto
+  proposals (AI passes priority instead). Fail-open on any error.
+- `experiments/pilot_bridge.py`: policy server + A/B driver.
+- Proof of life: 373 decisions round-tripped over 24 games, 9 vetoes
+  executed, zero crashes, sims at full speed.
+
+A/B (unblinded Tainted Aether deck vs same gauntlet, 24 games/arm):
+builtin 58%+-20%, veto-policy 50%+-20%. The hold-your-creatures rule
+fired only 9 times in 24 games - no measurable winrate effect at this
+sample. Honest read: the INFRASTRUCTURE is validated, the simple veto
+policy is too weak an intervention. The lever the deck actually needs
+is FORCING actions (tap Forbidden Orchard, ping with Catapult under
+the lock), which means constructing SpellAbilities with targets, not
+just filtering - that plus a learned policy is rungs 3-4.
+
+Rung 3 plan: extend the bridge protocol with (a) full candidate
+enumeration, not just the AI's preferred proposal, (b) a "force"
+reply verb; featurize states with the existing MiniLM card embeddings
+(new cards from evolver mutations get features for free); behavior-
+clone from built-in-AI logs first, then per-deck self-play fine-tune
+with locked-card play rate + winrate as the objectives.
+
 ## Evolver methodology v2 (evolve_core.py) - lessons from run 1
 
 Run 1 (self-play reference) accepted "cut 4 Acorn Catapult" in gen 1 -
