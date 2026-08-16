@@ -116,7 +116,12 @@ class Improver:
         return card is not None and card.legalities.get(self.fmt) in ("legal", "restricted")
 
     def playable(self, row: int) -> bool:
-        return norm(self.meta[row]["name"]) in self.supported
+        name = self.meta[row]["name"]
+        if norm(name) in self.supported:
+            return True
+        # double-faced cards: Scryfall says "Front // Back", Forge's
+        # deck format and card list use the front face name
+        return norm(name.split("//")[0]) in self.supported
 
     # ---------------- proposer ----------------
 
@@ -321,7 +326,8 @@ class Improver:
 def write_dck(name: str, main_pairs):
     FORGE_DECKS.mkdir(parents=True, exist_ok=True)
     lines = ["[metadata]", f"Name={name}", "[Main]"]
-    lines += [f"{q} {n}" for n, q in main_pairs]
+    # Forge's deck format names double-faced cards by their front face
+    lines += [f"{q} {n.split(' // ')[0]}" for n, q in main_pairs]
     lines += ["[Sideboard]"]
     (FORGE_DECKS / f"{name}.dck").write_text("\n".join(lines))
 
