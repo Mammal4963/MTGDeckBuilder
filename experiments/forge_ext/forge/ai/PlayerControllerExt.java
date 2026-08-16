@@ -16,25 +16,25 @@ import forge.LobbyPlayer;
 import forge.game.Game;
 import forge.game.card.Card;
 import forge.game.card.CardCollection;
+import forge.game.combat.Combat;
 import forge.game.player.Player;
 import forge.game.spellability.SpellAbility;
 import forge.game.zone.ZoneType;
 
 /**
- * Bridge protocol v2 (rung 3): besides the built-in AI's proposal, every
- * decision now carries the full list of LEGAL candidate plays, and the
- * policy may FORCE one of them - including plays the built-in AI would
- * never choose (the whole point: Acorn Catapult pings under a Tainted
- * Aether lock). Reply verbs:
+ * Bridge protocol v3 (rung 4): per-card board state and combat events.
  *
- *   ok                        play the AI's own proposal
- *   veto\tCardA\tCardB        pass priority instead of the proposal
- *   force\t<idx>              play candidate idx, AI picks targets
- *   force\t<idx>\topponent    play candidate idx targeting the opponent
+ * Cast decisions ("kind":"cast") now serialize each battlefield card as
+ * {id, n, p, t, tapped, dmg, cr} instead of a bare name, so the policy
+ * (and the set-transformer BC model) sees real board texture.
  *
- * Safety: a (turn, card) pair is forced at most once - if the engine
- * rejects the play and the AI returns to priority, we fall back to the
- * default instead of looping. All errors fail open to the built-in AI.
+ * Combat observation: declareAttackers / declareBlockers let the
+ * built-in AI decide, then ship what it chose -
+ *   {"kind":"attackers", my_creatures:[...], chosen:[ids...]}
+ *   {"kind":"blockers", attackers:[...], my_creatures:[...],
+ *    assignments:[[blockerId, attackerId]...]}
+ * The reply is ignored for combat (observe-only this rung) - this is
+ * the behavior-cloning feed for combat decisions. All errors fail open.
  */
 public class PlayerControllerExt extends PlayerControllerAi {
 
@@ -61,9 +61,48 @@ public class PlayerControllerExt extends PlayerControllerAi {
                 sock.getOutputStream(), StandardCharsets.UTF_8);
     }
 
+    private static synchronized String roundTrip(String msg) {
+        try {
+            ensureSocket();
+            out.write(msg);
+            out.flush();
+            return in.readLine();
+        } catch (Exception e) {
+            try {
+                if (sock != null) {
+                    sock.close();
+                }
+            } catch (Exception ignored) {
+            }
+            sock = null;
+            return null;
+        }
+    }
+
     private static String esc(String s) {
         return s.replace("\\", "\\\\").replace("\"", "\\\"")
                 .replace("\n", " ");
+    }
+
+    private static void cardObj(StringBuilder sb, Card c) {
+        sb.append("{\"id\":").append(c.getId());
+        sb.append(",\"n\":\"").append(esc(c.getName())).append("\"");
+        sb.append(",\"p\":").append(c.isCreature() ? c.getNetPower() : 0);
+        sb.append(",\"t\":").append(c.isCreature() ? c.getNetToughness() : 0);
+        sb.append(",\"tapped\":").append(c.isTapped());
+        sb.append(",\"dmg\":").append(c.getDamage());
+        sb.append(",\"cr\":").append(c.isCreature()).append("}");
+    }
+
+    private static void cardObjs(StringBuilder sb, Iterable<Card> cards) {
+        boolean first = true;
+        for (Card c : cards) {
+            if (!first) {
+                sb.append(",");
+            }
+            cardObj(sb, c);
+            first = false;
+        }
     }
 
     private void names(StringBuilder sb, Iterable<Card> cards) {
@@ -75,6 +114,36 @@ public class PlayerControllerExt extends PlayerControllerAi {
             sb.append("\"").append(esc(c.getName())).append("\"");
             first = false;
         }
+    }
+
+    private void stateCommon(StringBuilder sb, String kind) {
+        Player me = getPlayer();
+        sb.append("{\"kind\":\"").append(kind).append("\"");
+        sb.append(",\"turn\":").append(getGame().getPhaseHandler().getTurn());
+        sb.append(",\"phase\":\"").append(
+                getGame().getPhaseHandler().getPhase()).append("\"");
+        sb.append(",\"my_life\":").append(me.getLife());
+        int oppLife = 0;
+        for (Player o : me.getOpponents()) {
+            oppLife = o.getLife();
+        }
+        sb.append(",\"opp_life\":").append(oppLife);
+        sb.append(",\"my_hand\":[");
+        names(sb, me.getCardsIn(ZoneType.Hand));
+        sb.append("],\"my_battlefield\":[");
+        cardObjs(sb, me.getCardsIn(ZoneType.Battlefield));
+        sb.append("],\"opp_battlefield\":[");
+        boolean first = true;
+        for (Player o : me.getOpponents()) {
+            for (Card c : o.getCardsIn(ZoneType.Battlefield)) {
+                if (!first) {
+                    sb.append(",");
+                }
+                cardObj(sb, c);
+                first = false;
+            }
+        }
+        sb.append("]");
     }
 
     private List<SpellAbility> legalCandidates() {
@@ -96,7 +165,6 @@ public class PlayerControllerExt extends PlayerControllerAi {
                 }
                 result.add(sa);
             } catch (Exception ignored) {
-                // a card whose canPlay probe explodes is not a candidate
             }
         }
         return result;
@@ -109,7 +177,6 @@ public class PlayerControllerExt extends PlayerControllerAi {
             return def;
         }
         try {
-            ensureSocket();
             Player me = getPlayer();
             int turn = getGame().getPhaseHandler().getTurn();
             if (turn != lastSeenTurn) {
@@ -118,35 +185,10 @@ public class PlayerControllerExt extends PlayerControllerAi {
             }
             List<SpellAbility> candidates = legalCandidates();
 
-            StringBuilder sb = new StringBuilder(1024);
-            sb.append("{\"turn\":").append(turn);
-            sb.append(",\"phase\":\"").append(
-                    getGame().getPhaseHandler().getPhase()).append("\"");
-            sb.append(",\"my_life\":").append(me.getLife());
-            int oppLife = 0;
-            Player opp = null;
-            for (Player o : me.getOpponents()) {
-                oppLife = o.getLife();
-                opp = o;
-            }
-            sb.append(",\"opp_life\":").append(oppLife);
-            sb.append(",\"my_hand\":[");
-            names(sb, me.getCardsIn(ZoneType.Hand));
-            sb.append("],\"my_battlefield\":[");
-            names(sb, me.getCardsIn(ZoneType.Battlefield));
-            sb.append("],\"opp_battlefield\":[");
+            StringBuilder sb = new StringBuilder(1536);
+            stateCommon(sb, "cast");
+            sb.append(",\"proposed\":[");
             boolean first = true;
-            for (Player o : me.getOpponents()) {
-                for (Card c : o.getCardsIn(ZoneType.Battlefield)) {
-                    if (!first) {
-                        sb.append(",");
-                    }
-                    sb.append("\"").append(esc(c.getName())).append("\"");
-                    first = false;
-                }
-            }
-            sb.append("],\"proposed\":[");
-            first = true;
             if (def != null) {
                 for (SpellAbility sa : def) {
                     Card host = sa.getHostCard();
@@ -178,9 +220,7 @@ public class PlayerControllerExt extends PlayerControllerAi {
                 first = false;
             }
             sb.append("]}\n");
-            out.write(sb.toString());
-            out.flush();
-            String reply = in.readLine();
+            String reply = roundTrip(sb.toString());
             if (reply == null || reply.equals("ok")) {
                 return def;
             }
@@ -208,9 +248,13 @@ public class PlayerControllerExt extends PlayerControllerAi {
                 Card host = sa.getHostCard();
                 String key = host == null ? sa.toString() : host.getName();
                 if (!forcedThisTurn.add(key)) {
-                    return def;               // already forced this turn
+                    return def;
                 }
                 sa.setActivatingPlayer(me);
+                Player opp = null;
+                for (Player o : me.getOpponents()) {
+                    opp = o;
+                }
                 if (parts.length > 2 && parts[2].equals("opponent")
                         && sa.usesTargeting() && opp != null) {
                     sa.resetTargets();
@@ -220,14 +264,60 @@ public class PlayerControllerExt extends PlayerControllerAi {
             }
             return def;
         } catch (Exception e) {
-            try {
-                if (sock != null) {
-                    sock.close();
-                }
-            } catch (Exception ignored) {
-            }
-            sock = null;
             return def;
+        }
+    }
+
+    @Override
+    public void declareAttackers(Player attacker, Combat combat) {
+        super.declareAttackers(attacker, combat);
+        if (System.getenv("FORGE_EXT_POLICY") == null) {
+            return;
+        }
+        try {
+            StringBuilder sb = new StringBuilder(1024);
+            stateCommon(sb, "attackers");
+            sb.append(",\"chosen\":[");
+            boolean first = true;
+            for (Card c : combat.getAttackers()) {
+                if (!first) {
+                    sb.append(",");
+                }
+                sb.append(c.getId());
+                first = false;
+            }
+            sb.append("]}\n");
+            roundTrip(sb.toString());     // observe-only this rung
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
+    public void declareBlockers(Player defender, Combat combat) {
+        super.declareBlockers(defender, combat);
+        if (System.getenv("FORGE_EXT_POLICY") == null) {
+            return;
+        }
+        try {
+            StringBuilder sb = new StringBuilder(1024);
+            stateCommon(sb, "blockers");
+            sb.append(",\"attackers\":[");
+            cardObjs(sb, combat.getAttackers());
+            sb.append("],\"assignments\":[");
+            boolean first = true;
+            for (Card a : combat.getAttackers()) {
+                for (Card b : combat.getBlockers(a)) {
+                    if (!first) {
+                        sb.append(",");
+                    }
+                    sb.append("[").append(b.getId()).append(",")
+                      .append(a.getId()).append("]");
+                    first = false;
+                }
+            }
+            sb.append("]}\n");
+            roundTrip(sb.toString());     // observe-only this rung
+        } catch (Exception ignored) {
         }
     }
 }

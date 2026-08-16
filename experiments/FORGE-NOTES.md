@@ -258,10 +258,41 @@ picks the exact same action 73% (30-sample test; chance ~10-25%).
 Text-embedding features mean unseen cards get sensible scores - the
 property that lets one policy keep piloting through evolver mutations.
 
-Rung 4 next: scale collection (cheap, it's just sims), serve the BC
-model through the bridge (argmax -> ok/force), then per-deck self-play
-fine-tune with locked-card play rate + winrate objectives; REINFORCE
-or CEM over the BC initialization.
+## Custom AI pilot, rung 4: the learned model flies (2026-08-16)
+
+Bridge protocol v3 (PlayerControllerExt): battlefield cards serialize
+as {id, name, power, toughness, tapped, damage, is-creature} objects,
+and declareAttackers/declareBlockers ship the built-in AI's combat
+choices as observation events - the "show it a board at
+declare-attackers and record what it does" feed.
+
+Collection at scale (sim-server-backed, both players observed,
+creature-heavy legacy decks mixed in for combat coverage): 96 games ->
+26,630 cast + 202 attacker + 87 blocker decisions in ~10 min.
+
+Pilot v2 (train_pilot2.py): set-transformer over per-card tokens
+[frozen MiniLM text embedding + zone one-hot + live state], 2 layers,
+d=128, one encoder with three heads (cast CE, per-creature attack BCE,
+per-blocker assignment CE). No pooling bottleneck - 3 permanents or 30,
+same model. Held-out: cast 92.3% (act-only 73.1%), ATTACKERS 82.1% F1
+from just 202 events, blockers 38.5% (87 events - data-starved, noisy
+across epochs; more collection is the fix, not architecture).
+
+Serving (pilot_bridge.ModelPolicy): the trained net makes live cast
+decisions through the bridge - agrees with the AI -> ok, prefers pass
+-> veto, prefers another candidate -> force. Smoke: 6 games, 1,049
+net-made decisions, 15 overrides, 4/6 wins, zero crashes. A learned
+model is piloting Forge games end to end.
+
+Dataset regeneration: FORGE_SIM_SERVER=1 python3
+experiments/pilot_bridge.py --collect --games 96 (the 27 MB jsonl is
+gitignored; ~10 min to rebuild).
+
+Next (rung 5): scale combat data 10-50x for the blocker head, serve
+combat decisions (Combat-object write path in Java), then per-deck
+self-play fine-tune - REINFORCE/CEM over this BC initialization with
+winrate + locked-card play rate objectives. The evolver then mutates
+the list while the pilot relearns it each generation.
 
 ## Evolver methodology v2 (evolve_core.py) - lessons from run 1
 

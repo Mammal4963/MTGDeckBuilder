@@ -40,16 +40,25 @@ STATS = {"decisions": 0, "vetoes": 0, "forces": 0}
 COLLECT_FILE = {"fh": None}          # set by --collect / experiment
 
 
+def bf_names(state: dict, key: str) -> list[str]:
+    """Battlefield entries are objects since protocol v3; accept both."""
+    return [c["n"] if isinstance(c, dict) else c
+            for c in state.get(key, [])]
+
+
 def tainted_policy(state: dict) -> str:
-    """Protocol-v2 policy encoding the deck's actual plan.
+    """Lock-plan policy (protocol v3 aware).
 
     1. With Tainted Aether on our battlefield, FORCE an Acorn Catapult
        activation at the opponent (once per turn, enforced Java-side):
        the squirrel gift becomes a forced sacrifice under the lock.
     2. Under the lock, veto casting our own creatures - except the
        Hunted ones, whose ETB token gift feeds the same engine.
+    Combat messages ("attackers"/"blockers") are observe-only.
     """
-    mine = state.get("my_battlefield", [])
+    if state.get("kind") in ("attackers", "blockers"):
+        return "ok"
+    mine = bf_names(state, "my_battlefield")
     proposed = state.get("proposed", [])
     lock_up = "Tainted Aether" in mine
 
@@ -74,6 +83,85 @@ def tainted_policy(state: dict) -> str:
         if vetoes:
             return "veto\t" + "\t".join(vetoes)
     return "ok"
+
+
+class ModelPolicy:
+    """The trained pilot (train_pilot2) making live cast decisions.
+
+    kind=cast: encode the board, score candidates + pass, act on argmax:
+      - argmax == the built-in AI's proposal -> ok
+      - argmax is pass -> veto the proposal (pass priority)
+      - argmax is another candidate -> force it
+    Combat stays observe-only this rung (serving blocks needs the
+    Combat-object write path in Java).
+    """
+
+    def __init__(self):
+        import torch
+        import train_pilot2 as tp
+        self.torch = torch
+        self.feat = tp.Featurizer()
+        # rebuild the architecture exactly as trained
+        import torch.nn as nn
+        feat = self.feat
+        D = tp.D
+        sdim = feat.scalars({}).shape[0]
+        cdim = feat.dim + 2
+
+        class Pilot(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.proj = nn.Linear(feat.tok_dim, D)
+                self.state_tok = nn.Parameter(torch.randn(1, D) * 0.02)
+                layer = nn.TransformerEncoderLayer(
+                    d_model=D, nhead=4, dim_feedforward=256,
+                    batch_first=True, dropout=0.1)
+                self.enc = nn.TransformerEncoder(layer, num_layers=2)
+                self.state_mlp = nn.Sequential(nn.Linear(D + sdim, D), nn.ReLU())
+                self.cand_proj = nn.Sequential(nn.Linear(cdim, D), nn.ReLU())
+                self.cast_head = nn.Sequential(nn.Linear(2 * D, D), nn.ReLU(),
+                                               nn.Linear(D, 1))
+                self.pass_head = nn.Sequential(nn.Linear(D, D), nn.ReLU(),
+                                               nn.Linear(D, 1))
+                self.atk_head = nn.Sequential(nn.Linear(2 * D, D), nn.ReLU(),
+                                              nn.Linear(D, 1))
+                self.blk_head = nn.Sequential(nn.Linear(3 * D, D), nn.ReLU(),
+                                              nn.Linear(D, 1))
+                self.noblk_head = nn.Sequential(nn.Linear(2 * D, D), nn.ReLU(),
+                                                nn.Linear(D, 1))
+
+        self.model = Pilot()
+        self.model.load_state_dict(torch.load(
+            Path(__file__).resolve().parent / "output" / "pilot2.pt"))
+        self.model.eval()
+
+    def __call__(self, state: dict) -> str:
+        if state.get("kind") != "cast":
+            return "ok"
+        cands = state.get("candidates", [])
+        if not cands:
+            return "ok"
+        torch = self.torch
+        tt = lambda x: torch.from_numpy(__import__("numpy")
+                                        .ascontiguousarray(x))
+        with torch.no_grad():
+            toks, _ids = self.feat.tokens_and_ids(state)
+            x = self.model.proj(tt(toks)).unsqueeze(0)
+            x = torch.cat([self.model.state_tok.unsqueeze(0), x], dim=1)
+            h = self.model.enc(x)[0]
+            hs = self.model.state_mlp(torch.cat(
+                [h[0], tt(self.feat.scalars(state))]))
+            scores = [self.model.cast_head(torch.cat(
+                [hs, self.model.cand_proj(tt(self.feat.cand_vec(c)))]))
+                for c in cands]
+            scores.append(self.model.pass_head(hs))
+            pick = int(torch.cat(scores).argmax())
+        proposed = state.get("proposed", [])
+        if pick == len(cands):                    # model says pass
+            return ("veto\t" + "\t".join(proposed)) if proposed else "ok"
+        if proposed and cands[pick]["card"] == proposed[0]:
+            return "ok"                           # agrees with built-in AI
+        return f"force\t{cands[pick]['i']}"
 
 
 class PolicyHandler(socketserver.StreamRequestHandler):
@@ -108,6 +196,15 @@ def run_bridged(deck_a: str, deck_b: str, games: int, timeout_s: int,
                 port: int | None, player_filter: str | None = None) -> str:
     """Verbose sim; when port is set, deck_a's AI consults the policy."""
     import os
+    if os.environ.get("FORGE_SIM_SERVER") == "1":
+        import sim_server
+        extra = {}
+        if port is not None:
+            extra = {"FORGE_EXT_POLICY": str(port),
+                     "FORGE_EXT_PLAYER": player_filter or deck_a}
+        key = f"bridge-{port}-{player_filter or deck_a}"
+        return sim_server.shared_client(key, extra).run(
+            deck_a, deck_b, games, quiet=False, timeout_s=timeout_s)
     cmd = ["xvfb-run", "-a", "java", "-Xmx3g",
            "-Dio.netty.tryReflectionSetAccessible=true",
            "-Dfile.encoding=UTF-8",
@@ -177,14 +274,19 @@ def collect(games_per_pair: int = 6) -> None:
     COLLECT_FILE["fh"] = open(out_path, "a")
     port = 8879
     srv = start_server(port)
-    decks = ["evo_tainted2_base", "evo_tainted2_g0",
-             "evo_tainted2_g1", "evo_tainted2_g2"]
+    # mix in the creature-heavy legacy decks (elves, stompy) so combat
+    # decisions - attacks and blocks - are well represented
+    decks = ["evo_tainted2_base", "gauntlet_1", "evo_tainted2_g0",
+             "gauntlet_2", "evo_tainted2_g1", "burn",
+             "evo_tainted2_g2", "gauntlet_0"]
     try:
         for i, a in enumerate(decks):
             b = decks[(i + 1) % len(decks)]
             n0 = STATS["decisions"]
+            # player_filter "evo_" bridges BOTH sides: two observed
+            # controllers per game = twice the data per sim
             run_bridged(a, b, games_per_pair,
-                        120 + 40 * games_per_pair, port, player_filter=a)
+                        120 + 40 * games_per_pair, port, player_filter="evo_")
             print(f"{a} vs {b}: +{STATS['decisions'] - n0} decisions",
                   flush=True)
     finally:
