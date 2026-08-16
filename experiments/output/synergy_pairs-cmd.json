@@ -1,4002 +1,4002 @@
 [
  {
+  "a": "Bygone Marvels",
+  "b": "Master of the Pearl Trident",
+  "decks": 13,
+  "co_sim": 0.985,
+  "text_sim": 0.193,
+  "synergy": 0.793
+ },
+ {
+  "a": "Lim-D\u00fbl's Vault",
+  "b": "Sakashima's Student",
+  "decks": 9,
+  "co_sim": 0.868,
+  "text_sim": 0.089,
+  "synergy": 0.779
+ },
+ {
+  "a": "Lidless Gaze",
+  "b": "Corsairs of Umbar",
+  "decks": 16,
+  "co_sim": 0.949,
+  "text_sim": 0.187,
+  "synergy": 0.762
+ },
+ {
+  "a": "Azlask, the Swelling Scourge",
+  "b": "Ancient Stirrings",
+  "decks": 9,
+  "co_sim": 0.986,
+  "text_sim": 0.226,
+  "synergy": 0.76
+ },
+ {
+  "a": "Echoes of Eternity",
+  "b": "Ultima, Origin of Oblivion",
+  "decks": 30,
+  "co_sim": 0.994,
+  "text_sim": 0.234,
+  "synergy": 0.76
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Primo, the Unbounded",
+  "decks": 21,
+  "co_sim": 0.984,
+  "text_sim": 0.225,
+  "synergy": 0.759
+ },
+ {
+  "a": "Immerwolf",
+  "b": "The Celestus",
+  "decks": 8,
+  "co_sim": 0.934,
+  "text_sim": 0.176,
+  "synergy": 0.758
+ },
+ {
+  "a": "Sire of Seven Deaths",
+  "b": "Ugin's Binding",
+  "decks": 8,
+  "co_sim": 0.952,
+  "text_sim": 0.195,
+  "synergy": 0.757
+ },
+ {
+  "a": "Azula, Cunning Usurper",
+  "b": "Azula Always Lies",
+  "decks": 8,
+  "co_sim": 0.973,
+  "text_sim": 0.228,
+  "synergy": 0.745
+ },
+ {
+  "a": "Alpha Deathclaw",
+  "b": "Contaminated Drink",
+  "decks": 13,
+  "co_sim": 0.984,
+  "text_sim": 0.238,
+  "synergy": 0.745
+ },
+ {
+  "a": "Wastescape Battlemage",
+  "b": "Ancient Stirrings",
+  "decks": 10,
+  "co_sim": 0.988,
+  "text_sim": 0.245,
+  "synergy": 0.744
+ },
+ {
+  "a": "Eldrazi Confluence",
+  "b": "Ancient Stirrings",
+  "decks": 10,
+  "co_sim": 0.985,
+  "text_sim": 0.242,
+  "synergy": 0.743
+ },
+ {
+  "a": "Twice Upon a Time // Unlikely Meeting",
+  "b": "TARDIS",
+  "decks": 9,
+  "co_sim": 0.99,
+  "text_sim": 0.251,
+  "synergy": 0.739
+ },
+ {
+  "a": "Clara Oswald",
+  "b": "TARDIS",
+  "decks": 8,
+  "co_sim": 0.976,
+  "text_sim": 0.238,
+  "synergy": 0.738
+ },
+ {
+  "a": "Kozilek's Return",
+  "b": "Ancient Stirrings",
+  "decks": 9,
+  "co_sim": 0.988,
+  "text_sim": 0.252,
+  "synergy": 0.736
+ },
+ {
+  "a": "Ulamog's Crusher",
+  "b": "Ancient Stirrings",
+  "decks": 9,
+  "co_sim": 0.961,
+  "text_sim": 0.227,
+  "synergy": 0.734
+ },
+ {
+  "a": "Merfolk Cave-Diver",
+  "b": "Bygone Marvels",
+  "decks": 8,
+  "co_sim": 0.98,
+  "text_sim": 0.246,
+  "synergy": 0.734
+ },
+ {
+  "a": "Trazyn the Infinite",
+  "b": "Shard of the Nightbringer",
+  "decks": 9,
+  "co_sim": 0.893,
+  "text_sim": 0.161,
+  "synergy": 0.732
+ },
+ {
+  "a": "Shaun, Father of Synths",
+  "b": "Electrosiphon",
+  "decks": 9,
+  "co_sim": 0.965,
+  "text_sim": 0.233,
+  "synergy": 0.732
+ },
+ {
+  "a": "Solstice Revelations",
+  "b": "Firebender Ascension",
+  "decks": 9,
+  "co_sim": 0.965,
+  "text_sim": 0.233,
+  "synergy": 0.732
+ },
+ {
+  "a": "Ancient Stirrings",
+  "b": "Chittering Dispatcher",
+  "decks": 11,
+  "co_sim": 0.982,
+  "text_sim": 0.251,
+  "synergy": 0.731
+ },
+ {
+  "a": "Ancient Stirrings",
+  "b": "Endbringer",
+  "decks": 12,
+  "co_sim": 0.99,
+  "text_sim": 0.263,
+  "synergy": 0.727
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Svyelun of Sea and Sky",
+  "decks": 13,
+  "co_sim": 0.989,
+  "text_sim": 0.262,
+  "synergy": 0.727
+ },
+ {
+  "a": "Plague Stinger",
+  "b": "Expand the Sphere",
+  "decks": 14,
+  "co_sim": 0.965,
+  "text_sim": 0.241,
+  "synergy": 0.724
+ },
+ {
+  "a": "Extract Power",
+  "b": "Red Ghost, Intangible Genius",
+  "decks": 19,
+  "co_sim": 0.976,
+  "text_sim": 0.253,
+  "synergy": 0.724
+ },
+ {
+  "a": "Harold and Bob, First Numens",
+  "b": "Contaminated Drink",
+  "decks": 12,
+  "co_sim": 0.96,
+  "text_sim": 0.237,
+  "synergy": 0.723
+ },
+ {
+  "a": "Lim-D\u00fbl's Vault",
+  "b": "Thousand-Faced Shadow",
+  "decks": 11,
+  "co_sim": 0.869,
+  "text_sim": 0.147,
+  "synergy": 0.722
+ },
+ {
+  "a": "Ancient Stirrings",
+  "b": "Inversion Behemoth",
+  "decks": 8,
+  "co_sim": 0.986,
+  "text_sim": 0.265,
+  "synergy": 0.721
+ },
+ {
+  "a": "Shadow of Mortality",
+  "b": "Moon-Circuit Hacker",
+  "decks": 12,
+  "co_sim": 0.956,
+  "text_sim": 0.235,
+  "synergy": 0.721
+ },
+ {
+  "a": "Bombur, Gentle Dreamer",
+  "b": "Iron Hills Blacksmith",
+  "decks": 56,
+  "co_sim": 0.983,
+  "text_sim": 0.262,
+  "synergy": 0.721
+ },
+ {
+  "a": "Aboleth Spawn",
+  "b": "Maddening Cacophony",
+  "decks": 9,
+  "co_sim": 0.875,
+  "text_sim": 0.156,
+  "synergy": 0.72
+ },
+ {
+  "a": "Belisarius Cawl",
+  "b": "Primaris Chaplain",
+  "decks": 11,
+  "co_sim": 1.0,
+  "text_sim": 0.282,
+  "synergy": 0.718
+ },
+ {
+  "a": "Merfolk Sovereign",
+  "b": "Bygone Marvels",
+  "decks": 13,
+  "co_sim": 0.988,
+  "text_sim": 0.273,
+  "synergy": 0.715
+ },
+ {
   "a": "Tom Bombadil",
   "b": "Jukai Naturalist",
-  "decks": 8,
-  "co_sim": 0.946,
+  "decks": 26,
+  "co_sim": 0.879,
   "text_sim": 0.165,
-  "synergy": 0.781
+  "synergy": 0.714
+ },
+ {
+  "a": "Lidless Gaze",
+  "b": "Orcish Siegemaster",
+  "decks": 16,
+  "co_sim": 0.906,
+  "text_sim": 0.193,
+  "synergy": 0.714
+ },
+ {
+  "a": "The Celestus",
+  "b": "Kruin Outlaw // Terror of Kruin Pass",
+  "decks": 8,
+  "co_sim": 0.945,
+  "text_sim": 0.23,
+  "synergy": 0.714
+ },
+ {
+  "a": "Barbarian Class",
+  "b": "The Deck of Many Things",
+  "decks": 14,
+  "co_sim": 0.961,
+  "text_sim": 0.252,
+  "synergy": 0.71
+ },
+ {
+  "a": "Echoes of Eternity",
+  "b": "Planar Bridge",
+  "decks": 10,
+  "co_sim": 0.925,
+  "text_sim": 0.216,
+  "synergy": 0.71
+ },
+ {
+  "a": "Fire Nation Occupation",
+  "b": "The Fire Nation Drill",
+  "decks": 8,
+  "co_sim": 0.954,
+  "text_sim": 0.244,
+  "synergy": 0.71
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Deeproot Waters",
+  "decks": 13,
+  "co_sim": 0.994,
+  "text_sim": 0.285,
+  "synergy": 0.709
+ },
+ {
+  "a": "Guiltfeeder",
+  "b": "Fractured Sanity",
+  "decks": 9,
+  "co_sim": 0.984,
+  "text_sim": 0.276,
+  "synergy": 0.709
+ },
+ {
+  "a": "Dreamstone Hedron",
+  "b": "Echoes of Eternity",
+  "decks": 18,
+  "co_sim": 0.925,
+  "text_sim": 0.216,
+  "synergy": 0.709
+ },
+ {
+  "a": "Speed, Young Avenger",
+  "b": "Avengers Quinjet",
+  "decks": 17,
+  "co_sim": 0.972,
+  "text_sim": 0.264,
+  "synergy": 0.708
+ },
+ {
+  "a": "Wyll's Reversal",
+  "b": "The Deck of Many Things",
+  "decks": 15,
+  "co_sim": 0.94,
+  "text_sim": 0.233,
+  "synergy": 0.707
+ },
+ {
+  "a": "Titans' Vanguard",
+  "b": "Ancient Stirrings",
+  "decks": 8,
+  "co_sim": 0.986,
+  "text_sim": 0.279,
+  "synergy": 0.707
+ },
+ {
+  "a": "Shadow of Mortality",
+  "b": "Thousand-Faced Shadow",
+  "decks": 13,
+  "co_sim": 0.959,
+  "text_sim": 0.252,
+  "synergy": 0.707
+ },
+ {
+  "a": "Lightfoot Rogue",
+  "b": "Jan Jansen, Chaos Crafter",
+  "decks": 8,
+  "co_sim": 0.941,
+  "text_sim": 0.236,
+  "synergy": 0.706
+ },
+ {
+  "a": "Berserker's Frenzy",
+  "b": "Luck Bobblehead",
+  "decks": 8,
+  "co_sim": 0.933,
+  "text_sim": 0.228,
+  "synergy": 0.705
+ },
+ {
+  "a": "Ingenious Infiltrator",
+  "b": "Shadow of Mortality",
+  "decks": 13,
+  "co_sim": 0.959,
+  "text_sim": 0.255,
+  "synergy": 0.704
+ },
+ {
+  "a": "Spider-Man No More",
+  "b": "Spider-Bot",
+  "decks": 8,
+  "co_sim": 0.949,
+  "text_sim": 0.245,
+  "synergy": 0.704
+ },
+ {
+  "a": "Contaminated Drink",
+  "b": "Young Deathclaws",
+  "decks": 11,
+  "co_sim": 0.948,
+  "text_sim": 0.246,
+  "synergy": 0.702
+ },
+ {
+  "a": "Lossarnach Captain",
+  "b": "Lost to Legend",
+  "decks": 19,
+  "co_sim": 0.854,
+  "text_sim": 0.151,
+  "synergy": 0.702
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Ichorclaw Myr",
+  "decks": 8,
+  "co_sim": 0.934,
+  "text_sim": 0.232,
+  "synergy": 0.701
+ },
+ {
+  "a": "Artisan of Kozilek",
+  "b": "Ancient Stirrings",
+  "decks": 12,
+  "co_sim": 0.959,
+  "text_sim": 0.259,
+  "synergy": 0.7
+ },
+ {
+  "a": "Berserker's Frenzy",
+  "b": "The Deck of Many Things",
+  "decks": 11,
+  "co_sim": 0.979,
+  "text_sim": 0.28,
+  "synergy": 0.699
+ },
+ {
+  "a": "Lightfoot Rogue",
+  "b": "Luck Bobblehead",
+  "decks": 8,
+  "co_sim": 0.964,
+  "text_sim": 0.265,
+  "synergy": 0.699
+ },
+ {
+  "a": "The Motherlode, Excavator",
+  "b": "Glimmer of Genius",
+  "decks": 10,
+  "co_sim": 0.995,
+  "text_sim": 0.296,
+  "synergy": 0.699
+ },
+ {
+  "a": "Fractured Sanity",
+  "b": "Aboleth Spawn",
+  "decks": 9,
+  "co_sim": 0.875,
+  "text_sim": 0.176,
+  "synergy": 0.699
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Tanazir Quandrix",
+  "decks": 15,
+  "co_sim": 0.971,
+  "text_sim": 0.273,
+  "synergy": 0.698
+ },
+ {
+  "a": "Drowner of Hope",
+  "b": "Ancient Stirrings",
+  "decks": 9,
+  "co_sim": 0.988,
+  "text_sim": 0.291,
+  "synergy": 0.697
+ },
+ {
+  "a": "Jaws of Defeat",
+  "b": "Wingmantle Chaplain",
+  "decks": 9,
+  "co_sim": 0.983,
+  "text_sim": 0.286,
+  "synergy": 0.697
+ },
+ {
+  "a": "Methods of the Mighty",
+  "b": "Scarlet Witch, Chaotic Avenger",
+  "decks": 19,
+  "co_sim": 0.982,
+  "text_sim": 0.286,
+  "synergy": 0.696
+ },
+ {
+  "a": "Component Pouch",
+  "b": "Chaos Dragon",
+  "decks": 15,
+  "co_sim": 0.892,
+  "text_sim": 0.198,
+  "synergy": 0.695
+ },
+ {
+  "a": "Ugin, the Ineffable",
+  "b": "Thran Dynamo",
+  "decks": 52,
+  "co_sim": 0.882,
+  "text_sim": 0.187,
+  "synergy": 0.695
+ },
+ {
+  "a": "Ancient Stirrings",
+  "b": "Hideous Taskmaster",
+  "decks": 11,
+  "co_sim": 0.941,
+  "text_sim": 0.248,
+  "synergy": 0.694
+ },
+ {
+  "a": "Fractured Sanity",
+  "b": "Captain N'ghathrod",
+  "decks": 13,
+  "co_sim": 0.948,
+  "text_sim": 0.254,
+  "synergy": 0.694
+ },
+ {
+  "a": "Stormtide Leviathan",
+  "b": "Sapphire Medallion",
+  "decks": 8,
+  "co_sim": 0.859,
+  "text_sim": 0.165,
+  "synergy": 0.694
+ },
+ {
+  "a": "Plunder the Trollshaws",
+  "b": "Enchanted River's Grasp",
+  "decks": 15,
+  "co_sim": 0.921,
+  "text_sim": 0.226,
+  "synergy": 0.694
+ },
+ {
+  "a": "All Is Dust",
+  "b": "Ultima, Origin of Oblivion",
+  "decks": 29,
+  "co_sim": 0.986,
+  "text_sim": 0.293,
+  "synergy": 0.693
+ },
+ {
+  "a": "Twins of Discord",
+  "b": "Ancient Stirrings",
+  "decks": 9,
+  "co_sim": 0.988,
+  "text_sim": 0.296,
+  "synergy": 0.692
+ },
+ {
+  "a": "Primordial Hydra",
+  "b": "Unbound Flourishing",
+  "decks": 32,
+  "co_sim": 0.976,
+  "text_sim": 0.284,
+  "synergy": 0.692
+ },
+ {
+  "a": "Ancient Stirrings",
+  "b": "Vile Redeemer",
+  "decks": 8,
+  "co_sim": 0.983,
+  "text_sim": 0.292,
+  "synergy": 0.691
+ },
+ {
+  "a": "Thunderherd Migration",
+  "b": "Wayta, Trainer Prodigy",
+  "decks": 8,
+  "co_sim": 0.976,
+  "text_sim": 0.285,
+  "synergy": 0.691
+ },
+ {
+  "a": "Extract Power",
+  "b": "Titania, Proud Pummeler",
+  "decks": 13,
+  "co_sim": 0.936,
+  "text_sim": 0.245,
+  "synergy": 0.691
+ },
+ {
+  "a": "Fated Firepower",
+  "b": "Solstice Revelations",
+  "decks": 8,
+  "co_sim": 0.97,
+  "text_sim": 0.279,
+  "synergy": 0.691
+ },
+ {
+  "a": "Component Pouch",
+  "b": "Wyll's Reversal",
+  "decks": 15,
+  "co_sim": 0.945,
+  "text_sim": 0.255,
+  "synergy": 0.69
+ },
+ {
+  "a": "Wyll, Blade of Frontiers",
+  "b": "Berserker's Frenzy",
+  "decks": 14,
+  "co_sim": 0.994,
+  "text_sim": 0.304,
+  "synergy": 0.69
+ },
+ {
+  "a": "Helitrooper",
+  "b": "Yuffie, Materia Hunter",
+  "decks": 32,
+  "co_sim": 0.973,
+  "text_sim": 0.283,
+  "synergy": 0.69
+ },
+ {
+  "a": "Selective Obliteration",
+  "b": "Ultima, Origin of Oblivion",
+  "decks": 17,
+  "co_sim": 0.983,
+  "text_sim": 0.293,
+  "synergy": 0.69
+ },
+ {
+  "a": "The Legend of Roku // Avatar Roku",
+  "b": "Firebending Lesson",
+  "decks": 11,
+  "co_sim": 0.946,
+  "text_sim": 0.257,
+  "synergy": 0.689
+ },
+ {
+  "a": "Flashback",
+  "b": "Coruscation Mage",
+  "decks": 25,
+  "co_sim": 0.948,
+  "text_sim": 0.26,
+  "synergy": 0.689
+ },
+ {
+  "a": "Plague Stinger",
+  "b": "Staff of Compleation",
+  "decks": 11,
+  "co_sim": 0.91,
+  "text_sim": 0.221,
+  "synergy": 0.688
+ },
+ {
+  "a": "Lightfoot Rogue",
+  "b": "Mr. House, President and CEO",
+  "decks": 10,
+  "co_sim": 0.947,
+  "text_sim": 0.261,
+  "synergy": 0.687
+ },
+ {
+  "a": "Ultimate Magic: Holy",
+  "b": "Sephiroth, Fallen Hero",
+  "decks": 35,
+  "co_sim": 0.89,
+  "text_sim": 0.203,
+  "synergy": 0.687
+ },
+ {
+  "a": "Ebony Fly",
+  "b": "Danse Macabre",
+  "decks": 10,
+  "co_sim": 0.934,
+  "text_sim": 0.248,
+  "synergy": 0.686
+ },
+ {
+  "a": "Reaper's Scythe",
+  "b": "Thancred Waters",
+  "decks": 22,
+  "co_sim": 0.952,
+  "text_sim": 0.266,
+  "synergy": 0.686
+ },
+ {
+  "a": "Crystal Barricade",
+  "b": "Tower Defense",
+  "decks": 11,
+  "co_sim": 0.924,
+  "text_sim": 0.238,
+  "synergy": 0.686
+ },
+ {
+  "a": "Zo-Zu the Punisher",
+  "b": "Sulfuric Vortex",
+  "decks": 11,
+  "co_sim": 0.985,
+  "text_sim": 0.299,
+  "synergy": 0.686
+ },
+ {
+  "a": "Dark Ritual",
+  "b": "Chainer, Dementia Master",
+  "decks": 12,
+  "co_sim": 0.898,
+  "text_sim": 0.212,
+  "synergy": 0.686
+ },
+ {
+  "a": "Mirri, Weatherlight Duelist",
+  "b": "Sacred Cat",
+  "decks": 8,
+  "co_sim": 0.963,
+  "text_sim": 0.278,
+  "synergy": 0.685
+ },
+ {
+  "a": "The Legend of Roku // Avatar Roku",
+  "b": "Azula Always Lies",
+  "decks": 8,
+  "co_sim": 0.918,
+  "text_sim": 0.232,
+  "synergy": 0.685
+ },
+ {
+  "a": "An Unexpected Party // At the Door",
+  "b": "Bombur, Gentle Dreamer",
+  "decks": 37,
+  "co_sim": 0.973,
+  "text_sim": 0.288,
+  "synergy": 0.685
+ },
+ {
+  "a": "Assault on Osgiliath",
+  "b": "Grond, the Gatebreaker",
+  "decks": 14,
+  "co_sim": 0.97,
+  "text_sim": 0.285,
+  "synergy": 0.685
+ },
+ {
+  "a": "Tanazir Quandrix",
+  "b": "Brass Infiniscope",
+  "decks": 14,
+  "co_sim": 0.975,
+  "text_sim": 0.29,
+  "synergy": 0.684
+ },
+ {
+  "a": "Dark Ritual",
+  "b": "Tinybones, the Pickpocket",
+  "decks": 20,
+  "co_sim": 0.837,
+  "text_sim": 0.153,
+  "synergy": 0.684
  },
  {
   "a": "Weaver of Harmony",
   "b": "Tom Bombadil",
-  "decks": 8,
-  "co_sim": 0.952,
+  "decks": 21,
+  "co_sim": 0.924,
   "text_sim": 0.241,
-  "synergy": 0.71
+  "synergy": 0.683
  },
  {
-  "a": "Enchantress's Presence",
-  "b": "Tom Bombadil",
+  "a": "Extract Power",
+  "b": "Madame Hydra",
+  "decks": 18,
+  "co_sim": 0.948,
+  "text_sim": 0.265,
+  "synergy": 0.683
+ },
+ {
+  "a": "Combustion Technique",
+  "b": "Firebender Ascension",
   "decks": 8,
-  "co_sim": 0.849,
-  "text_sim": 0.183,
+  "co_sim": 0.949,
+  "text_sim": 0.266,
+  "synergy": 0.683
+ },
+ {
+  "a": "Dreamstone Hedron",
+  "b": "Not of This World",
+  "decks": 9,
+  "co_sim": 0.878,
+  "text_sim": 0.197,
+  "synergy": 0.682
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Blight Mamba",
+  "decks": 9,
+  "co_sim": 0.947,
+  "text_sim": 0.265,
+  "synergy": 0.682
+ },
+ {
+  "a": "Shadow of Mortality",
+  "b": "Prosperous Thief",
+  "decks": 10,
+  "co_sim": 0.918,
+  "text_sim": 0.235,
+  "synergy": 0.682
+ },
+ {
+  "a": "Thassa's Oracle",
+  "b": "Grim Monolith",
+  "decks": 24,
+  "co_sim": 0.878,
+  "text_sim": 0.197,
+  "synergy": 0.681
+ },
+ {
+  "a": "Circuits Act",
+  "b": "Berserker's Frenzy",
+  "decks": 10,
+  "co_sim": 0.966,
+  "text_sim": 0.286,
+  "synergy": 0.68
+ },
+ {
+  "a": "Maha, Its Feathers Night",
+  "b": "Dark Ritual",
+  "decks": 19,
+  "co_sim": 0.871,
+  "text_sim": 0.191,
+  "synergy": 0.68
+ },
+ {
+  "a": "Firebender Ascension",
+  "b": "Avatar Roku, Firebender",
+  "decks": 14,
+  "co_sim": 0.962,
+  "text_sim": 0.284,
+  "synergy": 0.679
+ },
+ {
+  "a": "Key to the Side-Door",
+  "b": "Magnificent End",
+  "decks": 9,
+  "co_sim": 0.948,
+  "text_sim": 0.269,
+  "synergy": 0.679
+ },
+ {
+  "a": "Wyll, Blade of Frontiers",
+  "b": "Wyll's Reversal",
+  "decks": 18,
+  "co_sim": 0.951,
+  "text_sim": 0.273,
+  "synergy": 0.678
+ },
+ {
+  "a": "April O'Neil, Live on the Scene",
+  "b": "Special Move",
+  "decks": 12,
+  "co_sim": 0.981,
+  "text_sim": 0.303,
+  "synergy": 0.678
+ },
+ {
+  "a": "For the Ancestors",
+  "b": "Spiteful Sliver",
+  "decks": 11,
+  "co_sim": 0.949,
+  "text_sim": 0.271,
+  "synergy": 0.678
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Hungering Hydra",
+  "decks": 16,
+  "co_sim": 0.971,
+  "text_sim": 0.292,
+  "synergy": 0.678
+ },
+ {
+  "a": "_____ Goblin",
+  "b": "Wheel of Fortune",
+  "decks": 9,
+  "co_sim": 0.902,
+  "text_sim": 0.225,
+  "synergy": 0.678
+ },
+ {
+  "a": "Extract Power",
+  "b": "Iron Monger, Sadistic Tycoon",
+  "decks": 20,
+  "co_sim": 0.964,
+  "text_sim": 0.287,
+  "synergy": 0.677
+ },
+ {
+  "a": "River Bear",
+  "b": "Grizzly Fate",
+  "decks": 13,
+  "co_sim": 0.995,
+  "text_sim": 0.319,
+  "synergy": 0.677
+ },
+ {
+  "a": "Urabrask // The Great Work",
+  "b": "Seething Song",
+  "decks": 21,
+  "co_sim": 0.896,
+  "text_sim": 0.219,
+  "synergy": 0.677
+ },
+ {
+  "a": "Pongify",
+  "b": "Preordain",
+  "decks": 101,
+  "co_sim": 0.803,
+  "text_sim": 0.127,
+  "synergy": 0.676
+ },
+ {
+  "a": "Masterwork of Ingenuity",
+  "b": "Inventory Management",
+  "decks": 22,
+  "co_sim": 0.96,
+  "text_sim": 0.284,
+  "synergy": 0.676
+ },
+ {
+  "a": "Combat Calligrapher",
+  "b": "Parasitic Impetus",
+  "decks": 15,
+  "co_sim": 0.861,
+  "text_sim": 0.186,
+  "synergy": 0.676
+ },
+ {
+  "a": "Mana Vault",
+  "b": "_____ Goblin",
+  "decks": 9,
+  "co_sim": 0.813,
+  "text_sim": 0.138,
+  "synergy": 0.676
+ },
+ {
+  "a": "Ancient Stirrings",
+  "b": "Benthic Anomaly",
+  "decks": 11,
+  "co_sim": 0.966,
+  "text_sim": 0.29,
+  "synergy": 0.675
+ },
+ {
+  "a": "Thran Dynamo",
+  "b": "Skittering Cicada",
+  "decks": 26,
+  "co_sim": 0.887,
+  "text_sim": 0.212,
+  "synergy": 0.675
+ },
+ {
+  "a": "Gargoyle Flock",
+  "b": "The First Tyrannic War",
+  "decks": 10,
+  "co_sim": 0.996,
+  "text_sim": 0.322,
+  "synergy": 0.675
+ },
+ {
+  "a": "Ugin, Eye of the Storms",
+  "b": "Thran Dynamo",
+  "decks": 31,
+  "co_sim": 0.903,
+  "text_sim": 0.228,
+  "synergy": 0.675
+ },
+ {
+  "a": "Pale Bears",
+  "b": "Grizzly Fate",
+  "decks": 10,
+  "co_sim": 0.995,
+  "text_sim": 0.321,
+  "synergy": 0.675
+ },
+ {
+  "a": "Ingenious Infiltrator",
+  "b": "Lim-D\u00fbl's Vault",
+  "decks": 12,
+  "co_sim": 0.853,
+  "text_sim": 0.178,
+  "synergy": 0.675
+ },
+ {
+  "a": "Attempted Murder",
+  "b": "Chaos Channeler",
+  "decks": 8,
+  "co_sim": 0.983,
+  "text_sim": 0.308,
+  "synergy": 0.674
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Merrow Reejerey",
+  "decks": 13,
+  "co_sim": 0.989,
+  "text_sim": 0.315,
+  "synergy": 0.674
+ },
+ {
+  "a": "The Wasp, Winsome Avenger",
+  "b": "Love on the Battlefield",
+  "decks": 14,
+  "co_sim": 0.991,
+  "text_sim": 0.317,
+  "synergy": 0.674
+ },
+ {
+  "a": "Urabrask // The Great Work",
+  "b": "Pyretic Ritual",
+  "decks": 15,
+  "co_sim": 0.908,
+  "text_sim": 0.234,
+  "synergy": 0.674
+ },
+ {
+  "a": "Lychguard",
+  "b": "Shard of the Nightbringer",
+  "decks": 10,
+  "co_sim": 0.88,
+  "text_sim": 0.207,
+  "synergy": 0.673
+ },
+ {
+  "a": "Clockwork Droid",
+  "b": "Great Intelligence's Plan",
+  "decks": 9,
+  "co_sim": 0.939,
+  "text_sim": 0.266,
+  "synergy": 0.673
+ },
+ {
+  "a": "Ashling, Flame Dancer",
+  "b": "Pyretic Ritual",
+  "decks": 20,
+  "co_sim": 0.935,
+  "text_sim": 0.261,
+  "synergy": 0.673
+ },
+ {
+  "a": "Felothar the Steadfast",
+  "b": "Tower Defense",
+  "decks": 14,
+  "co_sim": 0.962,
+  "text_sim": 0.29,
+  "synergy": 0.672
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Deeproot Elite",
+  "decks": 12,
+  "co_sim": 0.996,
+  "text_sim": 0.324,
+  "synergy": 0.672
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "The Goose Mother",
+  "decks": 26,
+  "co_sim": 0.937,
+  "text_sim": 0.265,
+  "synergy": 0.672
+ },
+ {
+  "a": "Tyranid Harridan",
+  "b": "The First Tyrannic War",
+  "decks": 10,
+  "co_sim": 0.996,
+  "text_sim": 0.324,
+  "synergy": 0.672
+ },
+ {
+  "a": "Katara, the Fearless",
+  "b": "Waterbending Lesson",
+  "decks": 9,
+  "co_sim": 0.905,
+  "text_sim": 0.233,
+  "synergy": 0.672
+ },
+ {
+  "a": "Love on the Battlefield",
+  "b": "Quicksilver, Speedster",
+  "decks": 13,
+  "co_sim": 0.992,
+  "text_sim": 0.32,
+  "synergy": 0.672
+ },
+ {
+  "a": "Bitter Downfall",
+  "b": "The Balrog of Moria",
+  "decks": 15,
+  "co_sim": 0.947,
+  "text_sim": 0.275,
+  "synergy": 0.671
+ },
+ {
+  "a": "Seething Song",
+  "b": "Ashling, Flame Dancer",
+  "decks": 24,
+  "co_sim": 0.934,
+  "text_sim": 0.263,
+  "synergy": 0.671
+ },
+ {
+  "a": "Oblivion Sower",
+  "b": "Null Elemental Blast",
+  "decks": 12,
+  "co_sim": 0.911,
+  "text_sim": 0.24,
+  "synergy": 0.671
+ },
+ {
+  "a": "Dreamstone Hedron",
+  "b": "Skittering Cicada",
+  "decks": 13,
+  "co_sim": 0.906,
+  "text_sim": 0.237,
+  "synergy": 0.67
+ },
+ {
+  "a": "Moment of Glory",
+  "b": "Esgaroth Garrison",
+  "decks": 10,
+  "co_sim": 0.96,
+  "text_sim": 0.29,
+  "synergy": 0.67
+ },
+ {
+  "a": "Moment of Glory",
+  "b": "Eagle of the Great Shelf",
+  "decks": 8,
+  "co_sim": 0.974,
+  "text_sim": 0.305,
+  "synergy": 0.67
+ },
+ {
+  "a": "Component Pouch",
+  "b": "Lightfoot Rogue",
+  "decks": 10,
+  "co_sim": 0.935,
+  "text_sim": 0.265,
+  "synergy": 0.669
+ },
+ {
+  "a": "Berserker's Frenzy",
+  "b": "Mr. House, President and CEO",
+  "decks": 9,
+  "co_sim": 0.905,
+  "text_sim": 0.236,
+  "synergy": 0.669
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Kumena, Tyrant of Orazca",
+  "decks": 13,
+  "co_sim": 0.996,
+  "text_sim": 0.327,
+  "synergy": 0.669
+ },
+ {
+  "a": "The Legend of Roku // Avatar Roku",
+  "b": "Redirect Lightning",
+  "decks": 17,
+  "co_sim": 0.907,
+  "text_sim": 0.239,
+  "synergy": 0.669
+ },
+ {
+  "a": "Tower Defense",
+  "b": "Huatli, the Sun's Heart",
+  "decks": 11,
+  "co_sim": 0.994,
+  "text_sim": 0.324,
+  "synergy": 0.669
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Phyrexian Swarmlord",
+  "decks": 15,
+  "co_sim": 0.972,
+  "text_sim": 0.304,
+  "synergy": 0.668
+ },
+ {
+  "a": "Methods of the Mighty",
+  "b": "Winter Soldier, Reborn Avenger",
+  "decks": 19,
+  "co_sim": 0.993,
+  "text_sim": 0.325,
+  "synergy": 0.668
+ },
+ {
+  "a": "Zo-Zu the Punisher",
+  "b": "Roiling Vortex",
+  "decks": 12,
+  "co_sim": 0.977,
+  "text_sim": 0.31,
+  "synergy": 0.667
+ },
+ {
+  "a": "Recruitment Drive",
+  "b": "Chaos Channeler",
+  "decks": 8,
+  "co_sim": 0.985,
+  "text_sim": 0.319,
   "synergy": 0.666
  },
  {
-  "a": "Flayer of Loyalties",
-  "b": "Darksteel Monolith",
+  "a": "Winged Hive Tyrant",
+  "b": "The First Tyrannic War",
+  "decks": 12,
+  "co_sim": 0.965,
+  "text_sim": 0.3,
+  "synergy": 0.666
+ },
+ {
+  "a": "The Squadron Sinister",
+  "b": "Extract Power",
+  "decks": 20,
+  "co_sim": 0.975,
+  "text_sim": 0.309,
+  "synergy": 0.666
+ },
+ {
+  "a": "Terra Eternal",
+  "b": "Toph, Earthbending Master",
   "decks": 9,
-  "co_sim": 0.98,
-  "text_sim": 0.32,
+  "co_sim": 0.972,
+  "text_sim": 0.306,
+  "synergy": 0.666
+ },
+ {
+  "a": "Grim Monolith",
+  "b": "Drannith Magistrate",
+  "decks": 21,
+  "co_sim": 0.79,
+  "text_sim": 0.125,
+  "synergy": 0.665
+ },
+ {
+  "a": "Celebr-8000",
+  "b": "Danse Macabre",
+  "decks": 10,
+  "co_sim": 0.973,
+  "text_sim": 0.308,
+  "synergy": 0.665
+ },
+ {
+  "a": "Jaws of Defeat",
+  "b": "Rampart Architect",
+  "decks": 11,
+  "co_sim": 0.986,
+  "text_sim": 0.321,
+  "synergy": 0.665
+ },
+ {
+  "a": "April O'Neil, Live on the Scene",
+  "b": "Swift Demise",
+  "decks": 13,
+  "co_sim": 0.99,
+  "text_sim": 0.325,
+  "synergy": 0.665
+ },
+ {
+  "a": "Mana Vault",
+  "b": "Demonic Consultation",
+  "decks": 46,
+  "co_sim": 0.89,
+  "text_sim": 0.225,
+  "synergy": 0.665
+ },
+ {
+  "a": "Animist's Awakening",
+  "b": "Hungering Hydra",
+  "decks": 11,
+  "co_sim": 0.924,
+  "text_sim": 0.26,
+  "synergy": 0.665
+ },
+ {
+  "a": "Hide // Seek",
+  "b": "Nelly Borca, Impulsive Accuser",
+  "decks": 8,
+  "co_sim": 0.932,
+  "text_sim": 0.268,
+  "synergy": 0.665
+ },
+ {
+  "a": "Glorious Purpose",
+  "b": "Red Ghost, Intangible Genius",
+  "decks": 24,
+  "co_sim": 0.996,
+  "text_sim": 0.333,
+  "synergy": 0.664
+ },
+ {
+  "a": "Shadow of Mortality",
+  "b": "Yuriko, the Tiger's Shadow",
+  "decks": 13,
+  "co_sim": 0.929,
+  "text_sim": 0.264,
+  "synergy": 0.664
+ },
+ {
+  "a": "Fervent Charge",
+  "b": "Powder Ganger",
+  "decks": 12,
+  "co_sim": 0.959,
+  "text_sim": 0.296,
+  "synergy": 0.663
+ },
+ {
+  "a": "Synth Infiltrator",
+  "b": "Glimmer of Genius",
+  "decks": 9,
+  "co_sim": 0.942,
+  "text_sim": 0.279,
+  "synergy": 0.663
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Pestilent Syphoner",
+  "decks": 12,
+  "co_sim": 0.943,
+  "text_sim": 0.28,
+  "synergy": 0.663
+ },
+ {
+  "a": "Windborn Muse",
+  "b": "Oblation",
+  "decks": 9,
+  "co_sim": 0.883,
+  "text_sim": 0.22,
+  "synergy": 0.663
+ },
+ {
+  "a": "Overgrown Battlement",
+  "b": "Meekstone",
+  "decks": 8,
+  "co_sim": 0.862,
+  "text_sim": 0.2,
+  "synergy": 0.662
+ },
+ {
+  "a": "Massive Raid",
+  "b": "Goblin Recruiter",
+  "decks": 10,
+  "co_sim": 0.962,
+  "text_sim": 0.301,
+  "synergy": 0.662
+ },
+ {
+  "a": "Thirsting Roots",
+  "b": "Venerated Rotpriest",
+  "decks": 16,
+  "co_sim": 0.959,
+  "text_sim": 0.297,
+  "synergy": 0.662
+ },
+ {
+  "a": "Teferi's Protection",
+  "b": "Smothering Tithe",
+  "decks": 297,
+  "co_sim": 0.886,
+  "text_sim": 0.225,
   "synergy": 0.661
  },
  {
-  "a": "Endless Detour",
-  "b": "Wakka, Devoted Guardian",
+  "a": "Weathered Sentinels",
+  "b": "Reunion of the House",
+  "decks": 10,
+  "co_sim": 0.984,
+  "text_sim": 0.323,
+  "synergy": 0.661
+ },
+ {
+  "a": "Abstruse Archaic",
+  "b": "Rise of the Eldrazi",
+  "decks": 9,
+  "co_sim": 0.968,
+  "text_sim": 0.307,
+  "synergy": 0.661
+ },
+ {
+  "a": "For the Ancestors",
+  "b": "Brood Sliver",
+  "decks": 12,
+  "co_sim": 0.954,
+  "text_sim": 0.293,
+  "synergy": 0.661
+ },
+ {
+  "a": "Echoes of Eternity",
+  "b": "Scour from Existence",
   "decks": 8,
-  "co_sim": 0.884,
+  "co_sim": 0.957,
+  "text_sim": 0.296,
+  "synergy": 0.661
+ },
+ {
+  "a": "Mesmeric Orb",
+  "b": "Bloatfly Swarm",
+  "decks": 14,
+  "co_sim": 0.87,
+  "text_sim": 0.209,
+  "synergy": 0.661
+ },
+ {
+  "a": "Thorin's Last Stand",
+  "b": "Bombur, Gentle Dreamer",
+  "decks": 30,
+  "co_sim": 0.924,
+  "text_sim": 0.263,
+  "synergy": 0.661
+ },
+ {
+  "a": "Wyll's Reversal",
+  "b": "Clown Car",
+  "decks": 12,
+  "co_sim": 0.888,
   "text_sim": 0.228,
+  "synergy": 0.66
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Viridian Corrupter",
+  "decks": 14,
+  "co_sim": 0.987,
+  "text_sim": 0.327,
+  "synergy": 0.66
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Lifeblood Hydra",
+  "decks": 33,
+  "co_sim": 0.981,
+  "text_sim": 0.321,
+  "synergy": 0.66
+ },
+ {
+  "a": "Guiltfeeder",
+  "b": "Maddening Cacophony",
+  "decks": 8,
+  "co_sim": 0.966,
+  "text_sim": 0.306,
+  "synergy": 0.66
+ },
+ {
+  "a": "Love on the Battlefield",
+  "b": "Captain Mar-Vell, Space-Born",
+  "decks": 12,
+  "co_sim": 0.912,
+  "text_sim": 0.252,
+  "synergy": 0.66
+ },
+ {
+  "a": "Grim Monolith",
+  "b": "Intuition",
+  "decks": 12,
+  "co_sim": 0.866,
+  "text_sim": 0.206,
+  "synergy": 0.66
+ },
+ {
+  "a": "Priority Boarding",
+  "b": "Iron Mastiff",
+  "decks": 8,
+  "co_sim": 0.997,
+  "text_sim": 0.338,
+  "synergy": 0.659
+ },
+ {
+  "a": "Liliana of the Dark Realms",
+  "b": "Jet Medallion",
+  "decks": 18,
+  "co_sim": 0.97,
+  "text_sim": 0.31,
+  "synergy": 0.659
+ },
+ {
+  "a": "Echoes of Eternity",
+  "b": "Thran Dynamo",
+  "decks": 43,
+  "co_sim": 0.862,
+  "text_sim": 0.203,
+  "synergy": 0.659
+ },
+ {
+  "a": "Long-Lost Lances",
+  "b": "D\u00e1in's Company",
+  "decks": 39,
+  "co_sim": 0.955,
+  "text_sim": 0.296,
+  "synergy": 0.659
+ },
+ {
+  "a": "Mordor Muster",
+  "b": "Grond, the Gatebreaker",
+  "decks": 13,
+  "co_sim": 0.972,
+  "text_sim": 0.313,
+  "synergy": 0.659
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Pterafractyl",
+  "decks": 8,
+  "co_sim": 0.968,
+  "text_sim": 0.309,
+  "synergy": 0.659
+ },
+ {
+  "a": "Wakening Sun's Avatar",
+  "b": "Wayta, Trainer Prodigy",
+  "decks": 10,
+  "co_sim": 0.972,
+  "text_sim": 0.315,
+  "synergy": 0.658
+ },
+ {
+  "a": "For the Ancestors",
+  "b": "Two-Headed Sliver",
+  "decks": 12,
+  "co_sim": 0.954,
+  "text_sim": 0.296,
+  "synergy": 0.658
+ },
+ {
+  "a": "Multiclass Baldric",
+  "b": "Irregular Cohort",
+  "decks": 8,
+  "co_sim": 0.799,
+  "text_sim": 0.141,
+  "synergy": 0.658
+ },
+ {
+  "a": "Archivist of Gondor",
+  "b": "Lost to Legend",
+  "decks": 15,
+  "co_sim": 0.848,
+  "text_sim": 0.192,
   "synergy": 0.657
  },
  {
-  "a": "Astral Cornucopia",
-  "b": "Thrummingbird",
-  "decks": 11,
+  "a": "Council of Reeds",
+  "b": "Fantastic Elasticity",
+  "decks": 10,
   "co_sim": 0.92,
   "text_sim": 0.263,
   "synergy": 0.657
  },
  {
-  "a": "Long-Lost Lances",
-  "b": "D\u00e1in's Company",
-  "decks": 9,
-  "co_sim": 0.952,
-  "text_sim": 0.296,
+  "a": "Royal Warden",
+  "b": "Shard of the Nightbringer",
+  "decks": 12,
+  "co_sim": 0.898,
+  "text_sim": 0.241,
   "synergy": 0.656
  },
  {
-  "a": "Masterwork of Ingenuity",
-  "b": "Inventory Management",
+  "a": "Trygon Prime",
+  "b": "The First Tyrannic War",
+  "decks": 11,
+  "co_sim": 0.998,
+  "text_sim": 0.342,
+  "synergy": 0.656
+ },
+ {
+  "a": "Kozilek's Command",
+  "b": "Ultima, Origin of Oblivion",
+  "decks": 20,
+  "co_sim": 0.968,
+  "text_sim": 0.312,
+  "synergy": 0.656
+ },
+ {
+  "a": "Tundra Tank",
+  "b": "Azula Always Lies",
+  "decks": 8,
+  "co_sim": 0.988,
+  "text_sim": 0.332,
+  "synergy": 0.656
+ },
+ {
+  "a": "Glaring Fleshraker",
+  "b": "Ancient Stirrings",
+  "decks": 12,
+  "co_sim": 0.894,
+  "text_sim": 0.239,
+  "synergy": 0.655
+ },
+ {
+  "a": "Wall of Junk",
+  "b": "Tower Defense",
   "decks": 9,
   "co_sim": 0.939,
   "text_sim": 0.284,
   "synergy": 0.655
  },
  {
-  "a": "Gilded Drake",
-  "b": "Mystical Tutor",
-  "decks": 8,
-  "co_sim": 0.877,
-  "text_sim": 0.223,
-  "synergy": 0.654
+  "a": "Ultima, Origin of Oblivion",
+  "b": "Darksteel Monolith",
+  "decks": 16,
+  "co_sim": 0.995,
+  "text_sim": 0.34,
+  "synergy": 0.655
  },
  {
-  "a": "Surrak and Goreclaw",
-  "b": "Emerald Medallion",
+  "a": "Roots of Wisdom",
+  "b": "Lathril, Blade of the Elves",
+  "decks": 14,
+  "co_sim": 0.985,
+  "text_sim": 0.33,
+  "synergy": 0.655
+ },
+ {
+  "a": "Light-Paws, Emperor's Voice",
+  "b": "Battle Mastery",
   "decks": 11,
-  "co_sim": 0.879,
-  "text_sim": 0.226,
-  "synergy": 0.653
+  "co_sim": 0.969,
+  "text_sim": 0.314,
+  "synergy": 0.655
  },
  {
-  "a": "Enduring Vitality",
-  "b": "Second Harvest",
-  "decks": 8,
-  "co_sim": 0.894,
-  "text_sim": 0.245,
-  "synergy": 0.65
- },
- {
-  "a": "Chaos Warp",
-  "b": "Vandalblast",
-  "decks": 96,
-  "co_sim": 0.93,
-  "text_sim": 0.283,
-  "synergy": 0.646
- },
- {
-  "a": "Second Harvest",
-  "b": "Toski, Bearer of Secrets",
-  "decks": 18,
-  "co_sim": 0.86,
-  "text_sim": 0.214,
-  "synergy": 0.646
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Archangel of Tithes",
-  "decks": 11,
-  "co_sim": 0.866,
-  "text_sim": 0.22,
-  "synergy": 0.646
- },
- {
-  "a": "Thran Dynamo",
-  "b": "It That Betrays",
-  "decks": 9,
-  "co_sim": 0.82,
-  "text_sim": 0.176,
-  "synergy": 0.644
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "F\u00edli and K\u00edli, Joyous",
-  "decks": 11,
-  "co_sim": 0.959,
-  "text_sim": 0.315,
-  "synergy": 0.644
- },
- {
-  "a": "Ugin, the Ineffable",
-  "b": "Thran Dynamo",
-  "decks": 17,
-  "co_sim": 0.827,
-  "text_sim": 0.187,
-  "synergy": 0.641
+  "a": "Unbound Flourishing",
+  "b": "Vastwood Hydra",
+  "decks": 12,
+  "co_sim": 0.946,
+  "text_sim": 0.292,
+  "synergy": 0.655
  },
  {
   "a": "Long-Lost Lances",
   "b": "Bifur, Melodic Rider",
-  "decks": 11,
-  "co_sim": 0.952,
+  "decks": 44,
+  "co_sim": 0.966,
   "text_sim": 0.311,
-  "synergy": 0.641
+  "synergy": 0.655
  },
  {
-  "a": "Forsaken Monument",
-  "b": "Endbringer",
-  "decks": 14,
-  "co_sim": 0.979,
-  "text_sim": 0.339,
-  "synergy": 0.64
- },
- {
-  "a": "Veyran, Voice of Duality",
-  "b": "Third Path Iconoclast",
-  "decks": 8,
-  "co_sim": 0.88,
-  "text_sim": 0.242,
-  "synergy": 0.638
- },
- {
-  "a": "Auron, Venerated Guardian",
-  "b": "Endless Detour",
-  "decks": 8,
-  "co_sim": 0.883,
-  "text_sim": 0.248,
-  "synergy": 0.635
- },
- {
-  "a": "Worn Powerstone",
-  "b": "Oblivion Sower",
+  "a": "Underworld Breach",
+  "b": "_____ Goblin",
   "decks": 9,
-  "co_sim": 0.818,
+  "co_sim": 0.937,
+  "text_sim": 0.281,
+  "synergy": 0.655
+ },
+ {
+  "a": "Zuko, Exiled Prince",
+  "b": "Azula Always Lies",
+  "decks": 8,
+  "co_sim": 0.944,
+  "text_sim": 0.29,
+  "synergy": 0.654
+ },
+ {
+  "a": "Ozai, the Phoenix King",
+  "b": "Azula Always Lies",
+  "decks": 11,
+  "co_sim": 0.953,
+  "text_sim": 0.299,
+  "synergy": 0.654
+ },
+ {
+  "a": "Raphael, the Muscle",
+  "b": "Lessons from Life",
+  "decks": 14,
+  "co_sim": 0.923,
+  "text_sim": 0.269,
+  "synergy": 0.654
+ },
+ {
+  "a": "Genestealer Locus",
+  "b": "The First Tyrannic War",
+  "decks": 8,
+  "co_sim": 0.966,
+  "text_sim": 0.312,
+  "synergy": 0.654
+ },
+ {
+  "a": "Belisarius Cawl",
+  "b": "Exterminatus",
+  "decks": 11,
+  "co_sim": 0.986,
+  "text_sim": 0.332,
+  "synergy": 0.654
+ },
+ {
+  "a": "Captain N'ghathrod",
+  "b": "Maddening Cacophony",
+  "decks": 12,
+  "co_sim": 0.934,
+  "text_sim": 0.28,
+  "synergy": 0.654
+ },
+ {
+  "a": "Dark Ritual",
+  "b": "Liliana, Heretical Healer // Liliana, Defiant Necromancer",
+  "decks": 9,
+  "co_sim": 0.786,
+  "text_sim": 0.132,
+  "synergy": 0.654
+ },
+ {
+  "a": "The Mountain-king's Return",
+  "b": "Magnificent End",
+  "decks": 10,
+  "co_sim": 0.923,
+  "text_sim": 0.27,
+  "synergy": 0.654
+ },
+ {
+  "a": "Sheoldred, the Apocalypse",
+  "b": "Dark Ritual",
+  "decks": 84,
+  "co_sim": 0.87,
+  "text_sim": 0.217,
+  "synergy": 0.653
+ },
+ {
+  "a": "Elder Deep-Fiend",
+  "b": "Ancient Stirrings",
+  "decks": 9,
+  "co_sim": 0.898,
+  "text_sim": 0.245,
+  "synergy": 0.653
+ },
+ {
+  "a": "Riders of Rohan",
+  "b": "Crown of Gondor",
+  "decks": 19,
+  "co_sim": 0.872,
+  "text_sim": 0.219,
+  "synergy": 0.653
+ },
+ {
+  "a": "Zellix, Sanity Flayer",
+  "b": "Maddening Cacophony",
+  "decks": 18,
+  "co_sim": 0.955,
+  "text_sim": 0.302,
+  "synergy": 0.653
+ },
+ {
+  "a": "Noble Heritage",
+  "b": "Combat Calligrapher",
+  "decks": 8,
+  "co_sim": 0.838,
   "text_sim": 0.185,
-  "synergy": 0.634
+  "synergy": 0.653
+ },
+ {
+  "a": "Oracle of Mul Daya",
+  "b": "Amulet of Vigor",
+  "decks": 13,
+  "co_sim": 0.884,
+  "text_sim": 0.231,
+  "synergy": 0.653
+ },
+ {
+  "a": "The Arkenstone // Seek the Heart",
+  "b": "Magnificent End",
+  "decks": 17,
+  "co_sim": 0.93,
+  "text_sim": 0.276,
+  "synergy": 0.653
+ },
+ {
+  "a": "Overgrown Battlement",
+  "b": "Colfenor's Urn",
+  "decks": 8,
+  "co_sim": 0.92,
+  "text_sim": 0.269,
+  "synergy": 0.652
+ },
+ {
+  "a": "Harmonic Prodigy",
+  "b": "Mizzix's Mastery",
+  "decks": 44,
+  "co_sim": 0.971,
+  "text_sim": 0.319,
+  "synergy": 0.652
+ },
+ {
+  "a": "Shaun, Father of Synths",
+  "b": "Vault 112: Sadistic Simulation",
+  "decks": 8,
+  "co_sim": 0.964,
+  "text_sim": 0.312,
+  "synergy": 0.652
+ },
+ {
+  "a": "Elder Owyn Lyons",
+  "b": "Glimmer of Genius",
+  "decks": 8,
+  "co_sim": 0.947,
+  "text_sim": 0.295,
+  "synergy": 0.652
+ },
+ {
+  "a": "Mistcutter Hydra",
+  "b": "Animist's Awakening",
+  "decks": 8,
+  "co_sim": 0.926,
+  "text_sim": 0.274,
+  "synergy": 0.652
+ },
+ {
+  "a": "Long-Lost Lances",
+  "b": "Bombur, Gentle Dreamer",
+  "decks": 24,
+  "co_sim": 0.933,
+  "text_sim": 0.282,
+  "synergy": 0.652
+ },
+ {
+  "a": "Fire Nation Turret",
+  "b": "Ozai, the Phoenix King",
+  "decks": 11,
+  "co_sim": 0.979,
+  "text_sim": 0.327,
+  "synergy": 0.651
+ },
+ {
+  "a": "Everything Pizza",
+  "b": "Splinter, the Mentor",
+  "decks": 12,
+  "co_sim": 0.954,
+  "text_sim": 0.303,
+  "synergy": 0.651
+ },
+ {
+  "a": "Martial Impetus",
+  "b": "Combat Calligrapher",
+  "decks": 17,
+  "co_sim": 0.9,
+  "text_sim": 0.249,
+  "synergy": 0.651
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Hydroid Krasis",
+  "decks": 39,
+  "co_sim": 0.955,
+  "text_sim": 0.304,
+  "synergy": 0.651
+ },
+ {
+  "a": "Glorious Purpose",
+  "b": "The Squadron Sinister",
+  "decks": 27,
+  "co_sim": 0.997,
+  "text_sim": 0.346,
+  "synergy": 0.651
+ },
+ {
+  "a": "Static Orb",
+  "b": "Swan Song",
+  "decks": 8,
+  "co_sim": 0.842,
+  "text_sim": 0.191,
+  "synergy": 0.651
+ },
+ {
+  "a": "Ninja of the Deep Hours",
+  "b": "Shadow of Mortality",
+  "decks": 8,
+  "co_sim": 0.946,
+  "text_sim": 0.295,
+  "synergy": 0.651
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Emperor Mihail II",
+  "decks": 13,
+  "co_sim": 0.99,
+  "text_sim": 0.34,
+  "synergy": 0.65
+ },
+ {
+  "a": "Soaring Lightbringer",
+  "b": "Redress Fate",
+  "decks": 8,
+  "co_sim": 0.929,
+  "text_sim": 0.278,
+  "synergy": 0.65
+ },
+ {
+  "a": "Dalek Squadron",
+  "b": "The Valeyard",
+  "decks": 9,
+  "co_sim": 0.913,
+  "text_sim": 0.263,
+  "synergy": 0.65
+ },
+ {
+  "a": "Methods of the Mighty",
+  "b": "Ant-Man, Elusive Avenger",
+  "decks": 19,
+  "co_sim": 0.978,
+  "text_sim": 0.328,
+  "synergy": 0.65
+ },
+ {
+  "a": "Doctor Doom",
+  "b": "Too Evil to Stay Dead",
+  "decks": 8,
+  "co_sim": 0.99,
+  "text_sim": 0.34,
+  "synergy": 0.65
+ },
+ {
+  "a": "Glaring Fleshraker",
+  "b": "Planar Bridge",
+  "decks": 9,
+  "co_sim": 0.898,
+  "text_sim": 0.247,
+  "synergy": 0.65
  },
  {
   "a": "Flayer of Loyalties",
-  "b": "Forsaken Monument",
+  "b": "Darksteel Monolith",
+  "decks": 22,
+  "co_sim": 0.969,
+  "text_sim": 0.32,
+  "synergy": 0.649
+ },
+ {
+  "a": "April O'Neil, Live on the Scene",
+  "b": "Game Over",
+  "decks": 12,
+  "co_sim": 0.986,
+  "text_sim": 0.338,
+  "synergy": 0.649
+ },
+ {
+  "a": "Plague Stinger",
+  "b": "Glistening Sphere",
+  "decks": 22,
+  "co_sim": 0.992,
+  "text_sim": 0.343,
+  "synergy": 0.649
+ },
+ {
+  "a": "Geier Reach Bandit // Vildin-Pack Alpha",
+  "b": "The Celestus",
+  "decks": 8,
+  "co_sim": 0.942,
+  "text_sim": 0.293,
+  "synergy": 0.649
+ },
+ {
+  "a": "Clockwork Droid",
+  "b": "This Is How It Ends",
+  "decks": 8,
+  "co_sim": 0.982,
+  "text_sim": 0.333,
+  "synergy": 0.649
+ },
+ {
+  "a": "_____ Goblin",
+  "b": "Lion's Eye Diamond",
+  "decks": 10,
+  "co_sim": 0.902,
+  "text_sim": 0.253,
+  "synergy": 0.649
+ },
+ {
+  "a": "Orcish Medicine",
+  "b": "Grond, the Gatebreaker",
   "decks": 15,
-  "co_sim": 0.972,
-  "text_sim": 0.342,
-  "synergy": 0.63
+  "co_sim": 0.987,
+  "text_sim": 0.339,
+  "synergy": 0.649
+ },
+ {
+  "a": "Down, Down to Goblin-town",
+  "b": "Grond, the Gatebreaker",
+  "decks": 12,
+  "co_sim": 0.949,
+  "text_sim": 0.3,
+  "synergy": 0.649
+ },
+ {
+  "a": "Tower Defense",
+  "b": "Colfenor's Urn",
+  "decks": 8,
+  "co_sim": 0.889,
+  "text_sim": 0.241,
+  "synergy": 0.648
+ },
+ {
+  "a": "Convergence of Dominion",
+  "b": "Shard of the Nightbringer",
+  "decks": 9,
+  "co_sim": 0.852,
+  "text_sim": 0.204,
+  "synergy": 0.648
+ },
+ {
+  "a": "Avenge",
+  "b": "Jocasta, Automaton Avenger",
+  "decks": 17,
+  "co_sim": 0.9,
+  "text_sim": 0.252,
+  "synergy": 0.648
+ },
+ {
+  "a": "Weaver of Harmony",
+  "b": "Garnet, Princess of Alexandria",
+  "decks": 14,
+  "co_sim": 0.923,
+  "text_sim": 0.275,
+  "synergy": 0.648
+ },
+ {
+  "a": "Claim the Precious",
+  "b": "Grond, the Gatebreaker",
+  "decks": 8,
+  "co_sim": 0.909,
+  "text_sim": 0.261,
+  "synergy": 0.648
+ },
+ {
+  "a": "Grim Monolith",
+  "b": "Ranger-Captain of Eos",
+  "decks": 20,
+  "co_sim": 0.807,
+  "text_sim": 0.16,
+  "synergy": 0.647
+ },
+ {
+  "a": "Celebr-8000",
+  "b": "Berserker's Frenzy",
+  "decks": 9,
+  "co_sim": 0.982,
+  "text_sim": 0.335,
+  "synergy": 0.647
+ },
+ {
+  "a": "Bebop, Skull & Crossbones",
+  "b": "Level Up",
+  "decks": 15,
+  "co_sim": 0.903,
+  "text_sim": 0.256,
+  "synergy": 0.647
+ },
+ {
+  "a": "For the Ancestors",
+  "b": "Taunting Sliver",
+  "decks": 8,
+  "co_sim": 0.954,
+  "text_sim": 0.307,
+  "synergy": 0.647
+ },
+ {
+  "a": "Wharf Infiltrator",
+  "b": "Fractured Sanity",
+  "decks": 8,
+  "co_sim": 0.953,
+  "text_sim": 0.306,
+  "synergy": 0.647
+ },
+ {
+  "a": "West Coast Expansion",
+  "b": "Jocasta, Automaton Avenger",
+  "decks": 18,
+  "co_sim": 0.97,
+  "text_sim": 0.323,
+  "synergy": 0.647
+ },
+ {
+  "a": "Pyretic Ritual",
+  "b": "Birgi, God of Storytelling // Harnfel, Horn of Bounty",
+  "decks": 45,
+  "co_sim": 0.95,
+  "text_sim": 0.302,
+  "synergy": 0.647
+ },
+ {
+  "a": "Jet Medallion",
+  "b": "Vincent Valentine // Galian Beast",
+  "decks": 10,
+  "co_sim": 0.88,
+  "text_sim": 0.233,
+  "synergy": 0.647
+ },
+ {
+  "a": "Fated Firepower",
+  "b": "Zuko, Exiled Prince",
+  "decks": 14,
+  "co_sim": 0.961,
+  "text_sim": 0.315,
+  "synergy": 0.646
+ },
+ {
+  "a": "Lord of the Nazg\u00fbl",
+  "b": "Corsairs of Umbar",
+  "decks": 24,
+  "co_sim": 0.938,
+  "text_sim": 0.292,
+  "synergy": 0.646
+ },
+ {
+  "a": "Genestealer Patriarch",
+  "b": "The First Tyrannic War",
+  "decks": 9,
+  "co_sim": 0.996,
+  "text_sim": 0.35,
+  "synergy": 0.646
+ },
+ {
+  "a": "Bonescythe Sliver",
+  "b": "For the Ancestors",
+  "decks": 13,
+  "co_sim": 0.947,
+  "text_sim": 0.301,
+  "synergy": 0.646
+ },
+ {
+  "a": "Harmonic Prodigy",
+  "b": "Prismari Charm",
+  "decks": 10,
+  "co_sim": 0.937,
+  "text_sim": 0.291,
+  "synergy": 0.646
+ },
+ {
+  "a": "Ultron, Unlimited",
+  "b": "Extract Power",
+  "decks": 20,
+  "co_sim": 0.969,
+  "text_sim": 0.323,
+  "synergy": 0.646
+ },
+ {
+  "a": "Charcoal Diamond",
+  "b": "Sangromancer",
+  "decks": 11,
+  "co_sim": 0.822,
+  "text_sim": 0.177,
+  "synergy": 0.646
+ },
+ {
+  "a": "The Torment of Gollum",
+  "b": "Grond, the Gatebreaker",
+  "decks": 10,
+  "co_sim": 0.994,
+  "text_sim": 0.347,
+  "synergy": 0.646
+ },
+ {
+  "a": "Altered Ego",
+  "b": "Expansion Algorithm",
+  "decks": 17,
+  "co_sim": 0.899,
+  "text_sim": 0.254,
+  "synergy": 0.645
+ },
+ {
+  "a": "West Coast Expansion",
+  "b": "Methods of the Mighty",
+  "decks": 18,
+  "co_sim": 0.989,
+  "text_sim": 0.345,
+  "synergy": 0.645
+ },
+ {
+  "a": "Void Winnower",
+  "b": "Selective Obliteration",
+  "decks": 10,
+  "co_sim": 0.921,
+  "text_sim": 0.276,
+  "synergy": 0.645
+ },
+ {
+  "a": "Doctor Octopus, Master Planner",
+  "b": "Doom's Time Platform",
+  "decks": 9,
+  "co_sim": 0.891,
+  "text_sim": 0.246,
+  "synergy": 0.645
+ },
+ {
+  "a": "Treasure Chest",
+  "b": "Berserker's Frenzy",
+  "decks": 10,
+  "co_sim": 0.921,
+  "text_sim": 0.276,
+  "synergy": 0.644
+ },
+ {
+  "a": "Extract Power",
+  "b": "Stilt-Man, Towering Terror",
+  "decks": 17,
+  "co_sim": 0.958,
+  "text_sim": 0.314,
+  "synergy": 0.644
+ },
+ {
+  "a": "West Coast Expansion",
+  "b": "Hercules, Olympian Hero",
+  "decks": 16,
+  "co_sim": 0.986,
+  "text_sim": 0.341,
+  "synergy": 0.644
  },
  {
   "a": "Tainted Pact",
   "b": "Mana Vault",
-  "decks": 11,
-  "co_sim": 0.894,
+  "decks": 49,
+  "co_sim": 0.909,
   "text_sim": 0.265,
-  "synergy": 0.629
+  "synergy": 0.644
+ },
+ {
+  "a": "Ultima, Origin of Oblivion",
+  "b": "Warping Wail",
+  "decks": 21,
+  "co_sim": 0.987,
+  "text_sim": 0.343,
+  "synergy": 0.644
+ },
+ {
+  "a": "Lim-D\u00fbl's Vault",
+  "b": "Moon-Circuit Hacker",
+  "decks": 9,
+  "co_sim": 0.844,
+  "text_sim": 0.201,
+  "synergy": 0.644
+ },
+ {
+  "a": "Dark Ritual",
+  "b": "Vincent Valentine // Galian Beast",
+  "decks": 11,
+  "co_sim": 0.841,
+  "text_sim": 0.198,
+  "synergy": 0.644
+ },
+ {
+  "a": "Ultimate Magic: Meteor",
+  "b": "Sephiroth, Fallen Hero",
+  "decks": 25,
+  "co_sim": 0.909,
+  "text_sim": 0.266,
+  "synergy": 0.643
+ },
+ {
+  "a": "Fervent Charge",
+  "b": "General's Enforcer",
+  "decks": 15,
+  "co_sim": 0.952,
+  "text_sim": 0.309,
+  "synergy": 0.643
+ },
+ {
+  "a": "Benevolent Hydra",
+  "b": "Unbound Flourishing",
+  "decks": 30,
+  "co_sim": 0.963,
+  "text_sim": 0.32,
+  "synergy": 0.643
+ },
+ {
+  "a": "Axebane Guardian",
+  "b": "Meekstone",
+  "decks": 9,
+  "co_sim": 0.876,
+  "text_sim": 0.233,
+  "synergy": 0.643
+ },
+ {
+  "a": "Sentinel Sliver",
+  "b": "For the Ancestors",
+  "decks": 13,
+  "co_sim": 0.946,
+  "text_sim": 0.303,
+  "synergy": 0.643
+ },
+ {
+  "a": "The Motherlode, Excavator",
+  "b": "Electrosiphon",
+  "decks": 11,
+  "co_sim": 0.996,
+  "text_sim": 0.353,
+  "synergy": 0.643
+ },
+ {
+  "a": "Collector Ouphe",
+  "b": "Green Sun's Zenith",
+  "decks": 13,
+  "co_sim": 0.885,
+  "text_sim": 0.241,
+  "synergy": 0.643
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Nicanzil, Current Conductor",
+  "decks": 13,
+  "co_sim": 0.995,
+  "text_sim": 0.354,
+  "synergy": 0.642
+ },
+ {
+  "a": "Underworld Breach",
+  "b": "Pyretic Ritual",
+  "decks": 45,
+  "co_sim": 0.898,
+  "text_sim": 0.256,
+  "synergy": 0.642
+ },
+ {
+  "a": "Grim Monolith",
+  "b": "Timetwister",
+  "decks": 14,
+  "co_sim": 0.867,
+  "text_sim": 0.225,
+  "synergy": 0.642
+ },
+ {
+  "a": "Grim Monolith",
+  "b": "Demonic Consultation",
+  "decks": 20,
+  "co_sim": 0.849,
+  "text_sim": 0.207,
+  "synergy": 0.642
+ },
+ {
+  "a": "Bombur, Gentle Dreamer",
+  "b": "D\u00e1in Ironfoot",
+  "decks": 62,
+  "co_sim": 0.986,
+  "text_sim": 0.343,
+  "synergy": 0.642
+ },
+ {
+  "a": "Animist's Awakening",
+  "b": "Pterafractyl",
+  "decks": 8,
+  "co_sim": 0.918,
+  "text_sim": 0.276,
+  "synergy": 0.642
+ },
+ {
+  "a": "Sunset Revelry",
+  "b": "Lost to Legend",
+  "decks": 17,
+  "co_sim": 0.808,
+  "text_sim": 0.167,
+  "synergy": 0.641
+ },
+ {
+  "a": "Ruthless Winnower",
+  "b": "Elvish Guidance",
+  "decks": 12,
+  "co_sim": 0.989,
+  "text_sim": 0.348,
+  "synergy": 0.641
+ },
+ {
+  "a": "Turnabout",
+  "b": "Preordain",
+  "decks": 9,
+  "co_sim": 0.898,
+  "text_sim": 0.256,
+  "synergy": 0.641
+ },
+ {
+  "a": "This Is How It Ends",
+  "b": "Ashad, the Lone Cyberman",
+  "decks": 8,
+  "co_sim": 0.949,
+  "text_sim": 0.308,
+  "synergy": 0.641
+ },
+ {
+  "a": "Bombur, Gentle Dreamer",
+  "b": "Iron Hills Stalwart",
+  "decks": 40,
+  "co_sim": 0.977,
+  "text_sim": 0.336,
+  "synergy": 0.641
+ },
+ {
+  "a": "March from the Black Gate",
+  "b": "Grond, the Gatebreaker",
+  "decks": 16,
+  "co_sim": 0.991,
+  "text_sim": 0.35,
+  "synergy": 0.641
+ },
+ {
+  "a": "Roots of Wisdom",
+  "b": "Dionus, Elvish Archdruid",
+  "decks": 12,
+  "co_sim": 0.984,
+  "text_sim": 0.344,
+  "synergy": 0.641
+ },
+ {
+  "a": "Wyll's Reversal",
+  "b": "Luck Bobblehead",
+  "decks": 10,
+  "co_sim": 0.872,
+  "text_sim": 0.232,
+  "synergy": 0.64
+ },
+ {
+  "a": "Not of This World",
+  "b": "Thran Dynamo",
+  "decks": 18,
+  "co_sim": 0.825,
+  "text_sim": 0.185,
+  "synergy": 0.64
+ },
+ {
+  "a": "April O'Neil, Live on the Scene",
+  "b": "Double Jump // Flying Kick",
+  "decks": 13,
+  "co_sim": 0.999,
+  "text_sim": 0.359,
+  "synergy": 0.64
+ },
+ {
+  "a": "Ponder",
+  "b": "Pongify",
+  "decks": 108,
+  "co_sim": 0.825,
+  "text_sim": 0.185,
+  "synergy": 0.64
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Altered Ego",
+  "decks": 23,
+  "co_sim": 0.939,
+  "text_sim": 0.299,
+  "synergy": 0.64
+ },
+ {
+  "a": "Exterminatus",
+  "b": "Inquisitor Greyfax",
+  "decks": 9,
+  "co_sim": 0.98,
+  "text_sim": 0.339,
+  "synergy": 0.64
+ },
+ {
+  "a": "Diffusion Sliver",
+  "b": "For the Ancestors",
+  "decks": 11,
+  "co_sim": 0.942,
+  "text_sim": 0.302,
+  "synergy": 0.64
+ },
+ {
+  "a": "Vault 13: Dweller's Journey",
+  "b": "Brotherhood Scribe",
+  "decks": 8,
+  "co_sim": 0.878,
+  "text_sim": 0.238,
+  "synergy": 0.64
+ },
+ {
+  "a": "West Coast Expansion",
+  "b": "Captain Marvel, Apex Avenger",
+  "decks": 20,
+  "co_sim": 0.993,
+  "text_sim": 0.352,
+  "synergy": 0.64
+ },
+ {
+  "a": "Firebird, Blazing Ranger",
+  "b": "Methods of the Mighty",
+  "decks": 14,
+  "co_sim": 0.977,
+  "text_sim": 0.336,
+  "synergy": 0.64
+ },
+ {
+  "a": "Eldritch Immunity",
+  "b": "Ugin's Binding",
+  "decks": 8,
+  "co_sim": 0.968,
+  "text_sim": 0.328,
+  "synergy": 0.64
+ },
+ {
+  "a": "Ringsight",
+  "b": "Orcish Siegemaster",
+  "decks": 18,
+  "co_sim": 0.864,
+  "text_sim": 0.224,
+  "synergy": 0.64
+ },
+ {
+  "a": "Zuko, Exiled Prince",
+  "b": "Firebending Lesson",
+  "decks": 10,
+  "co_sim": 0.947,
+  "text_sim": 0.307,
+  "synergy": 0.64
+ },
+ {
+  "a": "Yuna's Decision",
+  "b": "Wakka, Devoted Guardian",
+  "decks": 23,
+  "co_sim": 0.874,
+  "text_sim": 0.235,
+  "synergy": 0.639
+ },
+ {
+  "a": "Masterwork of Ingenuity",
+  "b": "Armory Paladin",
+  "decks": 8,
+  "co_sim": 0.96,
+  "text_sim": 0.321,
+  "synergy": 0.639
+ },
+ {
+  "a": "Extract Power",
+  "b": "Abomination, World Ravager",
+  "decks": 18,
+  "co_sim": 0.951,
+  "text_sim": 0.312,
+  "synergy": 0.639
+ },
+ {
+  "a": "All Is Dust",
+  "b": "Basalt Monolith",
+  "decks": 52,
+  "co_sim": 0.842,
+  "text_sim": 0.203,
+  "synergy": 0.639
+ },
+ {
+  "a": "Ugin, Eye of the Storms",
+  "b": "Basalt Monolith",
+  "decks": 38,
+  "co_sim": 0.875,
+  "text_sim": 0.236,
+  "synergy": 0.639
+ },
+ {
+  "a": "Shadow of Mortality",
+  "b": "Sakashima's Student",
+  "decks": 9,
+  "co_sim": 0.92,
+  "text_sim": 0.28,
+  "synergy": 0.639
+ },
+ {
+  "a": "Fall of Cair Andros",
+  "b": "Grond, the Gatebreaker",
+  "decks": 11,
+  "co_sim": 0.981,
+  "text_sim": 0.342,
+  "synergy": 0.639
+ },
+ {
+  "a": "Drover Grizzly",
+  "b": "Grizzly Fate",
+  "decks": 12,
+  "co_sim": 0.973,
+  "text_sim": 0.334,
+  "synergy": 0.639
+ },
+ {
+  "a": "Ebony Fly",
+  "b": "Wyll, Blade of Frontiers",
+  "decks": 10,
+  "co_sim": 0.92,
+  "text_sim": 0.282,
+  "synergy": 0.638
+ },
+ {
+  "a": "Thunderwave",
+  "b": "Wyll, Blade of Frontiers",
+  "decks": 10,
+  "co_sim": 0.952,
+  "text_sim": 0.315,
+  "synergy": 0.638
+ },
+ {
+  "a": "Eldritch Immunity",
+  "b": "Ancient Stirrings",
+  "decks": 12,
+  "co_sim": 0.985,
+  "text_sim": 0.346,
+  "synergy": 0.638
+ },
+ {
+  "a": "Exploding Barrel",
+  "b": "Splinter, the Mentor",
+  "decks": 11,
+  "co_sim": 0.897,
+  "text_sim": 0.259,
+  "synergy": 0.638
+ },
+ {
+  "a": "Wall of Junk",
+  "b": "Slaughter the Strong",
+  "decks": 9,
+  "co_sim": 0.926,
+  "text_sim": 0.288,
+  "synergy": 0.638
+ },
+ {
+  "a": "For the Ancestors",
+  "b": "Shifting Sliver",
+  "decks": 13,
+  "co_sim": 0.947,
+  "text_sim": 0.308,
+  "synergy": 0.638
+ },
+ {
+  "a": "Aetherworks Marvel",
+  "b": "Aurora Shifter",
+  "decks": 8,
+  "co_sim": 0.98,
+  "text_sim": 0.342,
+  "synergy": 0.638
+ },
+ {
+  "a": "Vault 112: Sadistic Simulation",
+  "b": "Brotherhood Scribe",
+  "decks": 10,
+  "co_sim": 0.993,
+  "text_sim": 0.356,
+  "synergy": 0.638
+ },
+ {
+  "a": "Waterbending Lesson",
+  "b": "Appa, Loyal Sky Bison",
+  "decks": 8,
+  "co_sim": 0.954,
+  "text_sim": 0.316,
+  "synergy": 0.638
+ },
+ {
+  "a": "Cybership",
+  "b": "The Valeyard",
+  "decks": 8,
+  "co_sim": 0.89,
+  "text_sim": 0.253,
+  "synergy": 0.638
+ },
+ {
+  "a": "Zo-Zu the Punisher",
+  "b": "Spellshock",
+  "decks": 11,
+  "co_sim": 0.983,
+  "text_sim": 0.345,
+  "synergy": 0.638
+ },
+ {
+  "a": "Fated Firepower",
+  "b": "Avatar Roku, Firebender",
+  "decks": 13,
+  "co_sim": 0.972,
+  "text_sim": 0.334,
+  "synergy": 0.638
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Venerated Rotpriest",
+  "decks": 12,
+  "co_sim": 0.94,
+  "text_sim": 0.303,
+  "synergy": 0.638
+ },
+ {
+  "a": "Tyvar, the Pummeler",
+  "b": "Roots of Wisdom",
+  "decks": 10,
+  "co_sim": 0.965,
+  "text_sim": 0.327,
+  "synergy": 0.638
+ },
+ {
+  "a": "Ancient Stirrings",
+  "b": "Deepfathom Skulker",
+  "decks": 9,
+  "co_sim": 0.983,
+  "text_sim": 0.346,
+  "synergy": 0.637
  },
  {
   "a": "All Is Dust",
   "b": "Skittering Cicada",
-  "decks": 9,
-  "co_sim": 0.97,
+  "decks": 25,
+  "co_sim": 0.98,
   "text_sim": 0.343,
-  "synergy": 0.628
+  "synergy": 0.637
+ },
+ {
+  "a": "Spawnbed Protector",
+  "b": "Ugin's Binding",
+  "decks": 8,
+  "co_sim": 0.992,
+  "text_sim": 0.355,
+  "synergy": 0.637
+ },
+ {
+  "a": "Sylvan Safekeeper",
+  "b": "Realms Uncharted",
+  "decks": 15,
+  "co_sim": 0.931,
+  "text_sim": 0.294,
+  "synergy": 0.637
+ },
+ {
+  "a": "Methods of the Mighty",
+  "b": "Jarvis, Earth's Mightiest Butler",
+  "decks": 18,
+  "co_sim": 0.989,
+  "text_sim": 0.352,
+  "synergy": 0.637
+ },
+ {
+  "a": "Rise of the Eldrazi",
+  "b": "It That Heralds the End",
+  "decks": 16,
+  "co_sim": 0.952,
+  "text_sim": 0.315,
+  "synergy": 0.637
+ },
+ {
+  "a": "Greensleeves, Maro-Sorcerer",
+  "b": "Roiling Regrowth",
+  "decks": 8,
+  "co_sim": 0.959,
+  "text_sim": 0.321,
+  "synergy": 0.637
+ },
+ {
+  "a": "Ringsight",
+  "b": "Corsairs of Umbar",
+  "decks": 14,
+  "co_sim": 0.934,
+  "text_sim": 0.297,
+  "synergy": 0.637
+ },
+ {
+  "a": "Component Pouch",
+  "b": "Barbarian Class",
+  "decks": 17,
+  "co_sim": 0.973,
+  "text_sim": 0.337,
+  "synergy": 0.636
+ },
+ {
+  "a": "Ultimate Magic: Meteor",
+  "b": "Helitrooper",
+  "decks": 25,
+  "co_sim": 0.89,
+  "text_sim": 0.254,
+  "synergy": 0.636
+ },
+ {
+  "a": "Animist's Awakening",
+  "b": "Altered Ego",
+  "decks": 21,
+  "co_sim": 0.874,
+  "text_sim": 0.238,
+  "synergy": 0.636
+ },
+ {
+  "a": "Lazotep Sliver",
+  "b": "For the Ancestors",
+  "decks": 12,
+  "co_sim": 0.952,
+  "text_sim": 0.315,
+  "synergy": 0.636
+ },
+ {
+  "a": "Unbound Flourishing",
+  "b": "Kalonian Hydra",
+  "decks": 14,
+  "co_sim": 0.877,
+  "text_sim": 0.241,
+  "synergy": 0.636
+ },
+ {
+  "a": "Dalek Squadron",
+  "b": "This Is How It Ends",
+  "decks": 10,
+  "co_sim": 0.938,
+  "text_sim": 0.302,
+  "synergy": 0.636
+ },
+ {
+  "a": "Intuition",
+  "b": "Mana Vault",
+  "decks": 24,
+  "co_sim": 0.881,
+  "text_sim": 0.245,
+  "synergy": 0.636
+ },
+ {
+  "a": "The Fire Nation Drill",
+  "b": "Fire Nation Cadets",
+  "decks": 8,
+  "co_sim": 0.918,
+  "text_sim": 0.282,
+  "synergy": 0.636
+ },
+ {
+  "a": "Ozai, the Phoenix King",
+  "b": "Firebender Ascension",
+  "decks": 25,
+  "co_sim": 0.972,
+  "text_sim": 0.336,
+  "synergy": 0.635
+ },
+ {
+  "a": "Surrak and Goreclaw",
+  "b": "Emerald Medallion",
+  "decks": 54,
+  "co_sim": 0.861,
+  "text_sim": 0.226,
+  "synergy": 0.635
+ },
+ {
+  "a": "Herald of Secret Streams",
+  "b": "Bygone Marvels",
+  "decks": 13,
+  "co_sim": 0.869,
+  "text_sim": 0.234,
+  "synergy": 0.635
+ },
+ {
+  "a": "Primo, the Unbounded",
+  "b": "Animist's Awakening",
+  "decks": 21,
+  "co_sim": 0.892,
+  "text_sim": 0.257,
+  "synergy": 0.635
+ },
+ {
+  "a": "Lossarnach Captain",
+  "b": "Crown of Gondor",
+  "decks": 20,
+  "co_sim": 0.865,
+  "text_sim": 0.23,
+  "synergy": 0.635
+ },
+ {
+  "a": "Raucous Audience",
+  "b": "Shared Roots",
+  "decks": 15,
+  "co_sim": 0.924,
+  "text_sim": 0.289,
+  "synergy": 0.635
+ },
+ {
+  "a": "Lim-D\u00fbl's Vault",
+  "b": "Satoru, the Infiltrator",
+  "decks": 8,
+  "co_sim": 0.875,
+  "text_sim": 0.24,
+  "synergy": 0.635
+ },
+ {
+  "a": "Dwarven Provisioner",
+  "b": "Bombur, Gentle Dreamer",
+  "decks": 25,
+  "co_sim": 0.981,
+  "text_sim": 0.346,
+  "synergy": 0.635
+ },
+ {
+  "a": "Magnificent End",
+  "b": "Thr\u00f3r's Map",
+  "decks": 10,
+  "co_sim": 0.92,
+  "text_sim": 0.285,
+  "synergy": 0.635
+ },
+ {
+  "a": "Exit Specialist",
+  "b": "Scroll of Fate",
+  "decks": 8,
+  "co_sim": 0.99,
+  "text_sim": 0.355,
+  "synergy": 0.635
+ },
+ {
+  "a": "Primordial Hydra",
+  "b": "Animist's Awakening",
+  "decks": 27,
+  "co_sim": 0.918,
+  "text_sim": 0.284,
+  "synergy": 0.634
+ },
+ {
+  "a": "Primo, the Unbounded",
+  "b": "Brass Infiniscope",
+  "decks": 19,
+  "co_sim": 0.992,
+  "text_sim": 0.358,
+  "synergy": 0.634
+ },
+ {
+  "a": "Elementalist's Palette",
+  "b": "Tanazir Quandrix",
+  "decks": 14,
+  "co_sim": 0.943,
+  "text_sim": 0.309,
+  "synergy": 0.634
+ },
+ {
+  "a": "Meekstone",
+  "b": "Arcades, the Strategist",
+  "decks": 8,
+  "co_sim": 0.864,
+  "text_sim": 0.229,
+  "synergy": 0.634
+ },
+ {
+  "a": "Wharf Infiltrator",
+  "b": "Maddening Cacophony",
+  "decks": 8,
+  "co_sim": 0.944,
+  "text_sim": 0.31,
+  "synergy": 0.634
+ },
+ {
+  "a": "Phyrexian Swarmlord",
+  "b": "Thirsting Roots",
+  "decks": 8,
+  "co_sim": 0.934,
+  "text_sim": 0.3,
+  "synergy": 0.634
+ },
+ {
+  "a": "Book of Mazarbul",
+  "b": "Grond, the Gatebreaker",
+  "decks": 12,
+  "co_sim": 0.991,
+  "text_sim": 0.356,
+  "synergy": 0.634
+ },
+ {
+  "a": "Colfenor's Urn",
+  "b": "Wingmantle Chaplain",
+  "decks": 8,
+  "co_sim": 0.907,
+  "text_sim": 0.274,
+  "synergy": 0.633
+ },
+ {
+  "a": "Trazyn the Infinite",
+  "b": "Their Name Is Death",
+  "decks": 13,
+  "co_sim": 0.91,
+  "text_sim": 0.277,
+  "synergy": 0.633
+ },
+ {
+  "a": "Heroic Intervention",
+  "b": "Nylea, Keen-Eyed",
+  "decks": 16,
+  "co_sim": 0.797,
+  "text_sim": 0.164,
+  "synergy": 0.633
+ },
+ {
+  "a": "Coralhelm Commander",
+  "b": "Bygone Marvels",
+  "decks": 9,
+  "co_sim": 0.99,
+  "text_sim": 0.356,
+  "synergy": 0.633
+ },
+ {
+  "a": "Avengers Quinjet",
+  "b": "Quicksilver, Speedster",
+  "decks": 19,
+  "co_sim": 0.964,
+  "text_sim": 0.331,
+  "synergy": 0.633
+ },
+ {
+  "a": "Long-Lost Lances",
+  "b": "Dwarven Recruiter",
+  "decks": 16,
+  "co_sim": 0.841,
+  "text_sim": 0.208,
+  "synergy": 0.633
+ },
+ {
+  "a": "Grond, the Gatebreaker",
+  "b": "Along the Crooked Way",
+  "decks": 10,
+  "co_sim": 0.941,
+  "text_sim": 0.308,
+  "synergy": 0.633
+ },
+ {
+  "a": "Thundermane Dragon",
+  "b": "Dragonstorm Globe",
+  "decks": 10,
+  "co_sim": 0.987,
+  "text_sim": 0.354,
+  "synergy": 0.633
+ },
+ {
+  "a": "Glorious Purpose",
+  "b": "Doctor Octopus, Master Planner",
+  "decks": 10,
+  "co_sim": 0.993,
+  "text_sim": 0.36,
+  "synergy": 0.633
+ },
+ {
+  "a": "Dark Ritual",
+  "b": "Tergrid, God of Fright // Tergrid's Lantern",
+  "decks": 30,
+  "co_sim": 0.831,
+  "text_sim": 0.2,
+  "synergy": 0.632
+ },
+ {
+  "a": "Technomancer",
+  "b": "Shard of the Nightbringer",
+  "decks": 11,
+  "co_sim": 0.881,
+  "text_sim": 0.249,
+  "synergy": 0.632
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Seafloor Oracle",
+  "decks": 13,
+  "co_sim": 0.99,
+  "text_sim": 0.358,
+  "synergy": 0.632
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Ichor Rats",
+  "decks": 14,
+  "co_sim": 0.895,
+  "text_sim": 0.262,
+  "synergy": 0.632
+ },
+ {
+  "a": "Scroll of Fate",
+  "b": "Skinthinner",
+  "decks": 9,
+  "co_sim": 0.987,
+  "text_sim": 0.354,
+  "synergy": 0.632
+ },
+ {
+  "a": "Glistening Sphere",
+  "b": "Hand of the Praetors",
+  "decks": 9,
+  "co_sim": 0.992,
+  "text_sim": 0.36,
+  "synergy": 0.632
+ },
+ {
+  "a": "_____ Goblin",
+  "b": "Deflecting Swat",
+  "decks": 10,
+  "co_sim": 0.822,
+  "text_sim": 0.19,
+  "synergy": 0.632
+ },
+ {
+  "a": "Harmonic Prodigy",
+  "b": "Flow State",
+  "decks": 10,
+  "co_sim": 0.908,
+  "text_sim": 0.277,
+  "synergy": 0.632
+ },
+ {
+  "a": "Magnificent End",
+  "b": "Bombur, Gentle Dreamer",
+  "decks": 13,
+  "co_sim": 0.864,
+  "text_sim": 0.232,
+  "synergy": 0.632
+ },
+ {
+  "a": "Lightfoot Rogue",
+  "b": "Danse Macabre",
+  "decks": 9,
+  "co_sim": 0.975,
+  "text_sim": 0.344,
+  "synergy": 0.631
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Hakbal of the Surging Soul",
+  "decks": 13,
+  "co_sim": 0.942,
+  "text_sim": 0.311,
+  "synergy": 0.631
+ },
+ {
+  "a": "Belisarius Cawl",
+  "b": "Deny the Witch",
+  "decks": 11,
+  "co_sim": 0.854,
+  "text_sim": 0.222,
+  "synergy": 0.631
+ },
+ {
+  "a": "Extract Power",
+  "b": "Killmonger, Ruthless Usurper",
+  "decks": 16,
+  "co_sim": 0.921,
+  "text_sim": 0.29,
+  "synergy": 0.631
+ },
+ {
+  "a": "Oboro Breezecaller",
+  "b": "Mystic Remora",
+  "decks": 8,
+  "co_sim": 0.849,
+  "text_sim": 0.218,
+  "synergy": 0.631
  },
  {
   "a": "Thassa's Oracle",
   "b": "Mana Vault",
-  "decks": 14,
-  "co_sim": 0.862,
+  "decks": 58,
+  "co_sim": 0.866,
   "text_sim": 0.235,
+  "synergy": 0.631
+ },
+ {
+  "a": "Firebender Ascension",
+  "b": "Firebending Lesson",
+  "decks": 12,
+  "co_sim": 0.938,
+  "text_sim": 0.307,
+  "synergy": 0.631
+ },
+ {
+  "a": "Bloodline Keeper // Lord of Lineage",
+  "b": "Exquisite Blood",
+  "decks": 14,
+  "co_sim": 0.839,
+  "text_sim": 0.208,
+  "synergy": 0.631
+ },
+ {
+  "a": "Ninja of the Deep Hours",
+  "b": "Lim-D\u00fbl's Vault",
+  "decks": 9,
+  "co_sim": 0.848,
+  "text_sim": 0.217,
+  "synergy": 0.631
+ },
+ {
+  "a": "Component Pouch",
+  "b": "Six-Sided Die",
+  "decks": 10,
+  "co_sim": 0.948,
+  "text_sim": 0.318,
+  "synergy": 0.63
+ },
+ {
+  "a": "Wyll, Blade of Frontiers",
+  "b": "Priority Boarding",
+  "decks": 9,
+  "co_sim": 0.99,
+  "text_sim": 0.359,
+  "synergy": 0.63
+ },
+ {
+  "a": "Barbarian Class",
+  "b": "Delina, Wild Mage",
+  "decks": 21,
+  "co_sim": 0.943,
+  "text_sim": 0.313,
+  "synergy": 0.63
+ },
+ {
+  "a": "Mutated Cultist",
+  "b": "Ancient Stirrings",
+  "decks": 9,
+  "co_sim": 0.954,
+  "text_sim": 0.324,
+  "synergy": 0.63
+ },
+ {
+  "a": "Thran Dynamo",
+  "b": "Titan's Presence",
+  "decks": 21,
+  "co_sim": 0.894,
+  "text_sim": 0.264,
+  "synergy": 0.63
+ },
+ {
+  "a": "Fractal Harness",
+  "b": "Troyan, Gutsy Explorer",
+  "decks": 17,
+  "co_sim": 0.953,
+  "text_sim": 0.323,
+  "synergy": 0.63
+ },
+ {
+  "a": "Fractal Harness",
+  "b": "Nexus Mentality",
+  "decks": 11,
+  "co_sim": 0.936,
+  "text_sim": 0.306,
+  "synergy": 0.63
+ },
+ {
+  "a": "Commander's Insight",
+  "b": "Primo, the Unbounded",
+  "decks": 11,
+  "co_sim": 0.921,
+  "text_sim": 0.292,
+  "synergy": 0.63
+ },
+ {
+  "a": "Lazotep Sliver",
+  "b": "Pillar of Origins",
+  "decks": 11,
+  "co_sim": 0.898,
+  "text_sim": 0.268,
+  "synergy": 0.63
+ },
+ {
+  "a": "Dalek Squadron",
+  "b": "Great Intelligence's Plan",
+  "decks": 13,
+  "co_sim": 0.941,
+  "text_sim": 0.311,
+  "synergy": 0.63
+ },
+ {
+  "a": "Methods of the Mighty",
+  "b": "Photon, Mighty Marvel",
+  "decks": 20,
+  "co_sim": 0.966,
+  "text_sim": 0.336,
+  "synergy": 0.63
+ },
+ {
+  "a": "Not of This World",
+  "b": "Basalt Monolith",
+  "decks": 11,
+  "co_sim": 0.75,
+  "text_sim": 0.12,
+  "synergy": 0.63
+ },
+ {
+  "a": "Hullbreaker Horror",
+  "b": "Sapphire Medallion",
+  "decks": 36,
+  "co_sim": 0.91,
+  "text_sim": 0.28,
+  "synergy": 0.63
+ },
+ {
+  "a": "Ultima, Origin of Oblivion",
+  "b": "Endbringer",
+  "decks": 16,
+  "co_sim": 0.967,
+  "text_sim": 0.337,
+  "synergy": 0.63
+ },
+ {
+  "a": "Diamond Pick-Axe",
+  "b": "Dwarven Recruiter",
+  "decks": 24,
+  "co_sim": 0.897,
+  "text_sim": 0.267,
+  "synergy": 0.63
+ },
+ {
+  "a": "Aerial Responder",
+  "b": "Bombur, Gentle Dreamer",
+  "decks": 11,
+  "co_sim": 0.939,
+  "text_sim": 0.308,
+  "synergy": 0.63
+ },
+ {
+  "a": "Chocobo Knights",
+  "b": "Yuna's Decision",
+  "decks": 24,
+  "co_sim": 0.893,
+  "text_sim": 0.264,
+  "synergy": 0.629
+ },
+ {
+  "a": "Leonardo, the Balance",
+  "b": "Game Over",
+  "decks": 14,
+  "co_sim": 0.985,
+  "text_sim": 0.356,
+  "synergy": 0.629
+ },
+ {
+  "a": "White Glove Gourmand",
+  "b": "Fervent Charge",
+  "decks": 9,
+  "co_sim": 0.959,
+  "text_sim": 0.33,
+  "synergy": 0.629
+ },
+ {
+  "a": "Winged Sliver",
+  "b": "Pillar of Origins",
+  "decks": 10,
+  "co_sim": 0.905,
+  "text_sim": 0.275,
+  "synergy": 0.629
+ },
+ {
+  "a": "West Coast Expansion",
+  "b": "War Machine, Avenging Arsenal",
+  "decks": 20,
+  "co_sim": 0.986,
+  "text_sim": 0.357,
+  "synergy": 0.629
+ },
+ {
+  "a": "Ultima, Origin of Oblivion",
+  "b": "Null Elemental Blast",
+  "decks": 28,
+  "co_sim": 0.991,
+  "text_sim": 0.362,
+  "synergy": 0.629
+ },
+ {
+  "a": "Claim the Precious",
+  "b": "Corsairs of Umbar",
+  "decks": 13,
+  "co_sim": 0.921,
+  "text_sim": 0.292,
+  "synergy": 0.629
+ },
+ {
+  "a": "Thirsting Roots",
+  "b": "Blight Mamba",
+  "decks": 8,
+  "co_sim": 0.947,
+  "text_sim": 0.318,
+  "synergy": 0.629
+ },
+ {
+  "a": "Heidegger, Shinra Executive",
+  "b": "Cloud's Limit Break",
+  "decks": 23,
+  "co_sim": 0.92,
+  "text_sim": 0.292,
+  "synergy": 0.628
+ },
+ {
+  "a": "Topography Tracker",
+  "b": "Bygone Marvels",
+  "decks": 13,
+  "co_sim": 0.996,
+  "text_sim": 0.368,
+  "synergy": 0.628
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Singer of Swift Rivers",
+  "decks": 13,
+  "co_sim": 0.996,
+  "text_sim": 0.368,
+  "synergy": 0.628
+ },
+ {
+  "a": "Primaris Chaplain",
+  "b": "Zephyrim",
+  "decks": 10,
+  "co_sim": 0.994,
+  "text_sim": 0.366,
+  "synergy": 0.628
+ },
+ {
+  "a": "Brainstorm",
+  "b": "Docent of Perfection // Final Iteration",
+  "decks": 9,
+  "co_sim": 0.874,
+  "text_sim": 0.246,
+  "synergy": 0.628
+ },
+ {
+  "a": "Avengers Quinjet",
+  "b": "She-Hulk, Wallbreaker",
+  "decks": 25,
+  "co_sim": 0.992,
+  "text_sim": 0.364,
+  "synergy": 0.628
+ },
+ {
+  "a": "Tainted Pact",
+  "b": "Grim Monolith",
+  "decks": 23,
+  "co_sim": 0.863,
+  "text_sim": 0.236,
+  "synergy": 0.628
+ },
+ {
+  "a": "Bombur, Gentle Dreamer",
+  "b": "D\u00e1in's Company",
+  "decks": 58,
+  "co_sim": 0.985,
+  "text_sim": 0.358,
+  "synergy": 0.628
+ },
+ {
+  "a": "Bombur, Gentle Dreamer",
+  "b": "Dwarven Mattock",
+  "decks": 47,
+  "co_sim": 0.986,
+  "text_sim": 0.358,
+  "synergy": 0.628
+ },
+ {
+  "a": "Expand the Sphere",
+  "b": "Necrogen Rotpriest",
+  "decks": 10,
+  "co_sim": 0.958,
+  "text_sim": 0.329,
+  "synergy": 0.628
+ },
+ {
+  "a": "Flow of Knowledge",
+  "b": "Sapphire Medallion",
+  "decks": 11,
+  "co_sim": 0.931,
+  "text_sim": 0.303,
+  "synergy": 0.628
+ },
+ {
+  "a": "Bombur, Gentle Dreamer",
+  "b": "Warchanter Skald",
+  "decks": 12,
+  "co_sim": 0.933,
+  "text_sim": 0.305,
+  "synergy": 0.628
+ },
+ {
+  "a": "Skyshroud Claim",
+  "b": "Kogla, the Titan Ape",
+  "decks": 13,
+  "co_sim": 0.843,
+  "text_sim": 0.216,
   "synergy": 0.627
  },
  {
-  "a": "Ajani's Chosen",
-  "b": "Winds of Rath",
-  "decks": 15,
+  "a": "Wastescape Battlemage",
+  "b": "Eldritch Immunity",
+  "decks": 19,
+  "co_sim": 0.965,
+  "text_sim": 0.338,
+  "synergy": 0.627
+ },
+ {
+  "a": "Ghoulish Impetus",
+  "b": "Combat Calligrapher",
+  "decks": 13,
+  "co_sim": 0.808,
+  "text_sim": 0.181,
+  "synergy": 0.627
+ },
+ {
+  "a": "Elder Owyn Lyons",
+  "b": "Electrosiphon",
+  "decks": 9,
+  "co_sim": 0.951,
+  "text_sim": 0.324,
+  "synergy": 0.627
+ },
+ {
+  "a": "Frantic Search",
+  "b": "Docent of Perfection // Final Iteration",
+  "decks": 10,
+  "co_sim": 0.897,
+  "text_sim": 0.27,
+  "synergy": 0.627
+ },
+ {
+  "a": "Dalek Drone",
+  "b": "Great Intelligence's Plan",
+  "decks": 12,
+  "co_sim": 0.959,
+  "text_sim": 0.332,
+  "synergy": 0.627
+ },
+ {
+  "a": "Fated Firepower",
+  "b": "Fire Lord Ozai",
+  "decks": 9,
+  "co_sim": 0.948,
+  "text_sim": 0.32,
+  "synergy": 0.627
+ },
+ {
+  "a": "Kimahri, Valiant Guardian",
+  "b": "Yuna's Decision",
+  "decks": 24,
+  "co_sim": 0.874,
+  "text_sim": 0.248,
+  "synergy": 0.626
+ },
+ {
+  "a": "Fervent Charge",
+  "b": "Caesar, Legion's Emperor",
+  "decks": 18,
+  "co_sim": 0.981,
+  "text_sim": 0.355,
+  "synergy": 0.626
+ },
+ {
+  "a": "Radiant Destiny",
+  "b": "Bloodline Necromancer",
+  "decks": 11,
+  "co_sim": 0.856,
+  "text_sim": 0.23,
+  "synergy": 0.626
+ },
+ {
+  "a": "Lattice Library",
+  "b": "Tanazir Quandrix",
+  "decks": 14,
+  "co_sim": 0.976,
+  "text_sim": 0.35,
+  "synergy": 0.626
+ },
+ {
+  "a": "Exterminatus",
+  "b": "Zephyrim",
+  "decks": 11,
+  "co_sim": 0.988,
+  "text_sim": 0.362,
+  "synergy": 0.626
+ },
+ {
+  "a": "Echoes of Eternity",
+  "b": "Rise of the Eldrazi",
+  "decks": 24,
+  "co_sim": 0.958,
+  "text_sim": 0.332,
+  "synergy": 0.626
+ },
+ {
+  "a": "Avenge",
+  "b": "She-Hulk, Wallbreaker",
+  "decks": 17,
+  "co_sim": 0.867,
+  "text_sim": 0.241,
+  "synergy": 0.626
+ },
+ {
+  "a": "Emerald Medallion",
+  "b": "Thunderfoot Baloth",
+  "decks": 12,
+  "co_sim": 0.816,
+  "text_sim": 0.191,
+  "synergy": 0.626
+ },
+ {
+  "a": "Gilded Drake",
+  "b": "Mystical Tutor",
+  "decks": 14,
+  "co_sim": 0.849,
+  "text_sim": 0.223,
+  "synergy": 0.626
+ },
+ {
+  "a": "Ultima, Origin of Oblivion",
+  "b": "Desecrate Reality",
+  "decks": 12,
   "co_sim": 0.986,
   "text_sim": 0.36,
   "synergy": 0.626
  },
  {
-  "a": "Mothdust Changeling",
-  "b": "Yuriko, the Tiger's Shadow",
-  "decks": 11,
-  "co_sim": 0.897,
-  "text_sim": 0.272,
+  "a": "Fire Lord Ozai",
+  "b": "Firebender Ascension",
+  "decks": 9,
+  "co_sim": 0.95,
+  "text_sim": 0.324,
+  "synergy": 0.626
+ },
+ {
+  "a": "Lim-D\u00fbl's Vault",
+  "b": "Silver-Fur Master",
+  "decks": 9,
+  "co_sim": 0.842,
+  "text_sim": 0.216,
+  "synergy": 0.626
+ },
+ {
+  "a": "Szarekh, the Silent King",
+  "b": "Shard of the Nightbringer",
+  "decks": 10,
+  "co_sim": 0.876,
+  "text_sim": 0.251,
   "synergy": 0.625
  },
  {
-  "a": "Sylvan Safekeeper",
-  "b": "Scapeshift",
-  "decks": 10,
-  "co_sim": 0.943,
-  "text_sim": 0.32,
-  "synergy": 0.623
- },
- {
-  "a": "Tainted Pact",
-  "b": "Lotus Petal",
-  "decks": 12,
-  "co_sim": 0.941,
-  "text_sim": 0.318,
-  "synergy": 0.623
- },
- {
-  "a": "Artisan of Kozilek",
-  "b": "Worn Powerstone",
-  "decks": 12,
-  "co_sim": 0.826,
-  "text_sim": 0.204,
-  "synergy": 0.622
- },
- {
-  "a": "It That Betrays",
-  "b": "Worn Powerstone",
-  "decks": 10,
-  "co_sim": 0.819,
-  "text_sim": 0.198,
-  "synergy": 0.621
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Angelic Field Marshal",
-  "decks": 9,
-  "co_sim": 0.825,
-  "text_sim": 0.204,
-  "synergy": 0.621
- },
- {
-  "a": "Imperial Seal",
-  "b": "Mana Vault",
-  "decks": 24,
-  "co_sim": 0.866,
-  "text_sim": 0.249,
-  "synergy": 0.618
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "An Unexpected Party // At the Door",
-  "decks": 10,
-  "co_sim": 0.962,
-  "text_sim": 0.345,
-  "synergy": 0.617
- },
- {
-  "a": "Tom Bombadil",
-  "b": "Sanctum Weaver",
-  "decks": 8,
-  "co_sim": 0.831,
-  "text_sim": 0.215,
-  "synergy": 0.616
- },
- {
-  "a": "Past in Flames",
-  "b": "Seething Song",
-  "decks": 11,
-  "co_sim": 0.954,
-  "text_sim": 0.342,
-  "synergy": 0.613
- },
- {
-  "a": "Gifts Ungiven",
-  "b": "Mana Vault",
-  "decks": 11,
-  "co_sim": 0.818,
-  "text_sim": 0.206,
-  "synergy": 0.612
- },
- {
-  "a": "Miirym, Sentinel Wyrm",
-  "b": "Temur Ascendancy",
-  "decks": 11,
-  "co_sim": 0.922,
-  "text_sim": 0.311,
-  "synergy": 0.611
- },
- {
-  "a": "Endless Detour",
-  "b": "Maester Seymour",
-  "decks": 8,
-  "co_sim": 0.857,
-  "text_sim": 0.247,
-  "synergy": 0.609
- },
- {
-  "a": "Their Name Is Death",
-  "b": "Canoptek Spyder",
-  "decks": 9,
-  "co_sim": 0.981,
-  "text_sim": 0.374,
-  "synergy": 0.608
- },
- {
-  "a": "Basalt Monolith",
-  "b": "Swan Song",
-  "decks": 11,
-  "co_sim": 0.734,
-  "text_sim": 0.126,
-  "synergy": 0.608
- },
- {
-  "a": "Iron Hills Blacksmith",
-  "b": "Thorin Oakenshield",
-  "decks": 8,
-  "co_sim": 0.98,
-  "text_sim": 0.372,
-  "synergy": 0.608
- },
- {
-  "a": "Balin, Loremaster",
-  "b": "Long-Lost Lances",
-  "decks": 9,
-  "co_sim": 0.956,
-  "text_sim": 0.349,
-  "synergy": 0.607
- },
- {
-  "a": "Echoes of Eternity",
-  "b": "Thran Dynamo",
-  "decks": 10,
-  "co_sim": 0.809,
-  "text_sim": 0.203,
-  "synergy": 0.606
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "Bofur, Reliable Guardian // Concerted Care",
-  "decks": 8,
-  "co_sim": 0.969,
-  "text_sim": 0.364,
-  "synergy": 0.605
- },
- {
-  "a": "Nightkin Ambusher",
-  "b": "Raul, Trouble Shooter",
-  "decks": 8,
-  "co_sim": 0.986,
-  "text_sim": 0.383,
-  "synergy": 0.604
- },
- {
-  "a": "Masterwork of Ingenuity",
-  "b": "Akiri, Fearless Voyager",
-  "decks": 9,
-  "co_sim": 0.972,
-  "text_sim": 0.367,
-  "synergy": 0.604
- },
- {
-  "a": "Diamond Pick-Axe",
-  "b": "Bifur, Melodic Rider",
-  "decks": 11,
-  "co_sim": 0.918,
-  "text_sim": 0.314,
-  "synergy": 0.604
- },
- {
-  "a": "Teferi's Protection",
-  "b": "Smothering Tithe",
-  "decks": 99,
-  "co_sim": 0.828,
-  "text_sim": 0.225,
-  "synergy": 0.603
- },
- {
-  "a": "Cloud, Midgar Mercenary",
-  "b": "Buster Sword",
-  "decks": 11,
-  "co_sim": 0.989,
-  "text_sim": 0.386,
-  "synergy": 0.603
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Exemplar of Light",
-  "decks": 8,
-  "co_sim": 0.836,
-  "text_sim": 0.233,
-  "synergy": 0.603
- },
- {
-  "a": "Puresteel Paladin",
-  "b": "Inventory Management",
-  "decks": 15,
-  "co_sim": 0.984,
-  "text_sim": 0.382,
-  "synergy": 0.602
- },
- {
-  "a": "Craterhoof Behemoth",
-  "b": "Emerald Medallion",
-  "decks": 12,
-  "co_sim": 0.845,
-  "text_sim": 0.243,
-  "synergy": 0.602
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "F\u00edli the Pathfinder",
-  "decks": 10,
-  "co_sim": 0.963,
-  "text_sim": 0.361,
-  "synergy": 0.602
- },
- {
-  "a": "Imperial Seal",
-  "b": "Grim Monolith",
-  "decks": 9,
-  "co_sim": 0.795,
-  "text_sim": 0.196,
-  "synergy": 0.6
- },
- {
-  "a": "Gishath, Sun's Avatar",
-  "b": "Rhythm of the Wild",
-  "decks": 9,
-  "co_sim": 0.81,
-  "text_sim": 0.21,
-  "synergy": 0.6
- },
- {
-  "a": "Circle of Power",
-  "b": "Lyse Hext",
-  "decks": 9,
-  "co_sim": 0.951,
-  "text_sim": 0.351,
-  "synergy": 0.599
- },
- {
-  "a": "Forsaken Monument",
-  "b": "Oblivion Sower",
-  "decks": 12,
-  "co_sim": 0.93,
-  "text_sim": 0.33,
-  "synergy": 0.599
- },
- {
-  "a": "Infesting Radroach",
-  "b": "Mutational Advantage",
-  "decks": 8,
-  "co_sim": 0.829,
-  "text_sim": 0.229,
-  "synergy": 0.599
- },
- {
-  "a": "Impact Tremors",
-  "b": "Kiki-Jiki, Mirror Breaker",
-  "decks": 9,
-  "co_sim": 0.907,
-  "text_sim": 0.307,
-  "synergy": 0.599
- },
- {
-  "a": "Merry, Warden of Isengard",
-  "b": "Banquet Guests",
-  "decks": 8,
-  "co_sim": 0.974,
-  "text_sim": 0.376,
-  "synergy": 0.598
- },
- {
-  "a": "Tainted Pact",
-  "b": "Mox Diamond",
-  "decks": 13,
-  "co_sim": 0.962,
-  "text_sim": 0.364,
-  "synergy": 0.598
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Avacyn, Angel of Hope",
-  "decks": 11,
-  "co_sim": 0.844,
-  "text_sim": 0.248,
-  "synergy": 0.597
- },
- {
-  "a": "Opposition Agent",
-  "b": "Mana Vault",
-  "decks": 16,
-  "co_sim": 0.763,
-  "text_sim": 0.165,
-  "synergy": 0.597
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "Bifur, Melodic Rider",
-  "decks": 15,
-  "co_sim": 0.997,
-  "text_sim": 0.4,
-  "synergy": 0.596
- },
- {
-  "a": "Fire Lord Azula",
-  "b": "Seething Song",
-  "decks": 9,
-  "co_sim": 0.831,
-  "text_sim": 0.237,
-  "synergy": 0.595
- },
- {
-  "a": "Harmonic Prodigy",
-  "b": "Mizzix's Mastery",
-  "decks": 10,
-  "co_sim": 0.914,
-  "text_sim": 0.319,
-  "synergy": 0.595
- },
- {
-  "a": "Grim Monolith",
-  "b": "Swan Song",
-  "decks": 11,
-  "co_sim": 0.735,
-  "text_sim": 0.14,
-  "synergy": 0.595
- },
- {
-  "a": "Veil of Summer",
-  "b": "Elvish Spirit Guide",
-  "decks": 15,
-  "co_sim": 0.911,
-  "text_sim": 0.316,
-  "synergy": 0.595
- },
- {
-  "a": "Mana Drain",
-  "b": "Gilded Drake",
-  "decks": 11,
-  "co_sim": 0.867,
-  "text_sim": 0.274,
-  "synergy": 0.593
- },
- {
-  "a": "High Tide",
-  "b": "Sapphire Medallion",
-  "decks": 16,
-  "co_sim": 0.975,
-  "text_sim": 0.383,
-  "synergy": 0.592
- },
- {
-  "a": "Void Winnower",
-  "b": "Thran Dynamo",
-  "decks": 8,
-  "co_sim": 0.807,
-  "text_sim": 0.215,
-  "synergy": 0.592
- },
- {
-  "a": "Thran Dynamo",
-  "b": "Skittering Cicada",
-  "decks": 9,
-  "co_sim": 0.802,
-  "text_sim": 0.212,
-  "synergy": 0.591
- },
- {
-  "a": "Silence",
-  "b": "Mox Diamond",
-  "decks": 19,
-  "co_sim": 0.924,
-  "text_sim": 0.333,
-  "synergy": 0.591
- },
- {
-  "a": "F\u00edli and K\u00edli, Joyous",
-  "b": "Iron Hills Blacksmith",
-  "decks": 9,
-  "co_sim": 0.998,
-  "text_sim": 0.406,
-  "synergy": 0.591
- },
- {
-  "a": "D\u00e1in, Lord of the Iron Hills",
-  "b": "Iron Hills Blacksmith",
-  "decks": 8,
-  "co_sim": 0.989,
-  "text_sim": 0.398,
-  "synergy": 0.591
- },
- {
-  "a": "Atarka, World Render",
-  "b": "Temur Ascendancy",
-  "decks": 14,
-  "co_sim": 0.914,
-  "text_sim": 0.326,
-  "synergy": 0.588
- },
- {
-  "a": "Tato Farmer",
-  "b": "Radstorm",
-  "decks": 8,
-  "co_sim": 0.923,
-  "text_sim": 0.335,
-  "synergy": 0.588
- },
- {
-  "a": "Wheel of Fortune",
-  "b": "Red Elemental Blast",
-  "decks": 10,
-  "co_sim": 0.941,
-  "text_sim": 0.352,
-  "synergy": 0.588
- },
- {
-  "a": "Puresteel Paladin",
-  "b": "Barret, Avalanche Leader",
-  "decks": 8,
-  "co_sim": 0.973,
-  "text_sim": 0.386,
-  "synergy": 0.587
- },
- {
-  "a": "Kozilek, Butcher of Truth",
-  "b": "Worn Powerstone",
-  "decks": 10,
-  "co_sim": 0.781,
-  "text_sim": 0.195,
-  "synergy": 0.587
- },
- {
-  "a": "Deflecting Swat",
-  "b": "Neheb, the Eternal",
-  "decks": 8,
-  "co_sim": 0.846,
-  "text_sim": 0.259,
-  "synergy": 0.587
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "D\u00e1in Ironfoot",
-  "decks": 11,
-  "co_sim": 0.98,
-  "text_sim": 0.393,
-  "synergy": 0.587
- },
- {
-  "a": "Astral Cornucopia",
-  "b": "Tekuthal, Inquiry Dominus",
-  "decks": 10,
-  "co_sim": 0.955,
-  "text_sim": 0.37,
-  "synergy": 0.586
- },
- {
-  "a": "Drakuseth, Maw of Flames",
-  "b": "Temur Ascendancy",
-  "decks": 8,
-  "co_sim": 0.877,
-  "text_sim": 0.291,
-  "synergy": 0.586
- },
- {
-  "a": "Harmonic Prodigy",
-  "b": "Prismari Command",
-  "decks": 9,
-  "co_sim": 0.863,
-  "text_sim": 0.276,
-  "synergy": 0.586
- },
- {
-  "a": "Underworld Breach",
-  "b": "Pyretic Ritual",
-  "decks": 9,
-  "co_sim": 0.842,
-  "text_sim": 0.256,
-  "synergy": 0.586
- },
- {
-  "a": "Protection Magic",
-  "b": "Auron, Venerated Guardian",
-  "decks": 8,
-  "co_sim": 0.973,
-  "text_sim": 0.388,
-  "synergy": 0.585
- },
- {
-  "a": "Raul, Trouble Shooter",
-  "b": "Bloatfly Swarm",
-  "decks": 8,
-  "co_sim": 0.976,
-  "text_sim": 0.391,
-  "synergy": 0.585
- },
- {
-  "a": "Summon: Magus Sisters",
-  "b": "Luminous Broodmoth",
-  "decks": 8,
-  "co_sim": 0.878,
-  "text_sim": 0.295,
-  "synergy": 0.583
- },
- {
-  "a": "Mana Vault",
-  "b": "Demonic Consultation",
-  "decks": 9,
-  "co_sim": 0.808,
-  "text_sim": 0.225,
-  "synergy": 0.583
- },
- {
-  "a": "Biotransference",
-  "b": "Their Name Is Death",
-  "decks": 8,
-  "co_sim": 0.987,
-  "text_sim": 0.405,
-  "synergy": 0.582
- },
- {
-  "a": "Sigarda's Aid",
-  "b": "Akiri, Fearless Voyager",
-  "decks": 8,
-  "co_sim": 0.976,
-  "text_sim": 0.394,
-  "synergy": 0.582
- },
- {
-  "a": "Lathliss, Dragon Queen",
-  "b": "Temur Ascendancy",
-  "decks": 13,
-  "co_sim": 0.89,
-  "text_sim": 0.309,
-  "synergy": 0.581
- },
- {
-  "a": "The Master, Transcendent",
-  "b": "Radstorm",
-  "decks": 8,
-  "co_sim": 0.932,
-  "text_sim": 0.351,
-  "synergy": 0.581
- },
- {
-  "a": "Radstorm",
-  "b": "Strong, the Brutish Thespian",
-  "decks": 8,
-  "co_sim": 0.945,
-  "text_sim": 0.364,
-  "synergy": 0.581
- },
- {
-  "a": "Rhythm of the Wild",
-  "b": "Ghalta, Stampede Tyrant",
-  "decks": 9,
-  "co_sim": 0.837,
-  "text_sim": 0.256,
-  "synergy": 0.581
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "Thorin, Mountain-king",
-  "decks": 8,
-  "co_sim": 0.971,
-  "text_sim": 0.39,
-  "synergy": 0.581
- },
- {
-  "a": "Miirym, Sentinel Wyrm",
-  "b": "Dragon Tempest",
-  "decks": 13,
-  "co_sim": 0.973,
-  "text_sim": 0.393,
-  "synergy": 0.58
- },
- {
-  "a": "Sigarda's Aid",
-  "b": "Bruenor Battlehammer",
-  "decks": 15,
-  "co_sim": 0.948,
-  "text_sim": 0.369,
-  "synergy": 0.58
- },
- {
-  "a": "D\u00e1in Ironfoot",
-  "b": "The Misty Mountains Cold",
-  "decks": 8,
-  "co_sim": 0.967,
-  "text_sim": 0.387,
-  "synergy": 0.58
- },
- {
-  "a": "Jukai Naturalist",
-  "b": "Satsuki, the Living Lore",
-  "decks": 9,
-  "co_sim": 0.944,
-  "text_sim": 0.365,
-  "synergy": 0.579
- },
- {
-  "a": "Trail of Mystery",
-  "b": "Yedora, Grave Gardener",
-  "decks": 8,
-  "co_sim": 0.973,
-  "text_sim": 0.393,
-  "synergy": 0.579
- },
- {
-  "a": "Harold and Bob, First Numens",
-  "b": "Screeching Scorchbeast",
-  "decks": 8,
-  "co_sim": 0.979,
-  "text_sim": 0.401,
-  "synergy": 0.578
- },
- {
-  "a": "Miirym, Sentinel Wyrm",
-  "b": "Sarkhan's Triumph",
-  "decks": 9,
-  "co_sim": 0.994,
-  "text_sim": 0.417,
-  "synergy": 0.578
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Resplendent Angel",
-  "decks": 10,
-  "co_sim": 0.82,
-  "text_sim": 0.242,
-  "synergy": 0.578
- },
- {
-  "a": "Sensei's Divining Top",
-  "b": "Swan Song",
-  "decks": 20,
-  "co_sim": 0.769,
-  "text_sim": 0.191,
-  "synergy": 0.578
- },
- {
-  "a": "O'aka, Traveling Merchant",
-  "b": "Summon: Yojimbo",
-  "decks": 9,
-  "co_sim": 0.953,
-  "text_sim": 0.376,
-  "synergy": 0.577
- },
- {
-  "a": "Astral Cornucopia",
-  "b": "Flux Channeler",
-  "decks": 8,
-  "co_sim": 0.88,
-  "text_sim": 0.303,
-  "synergy": 0.577
- },
- {
-  "a": "Resurgent Belief",
-  "b": "Jukai Naturalist",
-  "decks": 8,
-  "co_sim": 0.975,
-  "text_sim": 0.399,
-  "synergy": 0.576
- },
- {
-  "a": "Glowing One",
-  "b": "Radstorm",
-  "decks": 8,
-  "co_sim": 0.945,
-  "text_sim": 0.37,
-  "synergy": 0.575
- },
- {
-  "a": "Bane of Bala Ged",
-  "b": "Worn Powerstone",
-  "decks": 9,
-  "co_sim": 0.827,
-  "text_sim": 0.252,
-  "synergy": 0.575
- },
- {
-  "a": "Starfield Mystic",
-  "b": "Archon of Sun's Grace",
-  "decks": 17,
-  "co_sim": 0.935,
-  "text_sim": 0.361,
-  "synergy": 0.575
- },
- {
-  "a": "Light-Paws, Emperor's Voice",
-  "b": "Ethereal Armor",
-  "decks": 9,
-  "co_sim": 0.987,
-  "text_sim": 0.411,
-  "synergy": 0.575
- },
- {
-  "a": "Diamond Pick-Axe",
-  "b": "D\u00e1in's Company",
-  "decks": 9,
-  "co_sim": 0.916,
-  "text_sim": 0.341,
-  "synergy": 0.575
- },
- {
-  "a": "Worn Powerstone",
-  "b": "Desecrate Reality",
-  "decks": 8,
-  "co_sim": 0.84,
-  "text_sim": 0.265,
-  "synergy": 0.574
- },
- {
-  "a": "Grim Monolith",
-  "b": "Force of Will",
-  "decks": 11,
-  "co_sim": 0.833,
-  "text_sim": 0.259,
-  "synergy": 0.574
- },
- {
-  "a": "Balin, Loremaster",
-  "b": "Iron Hills Blacksmith",
-  "decks": 8,
-  "co_sim": 0.998,
-  "text_sim": 0.423,
-  "synergy": 0.574
- },
- {
-  "a": "Astral Cornucopia",
-  "b": "Experimental Augury",
-  "decks": 10,
-  "co_sim": 0.906,
-  "text_sim": 0.334,
-  "synergy": 0.572
- },
- {
-  "a": "Ashaya, Soul of the Wild",
-  "b": "Sylvan Library",
-  "decks": 16,
-  "co_sim": 0.792,
-  "text_sim": 0.22,
-  "synergy": 0.572
- },
- {
-  "a": "Hulking Raptor",
-  "b": "Rhythm of the Wild",
-  "decks": 9,
-  "co_sim": 0.839,
-  "text_sim": 0.267,
-  "synergy": 0.572
- },
- {
-  "a": "It That Betrays",
-  "b": "Darksteel Monolith",
-  "decks": 8,
-  "co_sim": 0.936,
-  "text_sim": 0.365,
-  "synergy": 0.571
- },
- {
-  "a": "Splendid Reclamation",
-  "b": "Scute Swarm",
-  "decks": 14,
-  "co_sim": 0.898,
-  "text_sim": 0.327,
-  "synergy": 0.571
- },
- {
-  "a": "Thassa's Oracle",
-  "b": "Mindbreak Trap",
-  "decks": 8,
-  "co_sim": 0.947,
-  "text_sim": 0.376,
-  "synergy": 0.57
- },
- {
-  "a": "Puresteel Paladin",
-  "b": "Hexplate Wallbreaker",
-  "decks": 8,
-  "co_sim": 0.959,
-  "text_sim": 0.389,
-  "synergy": 0.57
- },
- {
-  "a": "Tifa, Martial Artist",
-  "b": "Colossus Hammer",
-  "decks": 8,
-  "co_sim": 0.918,
-  "text_sim": 0.348,
-  "synergy": 0.569
- },
- {
-  "a": "Archon of Sun's Grace",
-  "b": "Mesa Enchantress",
+  "a": "Bitter Downfall",
+  "b": "Saruman, the White Hand",
   "decks": 18,
-  "co_sim": 0.986,
-  "text_sim": 0.417,
-  "synergy": 0.569
- },
- {
-  "a": "Preordain",
-  "b": "Veyran, Voice of Duality",
-  "decks": 16,
-  "co_sim": 0.826,
-  "text_sim": 0.258,
-  "synergy": 0.569
- },
- {
-  "a": "Pyretic Ritual",
-  "b": "Storm-Kiln Artist",
-  "decks": 8,
-  "co_sim": 0.872,
-  "text_sim": 0.303,
-  "synergy": 0.569
- },
- {
-  "a": "Luminous Broodmoth",
-  "b": "Summon: Yojimbo",
-  "decks": 8,
-  "co_sim": 0.906,
-  "text_sim": 0.338,
-  "synergy": 0.568
- },
- {
-  "a": "Harmonic Prodigy",
-  "b": "Preordain",
-  "decks": 17,
-  "co_sim": 0.776,
-  "text_sim": 0.208,
-  "synergy": 0.568
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "D\u00e1in of the Ancient Halls",
-  "decks": 8,
-  "co_sim": 0.997,
-  "text_sim": 0.429,
-  "synergy": 0.568
- },
- {
-  "a": "Bearded Axe",
-  "b": "Bifur, Melodic Rider",
-  "decks": 8,
-  "co_sim": 0.984,
-  "text_sim": 0.416,
-  "synergy": 0.568
- },
- {
-  "a": "Rhystic Study",
-  "b": "Cyclonic Rift",
-  "decks": 133,
-  "co_sim": 0.924,
+  "co_sim": 0.982,
   "text_sim": 0.357,
-  "synergy": 0.567
- },
- {
-  "a": "Yedora, Grave Gardener",
-  "b": "Scroll of Fate",
-  "decks": 8,
-  "co_sim": 0.972,
-  "text_sim": 0.405,
-  "synergy": 0.567
- },
- {
-  "a": "Echoes of Eternity",
-  "b": "Darksteel Monolith",
-  "decks": 8,
-  "co_sim": 0.993,
-  "text_sim": 0.426,
-  "synergy": 0.567
- },
- {
-  "a": "Harmonic Prodigy",
-  "b": "Izzet Signet",
-  "decks": 15,
-  "co_sim": 0.781,
-  "text_sim": 0.214,
-  "synergy": 0.567
- },
- {
-  "a": "Imperial Seal",
-  "b": "Mox Diamond",
-  "decks": 23,
-  "co_sim": 0.94,
-  "text_sim": 0.373,
-  "synergy": 0.567
- },
- {
-  "a": "D\u00e1in Ironfoot",
-  "b": "D\u00e1in's Company",
-  "decks": 12,
-  "co_sim": 0.98,
-  "text_sim": 0.413,
-  "synergy": 0.567
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Linvala, Keeper of Silence",
-  "decks": 9,
-  "co_sim": 0.814,
-  "text_sim": 0.248,
-  "synergy": 0.566
- },
- {
-  "a": "Radstorm",
-  "b": "Bloatfly Swarm",
-  "decks": 8,
-  "co_sim": 0.946,
-  "text_sim": 0.38,
-  "synergy": 0.566
- },
- {
-  "a": "Thran Dynamo",
-  "b": "Oblivion Sower",
-  "decks": 9,
-  "co_sim": 0.78,
-  "text_sim": 0.213,
-  "synergy": 0.566
- },
- {
-  "a": "Changeling Outcast",
-  "b": "Yuriko, the Tiger's Shadow",
-  "decks": 13,
-  "co_sim": 0.84,
-  "text_sim": 0.274,
-  "synergy": 0.566
- },
- {
-  "a": "Iron Hills Blacksmith",
-  "b": "Bifur, Melodic Rider",
-  "decks": 9,
-  "co_sim": 0.995,
-  "text_sim": 0.429,
-  "synergy": 0.566
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "Thorin, Mountain-king",
-  "decks": 8,
-  "co_sim": 0.989,
-  "text_sim": 0.424,
-  "synergy": 0.566
- },
- {
-  "a": "Lyse Hext",
-  "b": "Transpose",
-  "decks": 9,
-  "co_sim": 0.965,
-  "text_sim": 0.4,
-  "synergy": 0.565
- },
- {
-  "a": "Svyelun of Sea and Sky",
-  "b": "Mist Dancer",
-  "decks": 10,
-  "co_sim": 0.993,
-  "text_sim": 0.428,
-  "synergy": 0.565
- },
- {
-  "a": "Sauron, the Dark Lord",
-  "b": "Relic of Sauron",
-  "decks": 11,
-  "co_sim": 0.973,
-  "text_sim": 0.408,
-  "synergy": 0.565
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Righteous Valkyrie",
-  "decks": 10,
-  "co_sim": 0.816,
-  "text_sim": 0.252,
-  "synergy": 0.565
- },
- {
-  "a": "Blitzball Stadium",
-  "b": "Endless Detour",
-  "decks": 8,
-  "co_sim": 0.891,
-  "text_sim": 0.327,
-  "synergy": 0.564
+  "synergy": 0.625
  },
  {
   "a": "Experimental Augury",
-  "b": "Tekuthal, Inquiry Dominus",
-  "decks": 10,
-  "co_sim": 0.937,
-  "text_sim": 0.372,
-  "synergy": 0.564
+  "b": "Blighted Agent",
+  "decks": 12,
+  "co_sim": 0.835,
+  "text_sim": 0.211,
+  "synergy": 0.625
  },
  {
-  "a": "Saruman, the White Hand",
-  "b": "Relic of Sauron",
-  "decks": 8,
-  "co_sim": 0.96,
-  "text_sim": 0.397,
-  "synergy": 0.564
- },
- {
-  "a": "Preordain",
-  "b": "Third Path Iconoclast",
-  "decks": 10,
-  "co_sim": 0.828,
-  "text_sim": 0.263,
-  "synergy": 0.564
- },
- {
-  "a": "Boros Charm",
-  "b": "Iroas, God of Victory",
-  "decks": 10,
-  "co_sim": 0.847,
-  "text_sim": 0.283,
-  "synergy": 0.564
- },
- {
-  "a": "Forge Anew",
-  "b": "Akiri, Fearless Voyager",
-  "decks": 9,
-  "co_sim": 0.971,
-  "text_sim": 0.407,
-  "synergy": 0.564
- },
- {
-  "a": "Aettir and Priwen",
-  "b": "Sigarda's Aid",
-  "decks": 8,
-  "co_sim": 0.893,
+  "a": "Winged Sliver",
+  "b": "For the Ancestors",
+  "decks": 11,
+  "co_sim": 0.954,
   "text_sim": 0.329,
-  "synergy": 0.564
+  "synergy": 0.625
  },
  {
-  "a": "Sythis, Harvest's Hand",
-  "b": "Tom Bombadil",
+  "a": "The Dalek Emperor",
+  "b": "This Is How It Ends",
   "decks": 9,
-  "co_sim": 0.939,
-  "text_sim": 0.376,
-  "synergy": 0.563
- },
- {
-  "a": "Lightning Bolt",
-  "b": "Strike It Rich",
-  "decks": 11,
-  "co_sim": 0.859,
-  "text_sim": 0.296,
-  "synergy": 0.563
- },
- {
-  "a": "Kozilek, Butcher of Truth",
-  "b": "Thran Dynamo",
-  "decks": 11,
-  "co_sim": 0.834,
-  "text_sim": 0.271,
-  "synergy": 0.563
- },
- {
-  "a": "Sensei's Divining Top",
-  "b": "Flusterstorm",
-  "decks": 8,
-  "co_sim": 0.819,
-  "text_sim": 0.257,
-  "synergy": 0.563
- },
- {
-  "a": "Infesting Radroach",
-  "b": "Vault 12: The Necropolis",
-  "decks": 9,
-  "co_sim": 0.995,
-  "text_sim": 0.434,
-  "synergy": 0.562
- },
- {
-  "a": "Elvish Reclaimer",
-  "b": "Sylvan Safekeeper",
-  "decks": 8,
-  "co_sim": 0.963,
-  "text_sim": 0.401,
-  "synergy": 0.562
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "Gl\u00f3in, Dwarf Emissary",
-  "decks": 10,
-  "co_sim": 0.907,
-  "text_sim": 0.345,
-  "synergy": 0.562
- },
- {
-  "a": "Bifur, Melodic Rider",
-  "b": "The Misty Mountains Cold",
-  "decks": 8,
-  "co_sim": 0.98,
-  "text_sim": 0.417,
-  "synergy": 0.562
- },
- {
-  "a": "Forsaken Monument",
-  "b": "Eldritch Immunity",
-  "decks": 13,
-  "co_sim": 0.976,
-  "text_sim": 0.415,
-  "synergy": 0.561
- },
- {
-  "a": "Kozilek, Butcher of Truth",
-  "b": "Skittering Cicada",
-  "decks": 8,
-  "co_sim": 0.93,
-  "text_sim": 0.37,
-  "synergy": 0.561
- },
- {
-  "a": "Archon of Sun's Grace",
-  "b": "Ondu Spiritdancer",
-  "decks": 9,
-  "co_sim": 0.962,
-  "text_sim": 0.401,
-  "synergy": 0.561
- },
- {
-  "a": "Cloud, Ex-SOLDIER",
-  "b": "Puresteel Paladin",
-  "decks": 8,
   "co_sim": 0.975,
-  "text_sim": 0.414,
-  "synergy": 0.56
+  "text_sim": 0.35,
+  "synergy": 0.625
  },
  {
-  "a": "Pearl Medallion",
-  "b": "Archangel of Thune",
-  "decks": 12,
-  "co_sim": 0.83,
-  "text_sim": 0.269,
-  "synergy": 0.56
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Serra's Emissary",
-  "decks": 10,
-  "co_sim": 0.822,
-  "text_sim": 0.262,
-  "synergy": 0.56
- },
- {
-  "a": "Void Winnower",
-  "b": "Worn Powerstone",
+  "a": "Shadow of Mortality",
+  "b": "Silver-Fur Master",
   "decks": 9,
-  "co_sim": 0.763,
-  "text_sim": 0.203,
-  "synergy": 0.56
+  "co_sim": 0.943,
+  "text_sim": 0.318,
+  "synergy": 0.625
  },
  {
-  "a": "Mana Vault",
-  "b": "Mystical Tutor",
-  "decks": 32,
-  "co_sim": 0.794,
-  "text_sim": 0.234,
-  "synergy": 0.56
- },
- {
-  "a": "Lathliss, Dragon Queen",
-  "b": "Carnelian Orb of Dragonkind",
+  "a": "Deceiver of Form",
+  "b": "Ultima, Origin of Oblivion",
   "decks": 8,
-  "co_sim": 0.994,
-  "text_sim": 0.434,
-  "synergy": 0.56
+  "co_sim": 0.961,
+  "text_sim": 0.336,
+  "synergy": 0.625
  },
  {
-  "a": "Mystic Remora",
-  "b": "Cyclonic Rift",
-  "decks": 76,
-  "co_sim": 0.878,
-  "text_sim": 0.319,
-  "synergy": 0.559
- },
- {
-  "a": "Eldritch Immunity",
-  "b": "Snapping Voidcraw",
-  "decks": 8,
-  "co_sim": 0.971,
-  "text_sim": 0.413,
-  "synergy": 0.559
- },
- {
-  "a": "Scute Swarm",
-  "b": "Conduit of Worlds",
-  "decks": 11,
-  "co_sim": 0.852,
-  "text_sim": 0.294,
-  "synergy": 0.559
- },
- {
-  "a": "Bofur, Reliable Guardian // Concerted Care",
-  "b": "Iron Hills Blacksmith",
-  "decks": 9,
-  "co_sim": 0.974,
-  "text_sim": 0.415,
-  "synergy": 0.559
- },
- {
-  "a": "Rikku, Resourceful Guardian",
-  "b": "Endless Detour",
-  "decks": 8,
-  "co_sim": 0.851,
-  "text_sim": 0.294,
-  "synergy": 0.558
- },
- {
-  "a": "The Phasing of Zhalfir",
-  "b": "Jukai Naturalist",
-  "decks": 8,
-  "co_sim": 0.927,
-  "text_sim": 0.371,
-  "synergy": 0.557
- },
- {
-  "a": "Kodama's Reach",
-  "b": "Beast Within",
-  "decks": 132,
-  "co_sim": 0.848,
+  "a": "Dark Ritual",
+  "b": "Liliana of the Dark Realms",
+  "decks": 17,
+  "co_sim": 0.916,
   "text_sim": 0.291,
-  "synergy": 0.557
+  "synergy": 0.625
  },
  {
-  "a": "Artisan of Kozilek",
-  "b": "Thran Dynamo",
-  "decks": 10,
-  "co_sim": 0.795,
-  "text_sim": 0.239,
-  "synergy": 0.557
- },
- {
-  "a": "Worn Powerstone",
-  "b": "Ulamog, the Infinite Gyre",
-  "decks": 10,
-  "co_sim": 0.767,
-  "text_sim": 0.21,
-  "synergy": 0.557
- },
- {
-  "a": "Gl\u00f3in the Mighty // Easy Pickings",
-  "b": "Iron Hills Blacksmith",
-  "decks": 8,
-  "co_sim": 0.996,
-  "text_sim": 0.439,
-  "synergy": 0.557
- },
- {
-  "a": "Tifa, Martial Artist",
-  "b": "Conqueror's Flail",
-  "decks": 8,
-  "co_sim": 0.924,
-  "text_sim": 0.368,
-  "synergy": 0.556
- },
- {
-  "a": "Flayer of Loyalties",
-  "b": "Thran Dynamo",
-  "decks": 12,
-  "co_sim": 0.78,
-  "text_sim": 0.224,
-  "synergy": 0.556
- },
- {
-  "a": "Rhythm of the Wild",
-  "b": "Trumpeting Carnosaur",
-  "decks": 9,
-  "co_sim": 0.804,
-  "text_sim": 0.248,
-  "synergy": 0.556
- },
- {
-  "a": "Green Sun's Zenith",
-  "b": "Craterhoof Behemoth",
-  "decks": 14,
-  "co_sim": 0.889,
-  "text_sim": 0.334,
-  "synergy": 0.555
- },
- {
-  "a": "Mana Vault",
-  "b": "Vampiric Tutor",
-  "decks": 44,
-  "co_sim": 0.771,
-  "text_sim": 0.216,
-  "synergy": 0.555
- },
- {
-  "a": "Necron Deathmark",
-  "b": "Out of the Tombs",
-  "decks": 8,
-  "co_sim": 0.965,
-  "text_sim": 0.41,
-  "synergy": 0.554
- },
- {
-  "a": "Sterling Grove",
-  "b": "Destiny Spinner",
-  "decks": 12,
+  "a": "Component Pouch",
+  "b": "Myrkul's Edict",
+  "decks": 11,
   "co_sim": 0.928,
-  "text_sim": 0.374,
-  "synergy": 0.554
+  "text_sim": 0.304,
+  "synergy": 0.624
  },
  {
-  "a": "Chocobo Knights",
-  "b": "Endless Detour",
-  "decks": 8,
-  "co_sim": 0.855,
-  "text_sim": 0.302,
-  "synergy": 0.553
+  "a": "Fractal Harness",
+  "b": "Commander's Insight",
+  "decks": 14,
+  "co_sim": 0.885,
+  "text_sim": 0.261,
+  "synergy": 0.624
  },
  {
-  "a": "Dreamstone Hedron",
-  "b": "Artisan of Kozilek",
-  "decks": 11,
-  "co_sim": 0.917,
-  "text_sim": 0.364,
-  "synergy": 0.553
- },
- {
-  "a": "Ulamog's Crusher",
-  "b": "Forsaken Monument",
-  "decks": 9,
-  "co_sim": 0.922,
-  "text_sim": 0.369,
-  "synergy": 0.553
- },
- {
-  "a": "Vexing Radgull",
-  "b": "Raul, Trouble Shooter",
-  "decks": 9,
-  "co_sim": 0.978,
-  "text_sim": 0.425,
-  "synergy": 0.553
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Lyra Dawnbringer",
-  "decks": 11,
-  "co_sim": 0.836,
-  "text_sim": 0.283,
-  "synergy": 0.553
- },
- {
-  "a": "Craterhoof Behemoth",
-  "b": "Sylvan Library",
+  "a": "Increasing Devotion",
+  "b": "Verge Rangers",
   "decks": 23,
-  "co_sim": 0.839,
-  "text_sim": 0.287,
-  "synergy": 0.552
+  "co_sim": 0.852,
+  "text_sim": 0.228,
+  "synergy": 0.624
  },
  {
-  "a": "Endless Detour",
-  "b": "Duskshell Crawler",
-  "decks": 8,
-  "co_sim": 0.825,
-  "text_sim": 0.275,
-  "synergy": 0.551
- },
- {
-  "a": "Spawnbed Protector",
-  "b": "Endbringer",
-  "decks": 8,
-  "co_sim": 0.973,
-  "text_sim": 0.422,
-  "synergy": 0.551
- },
- {
-  "a": "Flickering Ward",
-  "b": "Archon of Sun's Grace",
-  "decks": 8,
-  "co_sim": 0.818,
-  "text_sim": 0.266,
-  "synergy": 0.551
- },
- {
-  "a": "Rampaging Baloths",
-  "b": "Conduit of Worlds",
+  "a": "Redemptor Dreadnought",
+  "b": "Deny the Witch",
   "decks": 10,
-  "co_sim": 0.806,
-  "text_sim": 0.256,
-  "synergy": 0.55
+  "co_sim": 0.863,
+  "text_sim": 0.239,
+  "synergy": 0.624
  },
  {
-  "a": "Generous Plunderer",
-  "b": "Deflecting Swat",
+  "a": "Plaguecrafter",
+  "b": "Dark Ritual",
+  "decks": 58,
+  "co_sim": 0.852,
+  "text_sim": 0.228,
+  "synergy": 0.624
+ },
+ {
+  "a": "Curator of Sun's Creation",
+  "b": "Etali, Primal Conqueror // Etali, Primal Sickness",
   "decks": 9,
-  "co_sim": 0.776,
-  "text_sim": 0.226,
-  "synergy": 0.55
+  "co_sim": 0.958,
+  "text_sim": 0.334,
+  "synergy": 0.624
+ },
+ {
+  "a": "Pyretic Ritual",
+  "b": "Artist's Talent",
+  "decks": 8,
+  "co_sim": 0.902,
+  "text_sim": 0.278,
+  "synergy": 0.624
+ },
+ {
+  "a": "Ebony Fly",
+  "b": "Chaos Channeler",
+  "decks": 10,
+  "co_sim": 0.932,
+  "text_sim": 0.309,
+  "synergy": 0.623
+ },
+ {
+  "a": "Barret, Avalanche Leader",
+  "b": "Cloud's Limit Break",
+  "decks": 32,
+  "co_sim": 0.925,
+  "text_sim": 0.302,
+  "synergy": 0.623
+ },
+ {
+  "a": "Resurgent Belief",
+  "b": "Weaver of Harmony",
+  "decks": 17,
+  "co_sim": 0.946,
+  "text_sim": 0.323,
+  "synergy": 0.623
+ },
+ {
+  "a": "Donatello, the Brains",
+  "b": "Special Move",
+  "decks": 13,
+  "co_sim": 0.92,
+  "text_sim": 0.297,
+  "synergy": 0.623
+ },
+ {
+  "a": "Bygone Marvels",
+  "b": "Merfolk Skydiver",
+  "decks": 12,
+  "co_sim": 0.973,
+  "text_sim": 0.35,
+  "synergy": 0.623
+ },
+ {
+  "a": "Primo, the Unbounded",
+  "b": "Nexus Mentality",
+  "decks": 10,
+  "co_sim": 0.969,
+  "text_sim": 0.346,
+  "synergy": 0.623
  },
  {
   "a": "Howlsquad Heavy",
   "b": "Goblin Bombardment",
-  "decks": 9,
-  "co_sim": 0.872,
+  "decks": 47,
+  "co_sim": 0.945,
   "text_sim": 0.322,
-  "synergy": 0.55
+  "synergy": 0.623
  },
  {
-  "a": "Steelshaper's Gift",
-  "b": "Bruenor Battlehammer",
-  "decks": 12,
-  "co_sim": 0.946,
-  "text_sim": 0.396,
-  "synergy": 0.55
- },
- {
-  "a": "Kozilek's Command",
-  "b": "Forsaken Monument",
-  "decks": 11,
-  "co_sim": 0.965,
-  "text_sim": 0.415,
-  "synergy": 0.55
- },
- {
-  "a": "Tifa, Martial Artist",
-  "b": "Puresteel Paladin",
-  "decks": 9,
-  "co_sim": 0.968,
-  "text_sim": 0.42,
-  "synergy": 0.549
- },
- {
-  "a": "Tato Farmer",
-  "b": "Harold and Bob, First Numens",
+  "a": "Deepglow Skate",
+  "b": "Narset Transcendent",
   "decks": 8,
-  "co_sim": 0.983,
-  "text_sim": 0.435,
-  "synergy": 0.549
- },
- {
-  "a": "Nature's Lore",
-  "b": "Questing Beast",
-  "decks": 9,
-  "co_sim": 0.774,
-  "text_sim": 0.225,
-  "synergy": 0.549
- },
- {
-  "a": "Zuran Orb",
-  "b": "Titania, Protector of Argoth",
-  "decks": 15,
-  "co_sim": 0.953,
-  "text_sim": 0.405,
-  "synergy": 0.548
- },
- {
-  "a": "Embercleave",
-  "b": "Steelshaper's Gift",
-  "decks": 9,
-  "co_sim": 0.929,
-  "text_sim": 0.381,
-  "synergy": 0.548
- },
- {
-  "a": "Goblin Recruiter",
-  "b": "Goblin Bombardment",
-  "decks": 8,
-  "co_sim": 0.875,
-  "text_sim": 0.328,
-  "synergy": 0.548
- },
- {
-  "a": "Balin, Loremaster",
-  "b": "An Unexpected Party // At the Door",
-  "decks": 11,
-  "co_sim": 0.997,
-  "text_sim": 0.449,
-  "synergy": 0.548
- },
- {
-  "a": "D\u00e1in's Company",
-  "b": "Orcrist, Goblin-cleaver",
-  "decks": 9,
-  "co_sim": 0.937,
-  "text_sim": 0.389,
-  "synergy": 0.548
- },
- {
-  "a": "Snakeskin Veil",
-  "b": "Snake Umbra",
-  "decks": 8,
-  "co_sim": 0.868,
-  "text_sim": 0.321,
-  "synergy": 0.547
- },
- {
-  "a": "Silence",
-  "b": "Chrome Mox",
-  "decks": 24,
-  "co_sim": 0.913,
-  "text_sim": 0.365,
-  "synergy": 0.547
- },
- {
-  "a": "Quartzwood Crasher",
-  "b": "Rhythm of the Wild",
-  "decks": 15,
-  "co_sim": 0.864,
-  "text_sim": 0.318,
-  "synergy": 0.547
- },
- {
-  "a": "Ulamog, the Ceaseless Hunger",
-  "b": "Worn Powerstone",
-  "decks": 10,
-  "co_sim": 0.773,
-  "text_sim": 0.226,
-  "synergy": 0.547
- },
- {
-  "a": "Sensei's Divining Top",
-  "b": "Pact of Negation",
-  "decks": 10,
-  "co_sim": 0.821,
-  "text_sim": 0.274,
-  "synergy": 0.547
- },
- {
-  "a": "Winds of Rath",
-  "b": "Ethereal Armor",
-  "decks": 11,
-  "co_sim": 0.974,
-  "text_sim": 0.428,
-  "synergy": 0.546
- },
- {
-  "a": "Open the Armory",
-  "b": "Danitha Capashen, Paragon",
-  "decks": 14,
-  "co_sim": 0.96,
-  "text_sim": 0.414,
-  "synergy": 0.546
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Angel of Indemnity",
-  "decks": 8,
-  "co_sim": 0.821,
-  "text_sim": 0.275,
-  "synergy": 0.546
- },
- {
-  "a": "Mana Vault",
-  "b": "Ad Nauseam",
-  "decks": 10,
-  "co_sim": 0.875,
-  "text_sim": 0.33,
-  "synergy": 0.546
- },
- {
-  "a": "Cranial Plating",
-  "b": "Their Name Is Death",
-  "decks": 10,
-  "co_sim": 0.955,
-  "text_sim": 0.411,
-  "synergy": 0.545
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Nature's Lore",
-  "decks": 136,
-  "co_sim": 0.82,
-  "text_sim": 0.275,
-  "synergy": 0.545
- },
- {
-  "a": "Gwaihir, Greatest of the Eagles",
-  "b": "Banquet Guests",
-  "decks": 8,
-  "co_sim": 0.916,
-  "text_sim": 0.371,
-  "synergy": 0.545
- },
- {
-  "a": "Ganax, Astral Hunter",
-  "b": "Dragon Tempest",
-  "decks": 12,
-  "co_sim": 0.96,
-  "text_sim": 0.415,
-  "synergy": 0.545
- },
- {
-  "a": "Roiling Regrowth",
-  "b": "Zendikar's Roil",
-  "decks": 8,
-  "co_sim": 0.947,
-  "text_sim": 0.402,
-  "synergy": 0.545
- },
- {
-  "a": "Ob Nixilis, the Fallen",
-  "b": "Life from the Loam",
-  "decks": 8,
-  "co_sim": 0.954,
-  "text_sim": 0.41,
-  "synergy": 0.544
- },
- {
-  "a": "All Is Dust",
-  "b": "Thran Dynamo",
-  "decks": 16,
-  "co_sim": 0.831,
-  "text_sim": 0.286,
-  "synergy": 0.544
- },
- {
-  "a": "Pongify",
-  "b": "Preordain",
-  "decks": 31,
-  "co_sim": 0.671,
-  "text_sim": 0.127,
-  "synergy": 0.544
- },
- {
-  "a": "Thran Dynamo",
-  "b": "Conduit of Ruin",
-  "decks": 13,
-  "co_sim": 0.817,
-  "text_sim": 0.274,
-  "synergy": 0.544
- },
- {
-  "a": "Frantic Search",
-  "b": "Talrand, Sky Summoner",
-  "decks": 16,
-  "co_sim": 0.897,
-  "text_sim": 0.354,
-  "synergy": 0.544
- },
- {
-  "a": "Sterling Grove",
-  "b": "Archon of Sun's Grace",
-  "decks": 9,
-  "co_sim": 0.857,
-  "text_sim": 0.313,
-  "synergy": 0.544
- },
- {
-  "a": "Argentum Armor",
-  "b": "Steelshaper's Gift",
-  "decks": 8,
-  "co_sim": 0.901,
-  "text_sim": 0.357,
-  "synergy": 0.544
- },
- {
-  "a": "Intuition",
-  "b": "Mana Vault",
-  "decks": 9,
-  "co_sim": 0.789,
-  "text_sim": 0.245,
-  "synergy": 0.544
- },
- {
-  "a": "Mox Diamond",
-  "b": "Pact of Negation",
-  "decks": 19,
-  "co_sim": 0.91,
-  "text_sim": 0.366,
-  "synergy": 0.544
- },
- {
-  "a": "Frantic Search",
-  "b": "Harmonic Prodigy",
-  "decks": 19,
-  "co_sim": 0.852,
-  "text_sim": 0.309,
-  "synergy": 0.543
- },
- {
-  "a": "Green Sun's Zenith",
-  "b": "Concordant Crossroads",
-  "decks": 9,
-  "co_sim": 0.915,
-  "text_sim": 0.372,
-  "synergy": 0.543
- },
- {
-  "a": "Rise of the Eldrazi",
-  "b": "Conduit of Ruin",
-  "decks": 8,
-  "co_sim": 0.983,
-  "text_sim": 0.44,
-  "synergy": 0.543
- },
- {
-  "a": "Fabricate",
-  "b": "Dramatic Reversal",
-  "decks": 10,
-  "co_sim": 0.887,
-  "text_sim": 0.344,
-  "synergy": 0.543
- },
- {
-  "a": "Resurgent Belief",
-  "b": "Sigil of the Empty Throne",
-  "decks": 8,
-  "co_sim": 0.903,
-  "text_sim": 0.361,
-  "synergy": 0.542
- },
- {
-  "a": "Not of This World",
-  "b": "Darksteel Monolith",
-  "decks": 8,
-  "co_sim": 0.923,
-  "text_sim": 0.381,
-  "synergy": 0.542
- },
- {
-  "a": "Izzet Signet",
-  "b": "Niv-Mizzet, Parun",
-  "decks": 26,
-  "co_sim": 0.828,
-  "text_sim": 0.286,
-  "synergy": 0.542
- },
- {
-  "a": "Thassa's Oracle",
-  "b": "Flusterstorm",
-  "decks": 12,
-  "co_sim": 0.921,
-  "text_sim": 0.379,
-  "synergy": 0.542
- },
- {
-  "a": "Mystic Remora",
-  "b": "Swan Song",
-  "decks": 71,
-  "co_sim": 0.92,
-  "text_sim": 0.379,
-  "synergy": 0.541
- },
- {
-  "a": "Luminous Broodmoth",
-  "b": "Yuna, Grand Summoner",
-  "decks": 10,
-  "co_sim": 0.93,
-  "text_sim": 0.389,
-  "synergy": 0.541
- },
- {
-  "a": "Tribute to the World Tree",
-  "b": "Emerald Medallion",
-  "decks": 10,
-  "co_sim": 0.895,
-  "text_sim": 0.353,
-  "synergy": 0.541
- },
- {
-  "a": "Light-Paws, Emperor's Voice",
-  "b": "Spirit Mantle",
-  "decks": 8,
-  "co_sim": 0.981,
-  "text_sim": 0.44,
-  "synergy": 0.541
- },
- {
-  "a": "Mana Crypt",
-  "b": "Drannith Magistrate",
-  "decks": 8,
-  "co_sim": 0.801,
-  "text_sim": 0.26,
-  "synergy": 0.541
- },
- {
-  "a": "Colossus Hammer",
-  "b": "Akiri, Fearless Voyager",
-  "decks": 8,
-  "co_sim": 0.986,
-  "text_sim": 0.445,
-  "synergy": 0.541
- },
- {
-  "a": "Summon: Magus Sisters",
-  "b": "O'aka, Traveling Merchant",
-  "decks": 10,
-  "co_sim": 0.965,
-  "text_sim": 0.425,
-  "synergy": 0.54
- },
- {
-  "a": "Blowfly Infestation",
-  "b": "Carnifex Demon",
-  "decks": 8,
-  "co_sim": 1.0,
-  "text_sim": 0.46,
-  "synergy": 0.54
- },
- {
-  "a": "All Is Dust",
-  "b": "Worn Powerstone",
-  "decks": 13,
-  "co_sim": 0.791,
-  "text_sim": 0.251,
-  "synergy": 0.54
- },
- {
-  "a": "Verdant Sun's Avatar",
-  "b": "Rhythm of the Wild",
-  "decks": 8,
-  "co_sim": 0.804,
-  "text_sim": 0.264,
-  "synergy": 0.54
- },
- {
-  "a": "Regal Behemoth",
-  "b": "Rhythm of the Wild",
-  "decks": 12,
-  "co_sim": 0.824,
-  "text_sim": 0.284,
-  "synergy": 0.54
- },
- {
-  "a": "Frodo, Adventurous Hobbit",
-  "b": "Feasting Hobbit",
-  "decks": 9,
-  "co_sim": 0.984,
-  "text_sim": 0.444,
-  "synergy": 0.54
- },
- {
-  "a": "Scute Swarm",
-  "b": "Scapeshift",
-  "decks": 11,
-  "co_sim": 0.865,
-  "text_sim": 0.325,
-  "synergy": 0.54
- },
- {
-  "a": "Fight Rigging",
-  "b": "Rikku, Resourceful Guardian",
-  "decks": 8,
-  "co_sim": 0.917,
-  "text_sim": 0.378,
-  "synergy": 0.539
- },
- {
-  "a": "Echoes of Eternity",
-  "b": "Forsaken Monument",
-  "decks": 15,
-  "co_sim": 0.986,
-  "text_sim": 0.447,
-  "synergy": 0.539
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "\u00d3in the Brave",
-  "decks": 8,
-  "co_sim": 0.997,
-  "text_sim": 0.458,
-  "synergy": 0.539
- },
- {
-  "a": "D\u00e1in's Company",
-  "b": "Bifur, Melodic Rider",
-  "decks": 16,
-  "co_sim": 1.0,
-  "text_sim": 0.46,
-  "synergy": 0.539
- },
- {
-  "a": "Cloud, Ex-SOLDIER",
-  "b": "Conqueror's Flail",
-  "decks": 8,
-  "co_sim": 0.913,
-  "text_sim": 0.376,
-  "synergy": 0.538
- },
- {
-  "a": "Splendid Reclamation",
-  "b": "Rampaging Baloths",
-  "decks": 17,
-  "co_sim": 0.895,
-  "text_sim": 0.356,
-  "synergy": 0.538
- },
- {
-  "a": "Lyse Hext",
-  "b": "G'raha Tia, Scion Reborn",
-  "decks": 8,
-  "co_sim": 0.975,
-  "text_sim": 0.437,
-  "synergy": 0.538
- },
- {
-  "a": "Bane of Bala Ged",
-  "b": "Thran Dynamo",
-  "decks": 8,
-  "co_sim": 0.807,
-  "text_sim": 0.269,
-  "synergy": 0.538
- },
- {
-  "a": "Skittering Cicada",
-  "b": "Zhulodok, Void Gorger",
-  "decks": 8,
-  "co_sim": 0.998,
-  "text_sim": 0.46,
-  "synergy": 0.538
- },
- {
-  "a": "Scourge of Valkas",
-  "b": "Orb of Dragonkind",
-  "decks": 11,
-  "co_sim": 0.993,
-  "text_sim": 0.455,
-  "synergy": 0.538
- },
- {
-  "a": "Dragonspeaker Shaman",
-  "b": "Ganax, Astral Hunter",
-  "decks": 15,
-  "co_sim": 0.988,
-  "text_sim": 0.45,
-  "synergy": 0.538
- },
- {
-  "a": "Lotus Cobra",
-  "b": "Realms Uncharted",
-  "decks": 8,
-  "co_sim": 0.91,
-  "text_sim": 0.371,
-  "synergy": 0.538
- },
- {
-  "a": "Emrakul, the Promised End",
-  "b": "Thran Dynamo",
-  "decks": 8,
-  "co_sim": 0.791,
-  "text_sim": 0.253,
-  "synergy": 0.538
- },
- {
-  "a": "Cloud, Midgar Mercenary",
-  "b": "Puresteel Paladin",
-  "decks": 10,
-  "co_sim": 0.979,
-  "text_sim": 0.441,
-  "synergy": 0.538
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "Dwalin, Weaponmaster",
-  "decks": 10,
-  "co_sim": 0.994,
-  "text_sim": 0.457,
-  "synergy": 0.538
- },
- {
-  "a": "Worn Powerstone",
-  "b": "Conduit of Ruin",
-  "decks": 11,
-  "co_sim": 0.806,
-  "text_sim": 0.269,
-  "synergy": 0.537
- },
- {
-  "a": "Gl\u00f3in, Dwarf Emissary",
-  "b": "Iron Hills Blacksmith",
-  "decks": 8,
-  "co_sim": 0.962,
-  "text_sim": 0.425,
-  "synergy": 0.537
- },
- {
-  "a": "Second Harvest",
-  "b": "Shamanic Revelation",
-  "decks": 24,
-  "co_sim": 0.84,
-  "text_sim": 0.304,
-  "synergy": 0.536
- },
- {
-  "a": "Rhythm of the Wild",
-  "b": "Vaultborn Tyrant",
-  "decks": 8,
-  "co_sim": 0.824,
-  "text_sim": 0.288,
-  "synergy": 0.536
- },
- {
-  "a": "Eldritch Immunity",
-  "b": "World Breaker",
-  "decks": 8,
-  "co_sim": 0.947,
-  "text_sim": 0.412,
-  "synergy": 0.535
- },
- {
-  "a": "Harold and Bob, First Numens",
-  "b": "Nuclear Fallout",
-  "decks": 8,
-  "co_sim": 0.961,
-  "text_sim": 0.426,
-  "synergy": 0.535
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Inspiring Overseer",
-  "decks": 11,
-  "co_sim": 0.884,
-  "text_sim": 0.349,
-  "synergy": 0.535
- },
- {
-  "a": "Ulamog, the Ceaseless Hunger",
-  "b": "Thran Dynamo",
-  "decks": 11,
-  "co_sim": 0.815,
-  "text_sim": 0.279,
-  "synergy": 0.535
- },
- {
-  "a": "Yuna, Grand Summoner",
-  "b": "Summon: Yojimbo",
-  "decks": 8,
-  "co_sim": 0.936,
-  "text_sim": 0.402,
-  "synergy": 0.534
- },
- {
-  "a": "Dreamstone Hedron",
-  "b": "Ugin, the Ineffable",
-  "decks": 10,
-  "co_sim": 0.857,
-  "text_sim": 0.323,
-  "synergy": 0.534
- },
- {
-  "a": "Dragon Tempest",
-  "b": "Orb of Dragonkind",
-  "decks": 11,
-  "co_sim": 0.98,
-  "text_sim": 0.446,
-  "synergy": 0.534
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Emerald Medallion",
-  "decks": 26,
-  "co_sim": 0.829,
-  "text_sim": 0.295,
-  "synergy": 0.534
- },
- {
-  "a": "Preordain",
-  "b": "Snap",
-  "decks": 27,
-  "co_sim": 0.854,
-  "text_sim": 0.32,
-  "synergy": 0.534
- },
- {
-  "a": "Sythis, Harvest's Hand",
-  "b": "Resurgent Belief",
-  "decks": 10,
-  "co_sim": 0.973,
-  "text_sim": 0.44,
-  "synergy": 0.533
- },
- {
-  "a": "Wakening Sun's Avatar",
-  "b": "Rhythm of the Wild",
-  "decks": 11,
-  "co_sim": 0.799,
-  "text_sim": 0.266,
-  "synergy": 0.533
- },
- {
-  "a": "Kozilek, Butcher of Truth",
-  "b": "Darksteel Monolith",
-  "decks": 8,
-  "co_sim": 0.932,
-  "text_sim": 0.399,
-  "synergy": 0.533
- },
- {
-  "a": "Cloud, Midgar Mercenary",
-  "b": "Colossus Hammer",
-  "decks": 8,
-  "co_sim": 0.944,
-  "text_sim": 0.411,
-  "synergy": 0.533
- },
- {
-  "a": "Tato Farmer",
-  "b": "Strong, the Brutish Thespian",
-  "decks": 9,
-  "co_sim": 0.987,
-  "text_sim": 0.455,
-  "synergy": 0.532
- },
- {
-  "a": "Rhythm of the Wild",
-  "b": "Pantlaza, Sun-Favored",
-  "decks": 11,
-  "co_sim": 0.799,
-  "text_sim": 0.267,
-  "synergy": 0.532
- },
- {
-  "a": "Ramos, Dragon Engine",
-  "b": "Dragonspeaker Shaman",
-  "decks": 8,
-  "co_sim": 0.949,
-  "text_sim": 0.417,
-  "synergy": 0.532
- },
- {
-  "a": "Roiling Regrowth",
-  "b": "Scute Swarm",
-  "decks": 11,
-  "co_sim": 0.873,
-  "text_sim": 0.341,
-  "synergy": 0.532
- },
- {
-  "a": "Echoes of Eternity",
-  "b": "Ulamog, the Defiler",
-  "decks": 9,
-  "co_sim": 0.951,
-  "text_sim": 0.418,
-  "synergy": 0.532
- },
- {
-  "a": "Gilded Drake",
-  "b": "Mystic Remora",
-  "decks": 13,
-  "co_sim": 0.85,
-  "text_sim": 0.318,
-  "synergy": 0.532
- },
- {
-  "a": "Mana Vault",
-  "b": "Drannith Magistrate",
-  "decks": 13,
-  "co_sim": 0.77,
-  "text_sim": 0.239,
-  "synergy": 0.531
- },
- {
-  "a": "Topography Tracker",
-  "b": "Svyelun of Sea and Sky",
-  "decks": 10,
-  "co_sim": 0.993,
-  "text_sim": 0.462,
-  "synergy": 0.531
- },
- {
-  "a": "Ugin, the Ineffable",
-  "b": "Worn Powerstone",
-  "decks": 12,
-  "co_sim": 0.764,
-  "text_sim": 0.233,
-  "synergy": 0.531
- },
- {
-  "a": "Their Name Is Death",
-  "b": "Cryptothrall",
-  "decks": 8,
-  "co_sim": 0.982,
-  "text_sim": 0.45,
-  "synergy": 0.531
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Beast Whisperer",
-  "decks": 61,
-  "co_sim": 0.818,
-  "text_sim": 0.287,
-  "synergy": 0.531
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Angel of Vitality",
-  "decks": 9,
-  "co_sim": 0.822,
-  "text_sim": 0.291,
-  "synergy": 0.531
- },
- {
-  "a": "Expedite",
-  "b": "Runaway Steam-Kin",
-  "decks": 8,
-  "co_sim": 0.892,
-  "text_sim": 0.361,
-  "synergy": 0.531
- },
- {
-  "a": "Gravecrawler",
-  "b": "The Meathook Massacre",
-  "decks": 11,
-  "co_sim": 0.841,
-  "text_sim": 0.31,
-  "synergy": 0.531
- },
- {
-  "a": "Expedite",
-  "b": "Young Pyromancer",
-  "decks": 12,
-  "co_sim": 0.943,
-  "text_sim": 0.412,
-  "synergy": 0.531
- },
- {
-  "a": "Masterwork of Ingenuity",
-  "b": "Sigarda's Aid",
-  "decks": 11,
-  "co_sim": 0.961,
-  "text_sim": 0.43,
-  "synergy": 0.531
- },
- {
-  "a": "Rampaging Baloths",
-  "b": "Harrow",
-  "decks": 30,
-  "co_sim": 0.927,
-  "text_sim": 0.397,
-  "synergy": 0.53
- },
- {
-  "a": "Ugin, the Ineffable",
-  "b": "Endbringer",
-  "decks": 15,
-  "co_sim": 0.879,
-  "text_sim": 0.349,
-  "synergy": 0.53
- },
- {
-  "a": "Raul, Trouble Shooter",
-  "b": "Strong, the Brutish Thespian",
-  "decks": 8,
-  "co_sim": 0.988,
-  "text_sim": 0.458,
-  "synergy": 0.53
- },
- {
-  "a": "Strong, the Brutish Thespian",
-  "b": "Bloatfly Swarm",
-  "decks": 8,
-  "co_sim": 0.974,
-  "text_sim": 0.444,
-  "synergy": 0.53
- },
- {
-  "a": "Thran Dynamo",
-  "b": "Ulamog, the Infinite Gyre",
-  "decks": 9,
-  "co_sim": 0.794,
-  "text_sim": 0.265,
-  "synergy": 0.53
- },
- {
-  "a": "Zuran Orb",
-  "b": "Realms Uncharted",
-  "decks": 9,
-  "co_sim": 0.938,
-  "text_sim": 0.409,
-  "synergy": 0.53
- },
- {
-  "a": "Lulu, Stern Guardian",
-  "b": "Endless Detour",
-  "decks": 8,
-  "co_sim": 0.878,
-  "text_sim": 0.349,
-  "synergy": 0.529
- },
- {
-  "a": "Valkyrie Harbinger",
-  "b": "Pearl Medallion",
-  "decks": 9,
-  "co_sim": 0.825,
-  "text_sim": 0.296,
-  "synergy": 0.529
- },
- {
-  "a": "Second Harvest",
-  "b": "Ivy Lane Denizen",
-  "decks": 8,
-  "co_sim": 0.905,
-  "text_sim": 0.376,
-  "synergy": 0.529
- },
- {
-  "a": "Masterwork of Ingenuity",
-  "b": "Reyav, Master Smith",
-  "decks": 8,
-  "co_sim": 0.832,
-  "text_sim": 0.303,
-  "synergy": 0.529
- },
- {
-  "a": "Mirrorhall Mimic // Ghastly Mimicry",
-  "b": "Stunt Double",
-  "decks": 10,
-  "co_sim": 0.926,
-  "text_sim": 0.397,
-  "synergy": 0.529
- },
- {
-  "a": "Hullbreaker Horror",
-  "b": "Sapphire Medallion",
-  "decks": 8,
-  "co_sim": 0.81,
-  "text_sim": 0.28,
-  "synergy": 0.529
- },
- {
-  "a": "Rampaging Baloths",
-  "b": "Roiling Regrowth",
-  "decks": 16,
-  "co_sim": 0.928,
-  "text_sim": 0.4,
-  "synergy": 0.528
- },
- {
-  "a": "Endless Detour",
-  "b": "Tromell, Seymour's Butler",
-  "decks": 8,
-  "co_sim": 0.836,
-  "text_sim": 0.307,
-  "synergy": 0.528
- },
- {
-  "a": "Frantic Search",
-  "b": "Veyran, Voice of Duality",
-  "decks": 20,
-  "co_sim": 0.87,
-  "text_sim": 0.342,
-  "synergy": 0.528
- },
- {
-  "a": "Elvish Spirit Guide",
-  "b": "Tinder Wall",
-  "decks": 8,
-  "co_sim": 0.927,
-  "text_sim": 0.399,
-  "synergy": 0.528
- },
- {
-  "a": "Desperate Ritual",
-  "b": "Storm-Kiln Artist",
-  "decks": 10,
-  "co_sim": 0.91,
-  "text_sim": 0.382,
-  "synergy": 0.528
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "D\u00e1in, Lord of the Iron Hills",
-  "decks": 8,
-  "co_sim": 0.952,
-  "text_sim": 0.424,
-  "synergy": 0.528
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "D\u00e1in's Company",
-  "decks": 13,
-  "co_sim": 0.996,
-  "text_sim": 0.468,
-  "synergy": 0.528
- },
- {
-  "a": "Luminous Broodmoth",
-  "b": "Endless Detour",
-  "decks": 8,
-  "co_sim": 0.801,
-  "text_sim": 0.273,
-  "synergy": 0.527
- },
- {
-  "a": "Bane of Bala Ged",
-  "b": "Forsaken Monument",
-  "decks": 9,
-  "co_sim": 0.941,
-  "text_sim": 0.414,
-  "synergy": 0.527
- },
- {
-  "a": "Thran Dynamo",
-  "b": "Desecrate Reality",
-  "decks": 8,
-  "co_sim": 0.827,
-  "text_sim": 0.3,
-  "synergy": 0.527
- },
- {
-  "a": "Seething Song",
-  "b": "Storm-Kiln Artist",
-  "decks": 23,
-  "co_sim": 0.817,
-  "text_sim": 0.29,
-  "synergy": 0.527
- },
- {
-  "a": "Rampaging Baloths",
-  "b": "Scapeshift",
-  "decks": 9,
-  "co_sim": 0.877,
-  "text_sim": 0.351,
-  "synergy": 0.527
- },
- {
-  "a": "Thassa's Oracle",
-  "b": "Pact of Negation",
-  "decks": 13,
-  "co_sim": 0.96,
-  "text_sim": 0.433,
-  "synergy": 0.527
- },
- {
-  "a": "Protection Magic",
-  "b": "Rikku, Resourceful Guardian",
-  "decks": 9,
-  "co_sim": 0.983,
-  "text_sim": 0.457,
-  "synergy": 0.526
- },
- {
-  "a": "Sin, Unending Cataclysm",
-  "b": "Chocobo Knights",
-  "decks": 8,
-  "co_sim": 0.965,
-  "text_sim": 0.438,
-  "synergy": 0.526
- },
- {
-  "a": "Zegana, Utopian Speaker",
-  "b": "Deeproot Waters",
-  "decks": 8,
-  "co_sim": 0.975,
-  "text_sim": 0.448,
-  "synergy": 0.526
- },
- {
-  "a": "Bronzebeak Foragers",
-  "b": "Rhythm of the Wild",
-  "decks": 11,
-  "co_sim": 0.806,
-  "text_sim": 0.28,
-  "synergy": 0.526
- },
- {
-  "a": "Dina, Soul Steeper",
-  "b": "Mortality Spear",
-  "decks": 12,
-  "co_sim": 0.975,
-  "text_sim": 0.448,
-  "synergy": 0.526
- },
- {
-  "a": "Flickering Ward",
-  "b": "Ajani's Chosen",
-  "decks": 8,
-  "co_sim": 0.977,
-  "text_sim": 0.451,
-  "synergy": 0.526
- },
- {
-  "a": "Mizzix's Mastery",
-  "b": "Veyran, Voice of Duality",
-  "decks": 12,
-  "co_sim": 0.91,
-  "text_sim": 0.384,
-  "synergy": 0.526
- },
- {
-  "a": "Ganax, Astral Hunter",
-  "b": "Dragonlord's Servant",
-  "decks": 14,
-  "co_sim": 0.99,
-  "text_sim": 0.463,
-  "synergy": 0.526
- },
- {
-  "a": "Grim Monolith",
-  "b": "Flusterstorm",
-  "decks": 9,
-  "co_sim": 0.81,
-  "text_sim": 0.284,
-  "synergy": 0.526
- },
- {
-  "a": "Muxus, Goblin Grandee",
-  "b": "Goblin Bombardment",
-  "decks": 8,
-  "co_sim": 0.875,
-  "text_sim": 0.348,
-  "synergy": 0.526
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "D\u00e1in, Lord of the Iron Hills",
-  "decks": 13,
-  "co_sim": 0.99,
-  "text_sim": 0.464,
-  "synergy": 0.526
- },
- {
-  "a": "Lyse Hext",
-  "b": "Vindicate",
-  "decks": 9,
-  "co_sim": 0.888,
-  "text_sim": 0.363,
-  "synergy": 0.525
- },
- {
-  "a": "Screeching Scorchbeast",
-  "b": "Strong, the Brutish Thespian",
-  "decks": 9,
-  "co_sim": 0.989,
-  "text_sim": 0.464,
-  "synergy": 0.525
- },
- {
-  "a": "Flayer of Loyalties",
-  "b": "Worn Powerstone",
-  "decks": 11,
-  "co_sim": 0.777,
-  "text_sim": 0.252,
-  "synergy": 0.525
- },
- {
-  "a": "Runic Armasaur",
-  "b": "Rhythm of the Wild",
-  "decks": 11,
-  "co_sim": 0.839,
-  "text_sim": 0.314,
-  "synergy": 0.525
- },
- {
-  "a": "Rakdos Signet",
-  "b": "Emberwilde Captain",
-  "decks": 11,
-  "co_sim": 0.696,
-  "text_sim": 0.172,
-  "synergy": 0.525
- },
- {
-  "a": "Chrome Mox",
-  "b": "Pact of Negation",
-  "decks": 26,
-  "co_sim": 0.893,
-  "text_sim": 0.368,
-  "synergy": 0.525
- },
- {
-  "a": "Thassa's Oracle",
-  "b": "Mana Crypt",
-  "decks": 8,
-  "co_sim": 0.852,
-  "text_sim": 0.328,
-  "synergy": 0.525
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "Gimli of the Glittering Caves",
-  "decks": 9,
-  "co_sim": 0.929,
-  "text_sim": 0.403,
-  "synergy": 0.525
- },
- {
-  "a": "Forsaken Monument",
-  "b": "Rise of the Eldrazi",
-  "decks": 10,
-  "co_sim": 0.97,
-  "text_sim": 0.447,
-  "synergy": 0.524
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Craterhoof Behemoth",
-  "decks": 38,
-  "co_sim": 0.838,
-  "text_sim": 0.314,
-  "synergy": 0.524
- },
- {
-  "a": "Sythis, Harvest's Hand",
-  "b": "Sterling Grove",
-  "decks": 15,
-  "co_sim": 0.982,
-  "text_sim": 0.458,
-  "synergy": 0.524
- },
- {
-  "a": "Simian Spirit Guide",
-  "b": "Red Elemental Blast",
-  "decks": 12,
-  "co_sim": 0.922,
-  "text_sim": 0.398,
-  "synergy": 0.524
- },
- {
-  "a": "Ruby Medallion",
-  "b": "Kiki-Jiki, Mirror Breaker",
-  "decks": 9,
-  "co_sim": 0.841,
-  "text_sim": 0.317,
-  "synergy": 0.524
- },
- {
-  "a": "Camaraderie",
-  "b": "Rhys the Redeemed",
-  "decks": 8,
-  "co_sim": 0.923,
-  "text_sim": 0.399,
-  "synergy": 0.524
- },
- {
-  "a": "Diamond Pick-Axe",
-  "b": "F\u00edli the Pathfinder",
-  "decks": 10,
-  "co_sim": 0.917,
-  "text_sim": 0.393,
-  "synergy": 0.524
- },
- {
-  "a": "Marcus, Mutant Mayor",
-  "b": "Nuclear Fallout",
-  "decks": 8,
-  "co_sim": 0.963,
-  "text_sim": 0.439,
-  "synergy": 0.523
- },
- {
-  "a": "Dragon's Hoard",
-  "b": "Dragon Tempest",
-  "decks": 23,
-  "co_sim": 0.988,
-  "text_sim": 0.465,
-  "synergy": 0.523
- },
- {
-  "a": "Brainstorm",
-  "b": "Hullbreaker Horror",
-  "decks": 17,
-  "co_sim": 0.761,
-  "text_sim": 0.238,
-  "synergy": 0.523
- },
- {
-  "a": "Nuka-Nuke Launcher",
-  "b": "Agent Frank Horrigan",
-  "decks": 8,
-  "co_sim": 0.847,
-  "text_sim": 0.323,
-  "synergy": 0.523
- },
- {
-  "a": "Serum Visions",
-  "b": "Third Path Iconoclast",
-  "decks": 8,
-  "co_sim": 0.839,
-  "text_sim": 0.316,
-  "synergy": 0.523
- },
- {
-  "a": "Crop Rotation",
-  "b": "Sylvan Safekeeper",
-  "decks": 22,
-  "co_sim": 0.942,
-  "text_sim": 0.419,
-  "synergy": 0.523
- },
- {
-  "a": "Keeper of Secrets",
-  "b": "Wild-Magic Sorcerer",
-  "decks": 8,
-  "co_sim": 0.963,
-  "text_sim": 0.44,
-  "synergy": 0.523
- },
- {
-  "a": "The Kami War // O-Kagachi Made Manifest",
-  "b": "Jukai Naturalist",
-  "decks": 8,
-  "co_sim": 0.935,
-  "text_sim": 0.414,
-  "synergy": 0.522
- },
- {
-  "a": "Open the Armory",
-  "b": "Ardenn, Intrepid Archaeologist",
-  "decks": 9,
-  "co_sim": 0.936,
-  "text_sim": 0.414,
-  "synergy": 0.522
- },
- {
-  "a": "Rhythm of the Wild",
-  "b": "Kogla and Yidaro",
-  "decks": 8,
-  "co_sim": 0.881,
-  "text_sim": 0.359,
-  "synergy": 0.522
- },
- {
-  "a": "Sigarda's Aid",
-  "b": "Genji Glove",
-  "decks": 9,
-  "co_sim": 0.909,
-  "text_sim": 0.387,
-  "synergy": 0.522
- },
- {
-  "a": "Gl\u00f3in, Dwarf Emissary",
-  "b": "An Unexpected Party // At the Door",
-  "decks": 14,
-  "co_sim": 0.965,
-  "text_sim": 0.443,
-  "synergy": 0.522
- },
- {
-  "a": "D\u00e1in's Company",
-  "b": "F\u00edli the Pathfinder",
-  "decks": 16,
-  "co_sim": 0.998,
-  "text_sim": 0.476,
-  "synergy": 0.522
- },
- {
-  "a": "One with the Machine",
-  "b": "Myr Battlesphere",
-  "decks": 8,
-  "co_sim": 0.87,
-  "text_sim": 0.349,
-  "synergy": 0.521
- },
- {
-  "a": "Luminous Broodmoth",
-  "b": "Rikku, Resourceful Guardian",
-  "decks": 10,
-  "co_sim": 0.916,
-  "text_sim": 0.395,
-  "synergy": 0.521
- },
- {
-  "a": "Luminous Broodmoth",
-  "b": "Blitzball Stadium",
-  "decks": 9,
-  "co_sim": 0.878,
-  "text_sim": 0.357,
-  "synergy": 0.521
- },
- {
-  "a": "Artisan of Kozilek",
-  "b": "Forsaken Monument",
-  "decks": 14,
-  "co_sim": 0.901,
-  "text_sim": 0.38,
-  "synergy": 0.521
- },
- {
-  "a": "Not of This World",
-  "b": "Forsaken Monument",
-  "decks": 8,
-  "co_sim": 0.906,
-  "text_sim": 0.385,
-  "synergy": 0.521
- },
- {
-  "a": "Forsaken Monument",
-  "b": "It That Betrays",
-  "decks": 10,
-  "co_sim": 0.907,
-  "text_sim": 0.386,
-  "synergy": 0.521
- },
- {
-  "a": "Weatherlight",
-  "b": "Etherium Sculptor",
-  "decks": 8,
-  "co_sim": 0.844,
-  "text_sim": 0.323,
-  "synergy": 0.521
- },
- {
-  "a": "Harrow",
-  "b": "Zendikar's Roil",
-  "decks": 11,
-  "co_sim": 0.953,
-  "text_sim": 0.432,
-  "synergy": 0.521
- },
- {
-  "a": "Lightning Bolt",
-  "b": "Storm-Kiln Artist",
-  "decks": 22,
-  "co_sim": 0.841,
-  "text_sim": 0.32,
-  "synergy": 0.521
- },
- {
-  "a": "Lotus Petal",
-  "b": "Demonic Consultation",
-  "decks": 12,
-  "co_sim": 0.839,
-  "text_sim": 0.319,
-  "synergy": 0.521
- },
- {
-  "a": "Demonic Consultation",
-  "b": "Mox Diamond",
-  "decks": 11,
-  "co_sim": 0.868,
-  "text_sim": 0.347,
-  "synergy": 0.521
- },
- {
-  "a": "Cloud, Midgar Mercenary",
-  "b": "Sigarda's Aid",
-  "decks": 8,
-  "co_sim": 0.894,
-  "text_sim": 0.373,
-  "synergy": 0.521
- },
- {
-  "a": "Gl\u00f3in, Dwarf Emissary",
-  "b": "D\u00e1in's Company",
-  "decks": 16,
-  "co_sim": 0.968,
-  "text_sim": 0.447,
-  "synergy": 0.521
- },
- {
-  "a": "Ugin, the Ineffable",
-  "b": "Flayer of Loyalties",
-  "decks": 13,
   "co_sim": 0.874,
-  "text_sim": 0.354,
-  "synergy": 0.52
+  "text_sim": 0.251,
+  "synergy": 0.623
  },
  {
-  "a": "Opt",
-  "b": "Talrand, Sky Summoner",
-  "decks": 17,
-  "co_sim": 0.896,
-  "text_sim": 0.376,
-  "synergy": 0.52
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Garruk, Primal Hunter",
+  "a": "Felisa, Fang of Silverquill",
+  "b": "Orzhov Signet",
   "decks": 15,
-  "co_sim": 0.769,
-  "text_sim": 0.249,
-  "synergy": 0.52
- },
- {
-  "a": "Imperial Recruiter",
-  "b": "Red Elemental Blast",
-  "decks": 8,
-  "co_sim": 0.852,
-  "text_sim": 0.332,
-  "synergy": 0.52
- },
- {
-  "a": "Summon: Ixion",
-  "b": "O'aka, Traveling Merchant",
-  "decks": 9,
-  "co_sim": 0.953,
-  "text_sim": 0.434,
-  "synergy": 0.519
- },
- {
-  "a": "Dreamstone Hedron",
-  "b": "Oblivion Sower",
-  "decks": 10,
-  "co_sim": 0.87,
-  "text_sim": 0.351,
-  "synergy": 0.519
- },
- {
-  "a": "Thran Dynamo",
-  "b": "Endbringer",
-  "decks": 10,
-  "co_sim": 0.785,
-  "text_sim": 0.266,
-  "synergy": 0.519
- },
- {
-  "a": "Lotus Cobra",
-  "b": "Scapeshift",
-  "decks": 17,
-  "co_sim": 0.934,
-  "text_sim": 0.414,
-  "synergy": 0.519
- },
- {
-  "a": "Scholar of New Horizons",
-  "b": "Summon: Yojimbo",
-  "decks": 9,
-  "co_sim": 0.887,
-  "text_sim": 0.369,
-  "synergy": 0.518
- },
- {
-  "a": "Second Harvest",
-  "b": "Squirrel Sovereign",
-  "decks": 8,
-  "co_sim": 0.821,
-  "text_sim": 0.303,
-  "synergy": 0.518
- },
- {
-  "a": "Worn Powerstone",
-  "b": "Zhulodok, Void Gorger",
-  "decks": 9,
-  "co_sim": 0.792,
-  "text_sim": 0.273,
-  "synergy": 0.518
- },
- {
-  "a": "Earthshaker Dreadmaw",
-  "b": "Rhythm of the Wild",
-  "decks": 11,
-  "co_sim": 0.81,
-  "text_sim": 0.292,
-  "synergy": 0.518
- },
- {
-  "a": "Izzet Signet",
-  "b": "Haughty Djinn",
-  "decks": 8,
-  "co_sim": 0.747,
-  "text_sim": 0.229,
-  "synergy": 0.518
- },
- {
-  "a": "Izzet Signet",
-  "b": "Talrand, Sky Summoner",
-  "decks": 16,
-  "co_sim": 0.777,
-  "text_sim": 0.259,
-  "synergy": 0.518
- },
- {
-  "a": "Righteous Valkyrie",
-  "b": "Gisela, the Broken Blade",
-  "decks": 8,
-  "co_sim": 0.929,
-  "text_sim": 0.411,
-  "synergy": 0.518
- },
- {
-  "a": "Dramatic Reversal",
-  "b": "Isochron Scepter",
-  "decks": 14,
-  "co_sim": 0.933,
-  "text_sim": 0.416,
-  "synergy": 0.518
- },
- {
-  "a": "Wheel of Fortune",
-  "b": "Pyroblast",
-  "decks": 8,
-  "co_sim": 0.847,
-  "text_sim": 0.33,
-  "synergy": 0.518
- },
- {
-  "a": "Grim Monolith",
-  "b": "Force of Negation",
-  "decks": 9,
-  "co_sim": 0.811,
-  "text_sim": 0.293,
-  "synergy": 0.518
- },
- {
-  "a": "Ruby Medallion",
-  "b": "Imperial Recruiter",
-  "decks": 8,
-  "co_sim": 0.794,
-  "text_sim": 0.276,
-  "synergy": 0.518
- },
- {
-  "a": "Songbirds' Blessing",
-  "b": "Winds of Rath",
-  "decks": 8,
-  "co_sim": 0.957,
-  "text_sim": 0.439,
-  "synergy": 0.517
- },
- {
-  "a": "Ancient Greenwarden",
-  "b": "Scapeshift",
-  "decks": 11,
-  "co_sim": 0.912,
-  "text_sim": 0.395,
-  "synergy": 0.516
- },
- {
-  "a": "Green Sun's Zenith",
-  "b": "Heroic Intervention",
-  "decks": 21,
-  "co_sim": 0.766,
-  "text_sim": 0.25,
-  "synergy": 0.516
- },
- {
-  "a": "Tear Asunder",
-  "b": "The Gitrog Monster",
-  "decks": 14,
-  "co_sim": 0.854,
-  "text_sim": 0.339,
-  "synergy": 0.515
- },
- {
-  "a": "Eldritch Immunity",
-  "b": "Endbringer",
-  "decks": 8,
-  "co_sim": 0.989,
-  "text_sim": 0.474,
-  "synergy": 0.515
- },
- {
-  "a": "Nightkin Ambusher",
-  "b": "Mutational Advantage",
-  "decks": 8,
   "co_sim": 0.844,
-  "text_sim": 0.329,
-  "synergy": 0.515
+  "text_sim": 0.221,
+  "synergy": 0.623
  },
  {
-  "a": "Elspeth, Sun's Champion",
-  "b": "Teferi's Protection",
-  "decks": 19,
-  "co_sim": 0.718,
-  "text_sim": 0.203,
-  "synergy": 0.515
- },
- {
-  "a": "Rise of the Eldrazi",
-  "b": "Darksteel Monolith",
-  "decks": 9,
-  "co_sim": 0.988,
-  "text_sim": 0.473,
-  "synergy": 0.515
- },
- {
-  "a": "Yedora, Grave Gardener",
-  "b": "Whisperwood Elemental",
-  "decks": 8,
-  "co_sim": 0.974,
-  "text_sim": 0.459,
-  "synergy": 0.515
- },
- {
-  "a": "Sythis, Harvest's Hand",
-  "b": "Destiny Spinner",
+  "a": "Jeska's Will",
+  "b": "_____ Goblin",
   "decks": 12,
-  "co_sim": 0.882,
-  "text_sim": 0.367,
-  "synergy": 0.515
+  "co_sim": 0.858,
+  "text_sim": 0.235,
+  "synergy": 0.623
  },
  {
-  "a": "Snap",
-  "b": "Solve the Equation",
-  "decks": 11,
-  "co_sim": 0.901,
-  "text_sim": 0.386,
-  "synergy": 0.515
+  "a": "Lim-D\u00fbl's Vault",
+  "b": "Prosperous Thief",
+  "decks": 10,
+  "co_sim": 0.827,
+  "text_sim": 0.204,
+  "synergy": 0.623
  },
  {
-  "a": "Goblin Ringleader",
-  "b": "Goblin Bombardment",
-  "decks": 9,
-  "co_sim": 0.871,
-  "text_sim": 0.357,
-  "synergy": 0.515
- },
- {
-  "a": "D\u00e1in, Lord of the Iron Hills",
-  "b": "D\u00e1in's Company",
+  "a": "Foray of Orcs",
+  "b": "Grond, the Gatebreaker",
   "decks": 13,
-  "co_sim": 0.992,
-  "text_sim": 0.477,
-  "synergy": 0.515
+  "co_sim": 0.995,
+  "text_sim": 0.373,
+  "synergy": 0.623
  },
  {
-  "a": "Rikku, Resourceful Guardian",
-  "b": "Summon: Yojimbo",
-  "decks": 9,
-  "co_sim": 0.921,
-  "text_sim": 0.407,
-  "synergy": 0.514
+  "a": "Continue?",
+  "b": "Endless Foot Assault",
+  "decks": 15,
+  "co_sim": 0.902,
+  "text_sim": 0.28,
+  "synergy": 0.622
  },
  {
-  "a": "Radstorm",
-  "b": "Screeching Scorchbeast",
-  "decks": 8,
-  "co_sim": 0.926,
-  "text_sim": 0.412,
-  "synergy": 0.514
+  "a": "Leonardo, the Balance",
+  "b": "Exploding Barrel",
+  "decks": 12,
+  "co_sim": 0.931,
+  "text_sim": 0.309,
+  "synergy": 0.622
  },
  {
-  "a": "Ponder",
-  "b": "Pongify",
-  "decks": 31,
-  "co_sim": 0.699,
-  "text_sim": 0.185,
-  "synergy": 0.514
+  "a": "Tokka & Rahzar, Unsupervised",
+  "b": "Game Over",
+  "decks": 13,
+  "co_sim": 0.935,
+  "text_sim": 0.313,
+  "synergy": 0.622
+ },
+ {
+  "a": "Bitter Downfall",
+  "b": "Sauron, Lord of the Rings",
+  "decks": 14,
+  "co_sim": 0.983,
+  "text_sim": 0.361,
+  "synergy": 0.622
  },
  {
   "a": "Starfield Mystic",
-  "b": "Flickering Ward",
-  "decks": 8,
-  "co_sim": 0.942,
-  "text_sim": 0.428,
-  "synergy": 0.514
+  "b": "Archon of Sun's Grace",
+  "decks": 56,
+  "co_sim": 0.982,
+  "text_sim": 0.361,
+  "synergy": 0.622
  },
  {
-  "a": "Pearl Medallion",
-  "b": "Emeria Shepherd",
-  "decks": 10,
-  "co_sim": 0.814,
-  "text_sim": 0.3,
-  "synergy": 0.514
- },
- {
-  "a": "Defiler of Vigor",
-  "b": "Selvala, Heart of the Wilds",
-  "decks": 9,
-  "co_sim": 0.805,
-  "text_sim": 0.292,
-  "synergy": 0.514
- },
- {
-  "a": "Consider",
-  "b": "Talrand, Sky Summoner",
-  "decks": 11,
-  "co_sim": 0.859,
-  "text_sim": 0.345,
-  "synergy": 0.514
- },
- {
-  "a": "Formidable Speaker",
-  "b": "Allosaurus Shepherd",
-  "decks": 8,
-  "co_sim": 0.944,
-  "text_sim": 0.43,
-  "synergy": 0.514
- },
- {
-  "a": "Chain of Vapor",
-  "b": "Mystic Remora",
-  "decks": 25,
-  "co_sim": 0.867,
-  "text_sim": 0.354,
-  "synergy": 0.513
- },
- {
-  "a": "Sythis, Harvest's Hand",
-  "b": "The Phasing of Zhalfir",
-  "decks": 9,
-  "co_sim": 0.924,
-  "text_sim": 0.411,
-  "synergy": 0.513
- },
- {
-  "a": "Spawnbed Protector",
-  "b": "Snapping Voidcraw",
-  "decks": 9,
-  "co_sim": 0.997,
-  "text_sim": 0.484,
-  "synergy": 0.513
- },
- {
-  "a": "Sarkhan, Soul Aflame",
-  "b": "Temur Ascendancy",
-  "decks": 8,
-  "co_sim": 0.919,
-  "text_sim": 0.405,
-  "synergy": 0.513
- },
- {
-  "a": "Feral Ghoul",
-  "b": "Radstorm",
-  "decks": 8,
-  "co_sim": 0.894,
-  "text_sim": 0.382,
-  "synergy": 0.513
- },
- {
-  "a": "Revive the Shire",
-  "b": "Feasting Hobbit",
-  "decks": 8,
-  "co_sim": 0.948,
-  "text_sim": 0.434,
-  "synergy": 0.513
- },
- {
-  "a": "Dockside Extortionist",
-  "b": "Red Elemental Blast",
-  "decks": 9,
-  "co_sim": 0.846,
-  "text_sim": 0.333,
-  "synergy": 0.513
- },
- {
-  "a": "Kogla, the Titan Ape",
-  "b": "Sylvan Library",
-  "decks": 8,
-  "co_sim": 0.761,
-  "text_sim": 0.248,
-  "synergy": 0.513
- },
- {
-  "a": "Long-Lost Lances",
-  "b": "K\u00edli the Resourceful",
-  "decks": 13,
-  "co_sim": 0.994,
-  "text_sim": 0.48,
-  "synergy": 0.513
- },
- {
-  "a": "Teferi's Protection",
-  "b": "Esper Sentinel",
-  "decks": 82,
-  "co_sim": 0.83,
-  "text_sim": 0.317,
-  "synergy": 0.512
- },
- {
-  "a": "Mystic Remora",
-  "b": "Mystical Tutor",
-  "decks": 55,
-  "co_sim": 0.917,
-  "text_sim": 0.405,
-  "synergy": 0.512
- },
- {
-  "a": "Observed Stasis",
-  "b": "Hermes, Overseer of Elpis",
-  "decks": 8,
-  "co_sim": 0.823,
-  "text_sim": 0.311,
-  "synergy": 0.512
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Birds of Paradise",
-  "decks": 102,
-  "co_sim": 0.767,
-  "text_sim": 0.254,
-  "synergy": 0.512
- },
- {
-  "a": "Mutational Advantage",
-  "b": "Tato Farmer",
-  "decks": 9,
-  "co_sim": 0.818,
-  "text_sim": 0.306,
-  "synergy": 0.512
- },
- {
-  "a": "Vault 12: The Necropolis",
-  "b": "Harold and Bob, First Numens",
-  "decks": 8,
-  "co_sim": 0.98,
-  "text_sim": 0.468,
-  "synergy": 0.512
- },
- {
-  "a": "Endbringer",
-  "b": "Zhulodok, Void Gorger",
-  "decks": 8,
-  "co_sim": 0.996,
-  "text_sim": 0.484,
-  "synergy": 0.512
- },
- {
-  "a": "Pearl Medallion",
-  "b": "Serra Ascendant",
-  "decks": 8,
-  "co_sim": 0.795,
-  "text_sim": 0.284,
-  "synergy": 0.512
- },
- {
-  "a": "Zada, Hedron Grinder",
-  "b": "Fists of Flame",
-  "decks": 12,
-  "co_sim": 0.894,
-  "text_sim": 0.383,
-  "synergy": 0.512
- },
- {
-  "a": "Grim Monolith",
-  "b": "Rhystic Study",
-  "decks": 17,
-  "co_sim": 0.736,
-  "text_sim": 0.223,
-  "synergy": 0.512
- },
- {
-  "a": "Mana Vault",
-  "b": "Swan Song",
-  "decks": 35,
-  "co_sim": 0.709,
-  "text_sim": 0.198,
-  "synergy": 0.512
- },
- {
-  "a": "An Unexpected Party // At the Door",
-  "b": "Thorin Oakenshield",
-  "decks": 12,
-  "co_sim": 0.983,
-  "text_sim": 0.472,
-  "synergy": 0.512
- },
- {
-  "a": "Rakdos Signet",
-  "b": "Kardur, Doomscourge",
-  "decks": 16,
-  "co_sim": 0.741,
-  "text_sim": 0.231,
-  "synergy": 0.511
- },
- {
-  "a": "Summon: Magus Sisters",
-  "b": "Scholar of New Horizons",
-  "decks": 9,
-  "co_sim": 0.883,
-  "text_sim": 0.371,
-  "synergy": 0.511
- },
- {
-  "a": "Auron, Venerated Guardian",
-  "b": "Bred for the Hunt",
-  "decks": 8,
-  "co_sim": 0.885,
-  "text_sim": 0.374,
-  "synergy": 0.511
- },
- {
-  "a": "Atarka, World Render",
-  "b": "Dragonlord's Servant",
+  "a": "Fractal Harness",
+  "b": "Animist's Awakening",
   "decks": 19,
-  "co_sim": 0.988,
-  "text_sim": 0.477,
-  "synergy": 0.511
+  "co_sim": 0.91,
+  "text_sim": 0.288,
+  "synergy": 0.622
  },
  {
-  "a": "Thran Dynamo",
-  "b": "Zhulodok, Void Gorger",
-  "decks": 10,
-  "co_sim": 0.794,
-  "text_sim": 0.282,
-  "synergy": 0.511
- },
- {
-  "a": "Opt",
-  "b": "Third Path Iconoclast",
-  "decks": 8,
-  "co_sim": 0.818,
-  "text_sim": 0.306,
-  "synergy": 0.511
- },
- {
-  "a": "Dimir Signet",
-  "b": "Gonti, Lord of Luxury",
-  "decks": 11,
-  "co_sim": 0.721,
-  "text_sim": 0.21,
-  "synergy": 0.511
- },
- {
-  "a": "Dark Ritual",
-  "b": "Sheoldred, Whispering One",
-  "decks": 9,
-  "co_sim": 0.673,
-  "text_sim": 0.162,
-  "synergy": 0.511
- },
- {
-  "a": "Frantic Search",
-  "b": "Baral, Chief of Compliance",
-  "decks": 15,
-  "co_sim": 0.926,
-  "text_sim": 0.415,
-  "synergy": 0.511
- },
- {
-  "a": "Infesting Radroach",
-  "b": "Nuclear Fallout",
-  "decks": 9,
-  "co_sim": 0.973,
-  "text_sim": 0.463,
-  "synergy": 0.51
- },
- {
-  "a": "Skittering Cicada",
-  "b": "Worn Powerstone",
-  "decks": 8,
-  "co_sim": 0.794,
-  "text_sim": 0.284,
-  "synergy": 0.51
- },
- {
-  "a": "Beastmaster Ascension",
-  "b": "Heroic Intervention",
-  "decks": 29,
-  "co_sim": 0.777,
-  "text_sim": 0.267,
-  "synergy": 0.51
- },
- {
-  "a": "Mindbreak Trap",
-  "b": "Mox Diamond",
-  "decks": 14,
-  "co_sim": 0.92,
-  "text_sim": 0.41,
-  "synergy": 0.51
- },
- {
-  "a": "Frodo, Adventurous Hobbit",
-  "b": "Banquet Guests",
-  "decks": 8,
-  "co_sim": 0.929,
-  "text_sim": 0.42,
-  "synergy": 0.509
- },
- {
-  "a": "Splendid Reclamation",
-  "b": "Lotus Cobra",
-  "decks": 18,
-  "co_sim": 0.929,
-  "text_sim": 0.42,
-  "synergy": 0.509
- },
- {
-  "a": "Dreamstone Hedron",
-  "b": "Endbringer",
-  "decks": 10,
-  "co_sim": 0.899,
-  "text_sim": 0.391,
-  "synergy": 0.508
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Guardian Project",
-  "decks": 60,
-  "co_sim": 0.802,
-  "text_sim": 0.293,
-  "synergy": 0.508
- },
- {
-  "a": "Nicanzil, Current Conductor",
-  "b": "Mist Dancer",
-  "decks": 10,
-  "co_sim": 1.0,
-  "text_sim": 0.492,
-  "synergy": 0.508
- },
- {
-  "a": "Talisman of Indulgence",
-  "b": "Anger",
-  "decks": 25,
-  "co_sim": 0.753,
-  "text_sim": 0.244,
-  "synergy": 0.508
- },
- {
-  "a": "Miirym, Sentinel Wyrm",
-  "b": "Orb of Dragonkind",
-  "decks": 9,
-  "co_sim": 0.996,
-  "text_sim": 0.488,
-  "synergy": 0.508
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Rhonas the Indomitable",
-  "decks": 8,
-  "co_sim": 0.748,
-  "text_sim": 0.24,
-  "synergy": 0.508
- },
- {
-  "a": "Vorel of the Hull Clade",
-  "b": "Simic Ascendancy",
-  "decks": 8,
-  "co_sim": 0.926,
-  "text_sim": 0.418,
-  "synergy": 0.508
- },
- {
-  "a": "Jaheira, Friend of the Forest",
-  "b": "Second Harvest",
+  "a": "Zellix, Sanity Flayer",
+  "b": "Fractured Sanity",
   "decks": 17,
-  "co_sim": 0.894,
-  "text_sim": 0.385,
-  "synergy": 0.508
+  "co_sim": 0.974,
+  "text_sim": 0.352,
+  "synergy": 0.622
  },
  {
-  "a": "Heroic Intervention",
-  "b": "Delighted Halfling",
-  "decks": 48,
-  "co_sim": 0.67,
-  "text_sim": 0.162,
-  "synergy": 0.508
+  "a": "Saruman's Trickery",
+  "b": "Witch-king of Angmar",
+  "decks": 13,
+  "co_sim": 0.923,
+  "text_sim": 0.301,
+  "synergy": 0.622
  },
  {
-  "a": "Mana Vault",
-  "b": "Ranger-Captain of Eos",
-  "decks": 12,
-  "co_sim": 0.73,
-  "text_sim": 0.223,
-  "synergy": 0.507
- },
- {
-  "a": "Dragon's Hoard",
-  "b": "Thunderbreak Regent",
-  "decks": 14,
-  "co_sim": 0.982,
-  "text_sim": 0.475,
-  "synergy": 0.507
- },
- {
-  "a": "Nicanzil, Current Conductor",
-  "b": "Deeproot Waters",
-  "decks": 10,
-  "co_sim": 1.0,
-  "text_sim": 0.493,
-  "synergy": 0.507
- },
- {
-  "a": "Rise of the Eldrazi",
-  "b": "Zhulodok, Void Gorger",
-  "decks": 9,
-  "co_sim": 0.982,
-  "text_sim": 0.475,
-  "synergy": 0.507
- },
- {
-  "a": "Thunderherd Migration",
-  "b": "Quartzwood Crasher",
-  "decks": 9,
-  "co_sim": 0.976,
-  "text_sim": 0.469,
-  "synergy": 0.507
- },
- {
-  "a": "Heroic Intervention",
-  "b": "Llanowar Elves",
-  "decks": 83,
-  "co_sim": 0.81,
-  "text_sim": 0.303,
-  "synergy": 0.507
- },
- {
-  "a": "Puresteel Paladin",
-  "b": "Codsworth, Handy Helper",
-  "decks": 17,
-  "co_sim": 0.966,
-  "text_sim": 0.459,
-  "synergy": 0.507
- },
- {
-  "a": "Astral Cornucopia",
-  "b": "Atraxa, Praetors' Voice",
-  "decks": 9,
-  "co_sim": 0.8,
-  "text_sim": 0.293,
-  "synergy": 0.507
- },
- {
-  "a": "Lyra Dawnbringer",
-  "b": "Starnheim Aspirant",
-  "decks": 9,
-  "co_sim": 0.995,
-  "text_sim": 0.488,
-  "synergy": 0.507
- },
- {
-  "a": "Splendid Reclamation",
-  "b": "Ancient Greenwarden",
-  "decks": 12,
-  "co_sim": 0.944,
-  "text_sim": 0.437,
-  "synergy": 0.507
- },
- {
-  "a": "Teferi's Protection",
-  "b": "Moonshaker Cavalry",
-  "decks": 12,
-  "co_sim": 0.742,
-  "text_sim": 0.235,
-  "synergy": 0.507
- },
- {
-  "a": "Teferi's Protection",
-  "b": "The Eternal Wanderer",
-  "decks": 12,
-  "co_sim": 0.704,
-  "text_sim": 0.197,
-  "synergy": 0.507
- },
- {
-  "a": "Feather, the Redeemed",
-  "b": "Shelter",
-  "decks": 9,
-  "co_sim": 0.886,
-  "text_sim": 0.379,
-  "synergy": 0.507
- },
- {
-  "a": "Kaldra Compleat",
+  "a": "Reyav, Master Smith",
   "b": "Steelshaper's Gift",
-  "decks": 9,
-  "co_sim": 0.9,
-  "text_sim": 0.393,
-  "synergy": 0.507
- },
- {
-  "a": "Iron Hills Blacksmith",
-  "b": "F\u00edli the Pathfinder",
-  "decks": 8,
-  "co_sim": 0.995,
-  "text_sim": 0.488,
-  "synergy": 0.507
- },
- {
-  "a": "Auron, Venerated Guardian",
-  "b": "Sphere Grid",
-  "decks": 8,
-  "co_sim": 0.908,
-  "text_sim": 0.401,
-  "synergy": 0.506
- },
- {
-  "a": "Stonybrook Banneret",
-  "b": "Ripples of Potential",
-  "decks": 9,
-  "co_sim": 0.728,
-  "text_sim": 0.221,
-  "synergy": 0.506
+  "decks": 18,
+  "co_sim": 0.856,
+  "text_sim": 0.234,
+  "synergy": 0.622
  },
  {
   "a": "Mirelurk Queen",
-  "b": "Raul, Trouble Shooter",
+  "b": "Fractured Sanity",
+  "decks": 10,
+  "co_sim": 0.908,
+  "text_sim": 0.287,
+  "synergy": 0.622
+ },
+ {
+  "a": "_____ Goblin",
+  "b": "Red Elemental Blast",
   "decks": 9,
-  "co_sim": 0.995,
-  "text_sim": 0.488,
-  "synergy": 0.506
+  "co_sim": 0.922,
+  "text_sim": 0.3,
+  "synergy": 0.622
  },
  {
-  "a": "Scourge of Valkas",
-  "b": "Miirym, Sentinel Wyrm",
-  "decks": 13,
-  "co_sim": 0.989,
-  "text_sim": 0.484,
-  "synergy": 0.506
+  "a": "Dread Presence",
+  "b": "Dark Ritual",
+  "decks": 21,
+  "co_sim": 0.9,
+  "text_sim": 0.278,
+  "synergy": 0.622
  },
  {
-  "a": "Harrow",
-  "b": "Scute Swarm",
-  "decks": 26,
-  "co_sim": 0.893,
-  "text_sim": 0.387,
-  "synergy": 0.506
- },
- {
-  "a": "Jaheira, Friend of the Forest",
-  "b": "Parallel Lives",
-  "decks": 14,
-  "co_sim": 0.824,
-  "text_sim": 0.317,
-  "synergy": 0.506
- },
- {
-  "a": "Archon of Sun's Grace",
-  "b": "Starfield of Nyx",
+  "a": "Pinnacle Emissary",
+  "b": "Jhoira, Weatherlight Captain",
   "decks": 12,
-  "co_sim": 0.869,
-  "text_sim": 0.363,
-  "synergy": 0.506
+  "co_sim": 0.966,
+  "text_sim": 0.343,
+  "synergy": 0.622
  },
  {
-  "a": "Archon of Sun's Grace",
-  "b": "Destiny Spinner",
-  "decks": 11,
-  "co_sim": 0.838,
-  "text_sim": 0.332,
-  "synergy": 0.506
+  "a": "Mirkwood Meditator",
+  "b": "Thranduil's Decree",
+  "decks": 9,
+  "co_sim": 0.934,
+  "text_sim": 0.312,
+  "synergy": 0.622
  },
  {
-  "a": "Winter Orb",
-  "b": "Rhystic Study",
-  "decks": 8,
-  "co_sim": 0.788,
-  "text_sim": 0.282,
-  "synergy": 0.506
- },
- {
-  "a": "Waste Not",
-  "b": "Geth's Grimoire",
-  "decks": 8,
+  "a": "Magnificent End",
+  "b": "Celebrate the Mountain-king",
+  "decks": 13,
   "co_sim": 0.973,
-  "text_sim": 0.468,
-  "synergy": 0.506
+  "text_sim": 0.351,
+  "synergy": 0.622
  },
  {
-  "a": "Diamond Pick-Axe",
-  "b": "Giott, King of the Dwarves",
+  "a": "Bilbo, Unexpected Adventurer",
+  "b": "Bilbo's Gambit",
   "decks": 8,
-  "co_sim": 0.951,
-  "text_sim": 0.445,
-  "synergy": 0.506
+  "co_sim": 0.937,
+  "text_sim": 0.314,
+  "synergy": 0.622
  },
  {
-  "a": "Bifur, Melodic Rider",
-  "b": "Dwarven Recruiter",
-  "decks": 8,
-  "co_sim": 0.984,
-  "text_sim": 0.479,
-  "synergy": 0.506
- },
- {
-  "a": "Mana Vault",
-  "b": "Silence",
+  "a": "The Mindskinner",
+  "b": "Fractured Sanity",
   "decks": 19,
-  "co_sim": 0.849,
-  "text_sim": 0.345,
-  "synergy": 0.505
- },
- {
-  "a": "Elspeth Conquers Death",
-  "b": "Weaver of Harmony",
-  "decks": 8,
-  "co_sim": 0.947,
-  "text_sim": 0.442,
-  "synergy": 0.505
- },
- {
-  "a": "Forsaken Monument",
-  "b": "Snapping Voidcraw",
-  "decks": 9,
-  "co_sim": 0.928,
-  "text_sim": 0.423,
-  "synergy": 0.505
- },
- {
-  "a": "Ripples of Potential",
-  "b": "Emperor Mihail II",
-  "decks": 8,
-  "co_sim": 0.716,
-  "text_sim": 0.211,
-  "synergy": 0.505
- },
- {
-  "a": "Vault 12: The Necropolis",
-  "b": "Bloatfly Swarm",
-  "decks": 9,
   "co_sim": 0.982,
-  "text_sim": 0.477,
-  "synergy": 0.505
+  "text_sim": 0.36,
+  "synergy": 0.622
  },
  {
-  "a": "Rakdos Signet",
-  "b": "Mob Rule",
-  "decks": 9,
-  "co_sim": 0.742,
-  "text_sim": 0.237,
-  "synergy": 0.505
+  "a": "Atzocan Seer",
+  "b": "Wayta, Trainer Prodigy",
+  "decks": 10,
+  "co_sim": 0.973,
+  "text_sim": 0.351,
+  "synergy": 0.621
+ },
+ {
+  "a": "Rocksteady, Mutant Marauder",
+  "b": "Game Over",
+  "decks": 13,
+  "co_sim": 0.971,
+  "text_sim": 0.351,
+  "synergy": 0.621
+ },
+ {
+  "a": "Merry, Warden of Isengard",
+  "b": "Motivated Pony",
+  "decks": 26,
+  "co_sim": 0.99,
+  "text_sim": 0.369,
+  "synergy": 0.621
+ },
+ {
+  "a": "Dalek Drone",
+  "b": "The Valeyard",
+  "decks": 8,
+  "co_sim": 0.896,
+  "text_sim": 0.275,
+  "synergy": 0.621
+ },
+ {
+  "a": "Pearl Medallion",
+  "b": "Firemane Commando",
+  "decks": 23,
+  "co_sim": 0.874,
+  "text_sim": 0.253,
+  "synergy": 0.621
  }
 ]
