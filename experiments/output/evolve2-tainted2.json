@@ -1,0 +1,115 @@
+{
+ "name": "tainted2",
+ "format": "legacy",
+ "locks": [
+  "Tainted Aether",
+  "Acorn Catapult",
+  "Forbidden Orchard"
+ ],
+ "incumbent": [
+  [
+   "Acorn Catapult",
+   4
+  ],
+  [
+   "Clutch of the Undercity",
+   4
+  ],
+  [
+   "Dimir House Guard",
+   4
+  ],
+  [
+   "Echoing Truth",
+   4
+  ],
+  [
+   "Forbidden Orchard",
+   4
+  ],
+  [
+   "Hissing Miasma",
+   3
+  ],
+  [
+   "Hunted Phantasm",
+   3
+  ],
+  [
+   "Island",
+   2
+  ],
+  [
+   "Jwar Isle Refuge",
+   3
+  ],
+  [
+   "Phyrexian Arena",
+   4
+  ],
+  [
+   "Recoil",
+   3
+  ],
+  [
+   "Sign in Blood",
+   2
+  ],
+  [
+   "Swamp",
+   12
+  ],
+  [
+   "Tainted Aether",
+   4
+  ],
+  [
+   "Tainted Isle",
+   4
+  ]
+ ],
+ "gauntlet": [
+  "corpus #279",
+  "corpus #16",
+  "corpus #188"
+ ],
+ "baseline": {
+  "games": 18,
+  "wins": 10,
+  "avg_turns": 9.1,
+  "avg_lands_t3": 2.0,
+  "avg_lands_t5": 2.94,
+  "mulligan_rate": 0.22,
+  "tracked": {
+   "Tainted Aether": {
+    "played_in": "0/18",
+    "avg_casts": 0.0,
+    "median_first_turn": null
+   },
+   "Acorn Catapult": {
+    "played_in": "0/18",
+    "avg_casts": 0.0,
+    "median_first_turn": null
+   },
+   "Forbidden Orchard": {
+    "played_in": "12/18",
+    "avg_casts": 0.94,
+    "median_first_turn": 4
+   }
+  },
+  "winrate": 0.556,
+  "ci": 0.23
+ },
+ "history": [
+  {
+   "gen": 1,
+   "swap": "-3 Hunted Horror +3 Hissing Miasma",
+   "stage2": [
+    15,
+    24
+   ],
+   "vs_baseline": 0.292,
+   "accepted": true
+  }
+ ]
+}

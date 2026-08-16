@@ -2,11 +2,11 @@
  "format": "legacy",
  "incumbent": [
   [
-   "Clutch of the Undercity",
-   4
+   "Bubbling Muck",
+   3
   ],
   [
-   "Dimir House Guard",
+   "Clutch of the Undercity",
    4
   ],
   [
@@ -24,10 +24,6 @@
   [
    "Hissing Miasma",
    4
-  ],
-  [
-   "Hunted Horror",
-   3
   ],
   [
    "Island",
@@ -60,9 +56,13 @@
   [
    "Tainted Isle",
    4
+  ],
+  [
+   "The Darkness Crystal",
+   4
   ]
  ],
- "generation": 2,
+ "generation": 4,
  "history": [
   {
    "gen": 1,
@@ -109,12 +109,62 @@
     ]
    },
    "accepted": true
+  },
+  {
+   "gen": 3,
+   "swap": "-4 Dimir House Guard +4 The Darkness Crystal",
+   "h2h": [
+    24,
+    40
+   ],
+   "stage2": {
+    "evo_cand_5": [
+     8,
+     10
+    ],
+    "evo_cand_2": [
+     8,
+     10
+    ],
+    "evo_base": [
+     4,
+     20
+    ]
+   },
+   "accepted": true
+  },
+  {
+   "gen": 4,
+   "swap": "-3 Hunted Horror +3 Bubbling Muck",
+   "h2h": [
+    33,
+    40
+   ],
+   "stage2": {
+    "evo_cand_2": [
+     5,
+     10
+    ],
+    "evo_cand_3": [
+     5,
+     10
+    ],
+    "evo_base": [
+     10,
+     20
+    ]
+   },
+   "accepted": true
   }
  ],
  "tried": [
   [
    "Acorn Catapult",
    "Hissing Miasma"
+  ],
+  [
+   "Clutch of the Undercity",
+   "Harvester of Souls"
   ],
   [
    "Dimir House Guard",
@@ -130,11 +180,43 @@
   ],
   [
    "Dimir House Guard",
+   "Innocent Blood"
+  ],
+  [
+   "Dimir House Guard",
    "Tainted Remedy"
+  ],
+  [
+   "Dimir House Guard",
+   "The Darkness Crystal"
   ],
   [
    "Echoing Truth",
    "Carnival of Souls"
+  ],
+  [
+   "Echoing Truth",
+   "Dark Prophecy"
+  ],
+  [
+   "Echoing Truth",
+   "The Meathook Massacre"
+  ],
+  [
+   "Grave Pact",
+   "Carnival of Souls"
+  ],
+  [
+   "Grave Pact",
+   "Tainted Remedy"
+  ],
+  [
+   "Hunted Horror",
+   "Bubbling Muck"
+  ],
+  [
+   "Hunted Horror",
+   "Meathook Massacre II"
   ],
   [
    "Hunted Horror",
@@ -157,8 +239,20 @@
    "Grave Pact"
   ],
   [
+   "Recoil",
+   "Meathook Massacre II"
+  ],
+  [
+   "Sign in Blood",
+   "Innocent Blood"
+  ],
+  [
    "Sign in Blood",
    "The Meathook Massacre"
+  ],
+  [
+   "The Darkness Crystal",
+   "Carnival of Souls"
   ]
  ],
  "gauntlet": [

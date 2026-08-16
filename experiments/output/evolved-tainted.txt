@@ -1,10 +1,9 @@
+3 Bubbling Muck
 4 Clutch of the Undercity
-4 Dimir House Guard
 4 Echoing Truth
 4 Forbidden Orchard
 3 Grave Pact
 4 Hissing Miasma
-3 Hunted Horror
 2 Island
 3 Jwar Isle Refuge
 4 Phyrexian Arena
@@ -13,3 +12,4 @@
 12 Swamp
 4 Tainted Aether
 4 Tainted Isle
+4 The Darkness Crystal
