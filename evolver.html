@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTG Deck Evolver</title>
+<style>
+  :root {
+    --surface-1: #1a1a19; --surface-2: #242422; --surface-3: #2e2d2a;
+    --text-primary: #fff; --text-secondary: #c3c2b7;
+    --border: #3c3b36; --accent: #d4b85a;
+    --good: #199e70; --bad: #e66767; --info: #3987e5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface-1); color: var(--text-primary);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: 4rem;
+  }
+  header {
+    display: flex; gap: 0.9rem; align-items: baseline; flex-wrap: wrap;
+    padding: 0.7rem 1rem; border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 1rem; margin: 0; }
+  header a { color: var(--text-secondary); font-size: 0.83rem; }
+  header a:hover { color: var(--text-primary); }
+  main { max-width: 62rem; margin: 0 auto; padding: 1rem; }
+  .card {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0.9rem 1rem; margin: 0.8rem 0;
+  }
+  .card h2 { font-size: 0.92rem; margin: 0 0 0.55rem; }
+  textarea {
+    width: 100%; min-height: 11rem; background: var(--surface-1);
+    color: var(--text-primary); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.6rem; font: 13px/1.5 ui-monospace, monospace;
+  }
+  select, input[type=number], button {
+    background: var(--surface-3); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 7px;
+    padding: 0.35rem 0.6rem; font-size: 0.9rem;
+  }
+  button.primary { background: var(--accent); color: #1a1a19; font-weight: 600;
+    border: none; padding: 0.45rem 1rem; cursor: pointer; }
+  button.danger { background: var(--bad); color: #fff; border: none; cursor: pointer; }
+  button:disabled { opacity: 0.45; cursor: default; }
+  .row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
+  .locks { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.15rem 0.9rem; margin-top: 0.5rem; }
+  .locks label { display: flex; gap: 0.45rem; align-items: center;
+    font-size: 0.86rem; color: var(--text-secondary); padding: 0.1rem 0; }
+  .locks input:checked + span { color: var(--accent); font-weight: 600; }
+  #phase { font-weight: 600; color: var(--accent); }
+  .chips { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.4rem 0; }
+  .chip { background: var(--surface-3); border: 1px solid var(--border);
+    border-radius: 999px; padding: 0.12rem 0.65rem; font-size: 0.8rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 0.3rem 0.55rem;
+    border-bottom: 1px solid var(--border); }
+  th { color: var(--text-secondary); font-weight: 600; }
+  .ok { color: var(--good); font-weight: 600; }
+  .no { color: var(--text-secondary); }
+  .stat { display: inline-block; margin: 0.15rem 1.1rem 0.15rem 0; }
+  .stat b { font-size: 1.05rem; }
+  .stat span { color: var(--text-secondary); font-size: 0.78rem; display: block; }
+  #log { font: 12px/1.5 ui-monospace, monospace; color: var(--text-secondary);
+    max-height: 14rem; overflow-y: auto; white-space: pre-wrap; }
+  #offline { border-color: var(--info); }
+  #offline code { background: var(--surface-1); padding: 0.1rem 0.4rem;
+    border-radius: 5px; }
+  .hidden { display: none !important; }
+  .note { color: var(--text-secondary); font-size: 0.82rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Deck evolver</h1>
+  <span class="note">proposer suggests swaps · Forge simulates · only measured improvements survive</span>
+  <span style="margin-left:auto"></span>
+  <a href="index.html">card map →</a>
+  <a href="deck-seeker.html">deck seeker →</a>
+  <a href="builder.html">deck builder →</a>
+</header>
+<main>
+
+<div id="offline" class="card hidden">
+  <h2>Companion server not detected</h2>
+  <p class="note">Simulation runs in <a href="https://github.com/Card-Forge/forge" style="color:var(--accent)">Forge</a>,
+  a Java rules engine that can't run inside a browser. Run the companion on a machine
+  with Java 17+ and Forge installed, then reload this page there:</p>
+  <p><code>python3 experiments/evolve_server.py</code> &nbsp;→&nbsp; open <code>http://localhost:8765/</code></p>
+  <p class="note">Setup details: <code>experiments/FORGE-NOTES.md</code> in the repo.</p>
+</div>
+
+<div class="card" id="setup">
+  <h2>1 · Deck</h2>
+  <textarea id="deck" placeholder="4 Tainted Aether&#10;4 Acorn Catapult&#10;12 Swamp&#10;…"></textarea>
+  <div class="row" style="margin-top:0.6rem">
+    <label>format
+      <select id="format">
+        <option>legacy</option><option>vintage</option><option>modern</option>
+        <option>pauper</option><option>standard</option><option>pioneer</option>
+      </select>
+    </label>
+    <label>generations <input id="generations" type="number" value="8" min="1" max="30" style="width:4.2rem"></label>
+    <label>accept margin <input id="margin" type="number" value="0.03" step="0.01" min="0" max="0.3" style="width:4.6rem"></label>
+    <button id="parse">List cards for locking →</button>
+  </div>
+  <div id="lockbox" class="hidden">
+    <p class="note" style="margin:0.7rem 0 0">2 · <b>Lock</b> the cards the evolver must never cut — your win conditions
+    and theme pieces. The AI pilot undervalues lock/combo plans; locks keep the evolution honest about what the deck is.</p>
+    <div class="locks" id="locks"></div>
+    <div class="row" style="margin-top:0.7rem">
+      <button class="primary" id="start">Start evolution</button>
+      <button class="danger hidden" id="stop">Stop</button>
+      <span class="note" id="err"></span>
+    </div>
+  </div>
+</div>
+
+<div class="card hidden" id="aiblind" style="border-color:var(--bad)">
+  <h2>⚠ AI-blind cards</h2>
+  <p class="note" id="aiblindlist"></p>
+  <p class="note">Forge's built-in AI is hard-forbidden from playing these
+  (<code>AI:RemoveDeck:All</code> in its card scripts) — the simulation scores your deck
+  <b>without them</b>. Lock them so the evolver can't cut what it can't see, and read
+  winrates as "the rest of the deck". A custom pilot is the long-term fix.</p>
+</div>
+
+<div class="card hidden" id="status">
+  <h2>Run · <span id="phase">idle</span></h2>
+  <div id="gauntlet-row" class="hidden">
+    <span class="note">gauntlet (probe-matched to your deck's power):</span>
+    <div class="chips" id="gauntlet"></div>
+  </div>
+  <div id="baseline" class="hidden">
+    <h2 style="margin-top:0.6rem">Baseline</h2>
+    <div id="basestats"></div>
+    <div id="trackedstats"></div>
+  </div>
+  <div id="histbox" class="hidden">
+    <h2 style="margin-top:0.6rem">Generations</h2>
+    <table><thead><tr><th>gen</th><th>best swap</th><th>Δ winrate</th><th>verdict</th></tr></thead>
+    <tbody id="hist"></tbody></table>
+  </div>
+  <div id="evolvedbox" class="hidden">
+    <h2 style="margin-top:0.6rem">Current evolved list</h2>
+    <pre id="evolved" style="font:12px/1.5 ui-monospace,monospace"></pre>
+  </div>
+  <h2 style="margin-top:0.6rem">Event log</h2>
+  <div id="log"></div>
+</div>
+
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let API = "";           // same-origin when served by the companion
+let polling = null;
+
+async function detect() {
+  for (const base of ["", "http://localhost:8765"]) {
+    try {
+      const r = await fetch(base + "/api/status", {signal: AbortSignal.timeout(1500)});
+      if (r.ok) { API = base; return true; }
+    } catch (e) {}
+  }
+  return false;
+}
+
+function parseDeck(text) {
+  const out = [];
+  for (const line of text.split("\n")) {
+    const m = line.trim().match(/^(\d+)[x]?\s+(.+)$/) ||
+              line.trim().match(/^(.+?)\s+[x](\d+)$/i);
+    if (!m) continue;
+    const qty = Number(m[1]) || Number(m[2]);
+    const name = (Number(m[1]) ? m[2] : m[1]).trim();
+    if (name && qty) out.push([name, qty]);
+  }
+  return out;
+}
+
+$("parse").onclick = () => {
+  const cards = parseDeck($("deck").value);
+  if (!cards.length) { $("err").textContent = "no cards parsed"; return; }
+  $("locks").innerHTML = cards.map(([n, q]) => `
+    <label><input type="checkbox" value="${n.replace(/"/g,'&quot;')}"><span>${q}× ${n}</span></label>`).join("");
+  $("lockbox").classList.remove("hidden");
+};
+
+$("start").onclick = async () => {
+  $("err").textContent = "";
+  const locks = [...document.querySelectorAll("#locks input:checked")].map(i => i.value);
+  const body = {
+    deck: $("deck").value, format: $("format").value,
+    generations: Number($("generations").value),
+    margin: Number($("margin").value), locks,
+  };
+  const r = await fetch(API + "/api/start", {method: "POST",
+    headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+  const j = await r.json();
+  if (j.error) { $("err").textContent = j.error; return; }
+  $("start").disabled = true; $("stop").classList.remove("hidden");
+  $("status").classList.remove("hidden");
+  if (!polling) polling = setInterval(poll, 2500);
+};
+
+$("stop").onclick = () => fetch(API + "/api/stop", {method: "POST"});
+
+function statHtml(label, val) {
+  return `<span class="stat"><b>${val}</b><span>${label}</span></span>`;
+}
+
+async function poll() {
+  let j;
+  try { j = await (await fetch(API + "/api/status")).json(); }
+  catch (e) { return; }
+  const snap = j.snapshot;
+  const evs = j.events || [];
+  const last = evs.filter(e => e.type === "phase").pop();
+  $("phase").textContent = j.status === "running"
+    ? (last ? last.msg : "starting…") : j.status;
+  if (j.status !== "running") { $("start").disabled = false; $("stop").classList.add("hidden"); }
+
+  if (snap && snap.ai_blind && snap.ai_blind.length) {
+    $("aiblind").classList.remove("hidden");
+    $("aiblindlist").textContent = snap.ai_blind.join(", ");
+  }
+  if (snap && snap.gauntlet && snap.gauntlet.length) {
+    $("gauntlet-row").classList.remove("hidden");
+    $("gauntlet").innerHTML = snap.gauntlet.map(g => `<span class="chip">${g}</span>`).join("");
+  }
+  if (snap && snap.baseline) {
+    const b = snap.baseline;
+    $("baseline").classList.remove("hidden");
+    $("basestats").innerHTML =
+      statHtml("winrate vs gauntlet", `${Math.round(b.winrate*100)}% ±${Math.round(b.ci*100)}%`) +
+      statHtml("avg game length", `${b.avg_turns} turns`) +
+      statHtml("lands by turn 3", b.avg_lands_t3) +
+      statHtml("lands by turn 5", b.avg_lands_t5) +
+      statHtml("mulligan rate", `${Math.round(b.mulligan_rate*100)}%`);
+    const t = b.tracked || {};
+    $("trackedstats").innerHTML = Object.keys(t).length
+      ? "<table><thead><tr><th>locked card</th><th>played in</th><th>avg casts/game</th><th>median first turn</th></tr></thead><tbody>"
+        + Object.entries(t).map(([n, s]) =>
+          `<tr><td>${n}</td><td>${s.played_in}</td><td>${s.avg_casts}</td><td>${s.median_first_turn ?? "—"}</td></tr>`).join("")
+        + "</tbody></table>" : "";
+  }
+  if (snap && snap.history && snap.history.length) {
+    $("histbox").classList.remove("hidden");
+    $("hist").innerHTML = snap.history.map(h => `
+      <tr><td>${h.gen}</td><td>${h.swap}</td>
+      <td>${h.vs_baseline > 0 ? "+" : ""}${Math.round(h.vs_baseline*100)}%</td>
+      <td class="${h.accepted ? "ok" : "no"}">${h.accepted ? "accepted" : "rejected"}</td></tr>`).join("");
+  }
+  if (snap && snap.incumbent) {
+    $("evolvedbox").classList.remove("hidden");
+    $("evolved").textContent = snap.incumbent.map(([n, q]) => `${q} ${n}`).join("\n");
+  }
+  $("log").textContent = evs.slice(-60).map(e => e.msg).join("\n");
+  $("log").scrollTop = $("log").scrollHeight;
+}
+
+detect().then(ok => {
+  if (!ok) { $("offline").classList.remove("hidden"); return; }
+  $("status").classList.remove("hidden");
+  poll(); polling = setInterval(poll, 2500);
+});
+</script>
+</body>
+</html>

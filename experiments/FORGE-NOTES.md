@@ -156,6 +156,41 @@ fixed the data starvation diagnosed above:
   Malakir).
 - Seeker rebuilt with 6,988 recipe decks and redeployed.
 
+## AI:RemoveDeck - Forge's AI is hard-forbidden from 2,525 cards (2026-08-16)
+
+The Tainted Aether evolver run produced a decisive stat: the AI cast
+Tainted Aether and Acorn Catapult in **0 of 18** baseline games. Root
+cause found in Forge's card scripts: both carry `AI:RemoveDeck:All` -
+Forge's developers explicitly forbid the AI from playing cards it
+cannot evaluate (symmetric punishers, political cards, etc.).
+2,525 cards are flagged; the list is extracted to
+`data/forge-ai-unplayable.json` and the evolver warns when a deck
+contains any (the sim scores such decks WITHOUT those cards).
+
+Consequences:
+- Sim winrates for decks built around AI-blind cards measure only the
+  supporting shell. Lock the blind cards; read results accordingly.
+- The cheap unlock for a custom pilot experiment: drop modified card
+  scripts (hints stripped) into Forge's custom cards folder, or
+  implement a PlayerController that overrides the evaluation.
+
+## Evolver methodology v2 (evolve_core.py) - lessons from run 1
+
+Run 1 (self-play reference) accepted "cut 4 Acorn Catapult" in gen 1 -
+it deleted the deck's win condition, because in mirrors whoever adds
+creatures and attacks wins first. User called it immediately. v2:
+
+- FIXED external gauntlet, never self-play. Chosen by PROBING nearest
+  corpus neighbors and keeping opponents the deck beats 10-90% of the
+  time (informative gradient; the MTGO meta gauntlet gives 0%).
+- Baseline first (verbose logs -> winrate + stats: ramp curve, game
+  length, mulligans, per-locked-card play rate / first-cast turn),
+  accept a swap only if stage-2 gauntlet winrate clears baseline by a
+  margin, re-baseline after each accept.
+- Hard locks so the evolver can never cut the human-designated plan.
+- Served to the browser by experiments/evolve_server.py (local
+  companion; Forge can't run in a browser) driving evolver.html.
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:
