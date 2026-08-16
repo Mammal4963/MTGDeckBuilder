@@ -65,6 +65,11 @@ TESTS = [
 
 
 def run_verbose(deck_a: str, deck_b: str, games: int, timeout_s: int) -> str:
+    import os
+    if os.environ.get("FORGE_SIM_SERVER") == "1":
+        import sim_server
+        return sim_server.shared_client("verbose").run(
+            deck_a, deck_b, games, quiet=False, timeout_s=timeout_s)
     cmd = ["xvfb-run", "-a", "java", "-Xmx3g",
            "-Dio.netty.tryReflectionSetAccessible=true",
            "-Dfile.encoding=UTF-8", "-jar",

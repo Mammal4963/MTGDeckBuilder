@@ -328,6 +328,18 @@ def write_dck(name: str, main_pairs):
 
 def run_match(deck_a: str, deck_b: str, games: int, timeout_s: int):
     """Returns (wins_a, games_completed)."""
+    if __import__("os").environ.get("FORGE_SIM_SERVER") == "1":
+        # persistent warm JVM: same output format, no per-batch startup.
+        # One worker per calling thread so evaluate()'s thread pool keeps
+        # its parallelism (each worker is its own JVM).
+        import sim_server
+        import threading
+        out = sim_server.shared_client(
+            f"match-{threading.current_thread().name}").run(
+            deck_a, deck_b, games, quiet=True, timeout_s=timeout_s)
+        wins_a = len(re.findall(
+            rf"Game Result.*Ai\(1\)-{re.escape(deck_a)} has won", out))
+        return wins_a, len(re.findall(r"Game Result", out))
     cmd = ["xvfb-run", "-a", "java", "-Xmx3g",
            "-Dio.netty.tryReflectionSetAccessible=true",
            "-Dfile.encoding=UTF-8", "-jar",
