@@ -6,31 +6,43 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import forge.LobbyPlayer;
 import forge.game.Game;
 import forge.game.card.Card;
+import forge.game.card.CardCollection;
 import forge.game.player.Player;
 import forge.game.spellability.SpellAbility;
 import forge.game.zone.ZoneType;
 
 /**
- * Rung 2 of the custom-pilot ladder: a PlayerControllerAi subclass that
- * lets an external policy (a Python process on localhost) veto the
- * built-in AI's cast decisions. The built-in AI still handles all
- * mechanics (mana, targeting, combat, triggers); the policy only sees
- * "the AI wants to play X" plus a compact state summary, and answers
- * which proposals to veto. Fail-open: any bridge error falls back to
- * the built-in choice, so a dead policy server never hangs a sim.
+ * Bridge protocol v2 (rung 3): besides the built-in AI's proposal, every
+ * decision now carries the full list of LEGAL candidate plays, and the
+ * policy may FORCE one of them - including plays the built-in AI would
+ * never choose (the whole point: Acorn Catapult pings under a Tainted
+ * Aether lock). Reply verbs:
  *
- * Enabled when the env var FORGE_EXT_POLICY holds the policy port.
+ *   ok                        play the AI's own proposal
+ *   veto\tCardA\tCardB        pass priority instead of the proposal
+ *   force\t<idx>              play candidate idx, AI picks targets
+ *   force\t<idx>\topponent    play candidate idx targeting the opponent
+ *
+ * Safety: a (turn, card) pair is forced at most once - if the engine
+ * rejects the play and the AI returns to priority, we fall back to the
+ * default instead of looping. All errors fail open to the built-in AI.
  */
 public class PlayerControllerExt extends PlayerControllerAi {
 
     private static Socket sock;
     private static BufferedReader in;
     private static Writer out;
+    private final Set<String> forcedThisTurn = new HashSet<>();
+    private int lastSeenTurn = -1;
 
     public PlayerControllerExt(Game game, Player p, LobbyPlayer lp) {
         super(game, p, lp);
@@ -50,7 +62,8 @@ public class PlayerControllerExt extends PlayerControllerAi {
     }
 
     private static String esc(String s) {
-        return s.replace("\\", "\\\\").replace("\"", "\\\"");
+        return s.replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("\n", " ");
     }
 
     private void names(StringBuilder sb, Iterable<Card> cards) {
@@ -64,24 +77,57 @@ public class PlayerControllerExt extends PlayerControllerAi {
         }
     }
 
+    private List<SpellAbility> legalCandidates() {
+        Player me = getPlayer();
+        CardCollection pool = new CardCollection(me.getCardsIn(ZoneType.Hand));
+        pool.addAll(me.getCardsIn(ZoneType.Battlefield));
+        List<SpellAbility> result = new ArrayList<>();
+        for (SpellAbility sa : ComputerUtilAbility.getSpellAbilities(pool, me)) {
+            try {
+                if (sa.isManaAbility()) {
+                    continue;
+                }
+                sa.setActivatingPlayer(me);
+                if (!sa.canPlay()) {
+                    continue;
+                }
+                if (!ComputerUtilCost.canPayCost(sa, me, false)) {
+                    continue;
+                }
+                result.add(sa);
+            } catch (Exception ignored) {
+                // a card whose canPlay probe explodes is not a candidate
+            }
+        }
+        return result;
+    }
+
     @Override
     public List<SpellAbility> chooseSpellAbilityToPlay() {
         List<SpellAbility> def = super.chooseSpellAbilityToPlay();
-        if (def == null || def.isEmpty()
-                || System.getenv("FORGE_EXT_POLICY") == null) {
+        if (System.getenv("FORGE_EXT_POLICY") == null) {
             return def;
         }
         try {
             ensureSocket();
             Player me = getPlayer();
-            StringBuilder sb = new StringBuilder(512);
-            sb.append("{\"turn\":").append(getGame().getPhaseHandler().getTurn());
+            int turn = getGame().getPhaseHandler().getTurn();
+            if (turn != lastSeenTurn) {
+                forcedThisTurn.clear();
+                lastSeenTurn = turn;
+            }
+            List<SpellAbility> candidates = legalCandidates();
+
+            StringBuilder sb = new StringBuilder(1024);
+            sb.append("{\"turn\":").append(turn);
             sb.append(",\"phase\":\"").append(
                     getGame().getPhaseHandler().getPhase()).append("\"");
             sb.append(",\"my_life\":").append(me.getLife());
             int oppLife = 0;
+            Player opp = null;
             for (Player o : me.getOpponents()) {
                 oppLife = o.getLife();
+                opp = o;
             }
             sb.append(",\"opp_life\":").append(oppLife);
             sb.append(",\"my_hand\":[");
@@ -101,43 +147,76 @@ public class PlayerControllerExt extends PlayerControllerAi {
             }
             sb.append("],\"proposed\":[");
             first = true;
-            for (SpellAbility sa : def) {
+            if (def != null) {
+                for (SpellAbility sa : def) {
+                    Card host = sa.getHostCard();
+                    if (!first) {
+                        sb.append(",");
+                    }
+                    sb.append("\"").append(
+                            esc(host == null ? "?" : host.getName())).append("\"");
+                    first = false;
+                }
+            }
+            sb.append("],\"candidates\":[");
+            first = true;
+            for (int i = 0; i < candidates.size(); i++) {
+                SpellAbility sa = candidates.get(i);
                 Card host = sa.getHostCard();
                 if (!first) {
                     sb.append(",");
                 }
-                sb.append("{\"card\":\"").append(
+                sb.append("{\"i\":").append(i);
+                sb.append(",\"card\":\"").append(
                         esc(host == null ? "?" : host.getName()));
                 sb.append("\",\"type\":\"").append(
                         esc(host == null ? "?" : host.getType().toString()));
-                sb.append("\",\"desc\":\"").append(
-                        esc(sa.toString())).append("\"}");
+                sb.append("\",\"zone\":\"").append(
+                        host != null && host.isInPlay() ? "battlefield" : "hand");
+                sb.append("\",\"targeted\":").append(sa.usesTargeting());
+                sb.append(",\"desc\":\"").append(esc(sa.toString())).append("\"}");
                 first = false;
             }
             sb.append("]}\n");
             out.write(sb.toString());
             out.flush();
             String reply = in.readLine();
-            if (reply == null) {
+            if (reply == null || reply.equals("ok")) {
                 return def;
             }
-            // reply: veto\tCard A\tCard B   |   ok
             if (reply.startsWith("veto\t")) {
-                String[] parts = reply.split("\t");
-                for (int i = 1; i < parts.length; i++) {
-                    final String banned = parts[i];
-                    boolean anyMatch = false;
+                if (def == null) {
+                    return null;
+                }
+                for (String banned : reply.substring(5).split("\t")) {
                     for (SpellAbility sa : def) {
                         Card host = sa.getHostCard();
                         if (host != null && host.getName().equals(banned)) {
-                            anyMatch = true;
-                            break;
+                            return null;
                         }
                     }
-                    if (anyMatch) {
-                        return null;    // pass priority instead
-                    }
                 }
+                return def;
+            }
+            if (reply.startsWith("force\t")) {
+                String[] parts = reply.split("\t");
+                int idx = Integer.parseInt(parts[1]);
+                if (idx < 0 || idx >= candidates.size()) {
+                    return def;
+                }
+                SpellAbility sa = candidates.get(idx);
+                Card host = sa.getHostCard();
+                String key = host == null ? sa.toString() : host.getName();
+                if (!forcedThisTurn.add(key)) {
+                    return def;               // already forced this turn
+                }
+                sa.setActivatingPlayer(me);
+                if (parts.length > 2 && parts[2].equals("opponent")
+                        && sa.usesTargeting() && opp != null) {
+                    sa.resetTargets();
+                    sa.getTargets().add(opp);
+                }
+                return Collections.singletonList(sa);
             }
             return def;
         } catch (Exception e) {

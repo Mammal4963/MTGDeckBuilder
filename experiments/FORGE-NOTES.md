@@ -228,12 +228,40 @@ is FORCING actions (tap Forbidden Orchard, ping with Catapult under
 the lock), which means constructing SpellAbilities with targets, not
 just filtering - that plus a learned policy is rungs 3-4.
 
-Rung 3 plan: extend the bridge protocol with (a) full candidate
-enumeration, not just the AI's preferred proposal, (b) a "force"
-reply verb; featurize states with the existing MiniLM card embeddings
-(new cards from evolver mutations get features for free); behavior-
-clone from built-in-AI logs first, then per-deck self-play fine-tune
-with locked-card play rate + winrate as the objectives.
+## Custom AI pilot, rung 3: force verb + first learned policy (2026-08-16)
+
+Bridge protocol v2 (forge_ext/PlayerControllerExt): every decision now
+carries the FULL legal-candidate list (ComputerUtilAbility enumeration
+filtered by canPlay + canPayCost), and the reply may `force\t<idx>
+[\topponent]` - playing an ability the built-in AI would never choose,
+with optional opponent targeting. Java-side loop guard: a (turn, card)
+pair is forced at most once, then falls back to default.
+
+Scripted lock-plan policy (pilot_bridge.py): with Tainted Aether on
+our battlefield, force Acorn Catapult activations (the squirrel gift
+becomes a forced sacrifice) and veto feeding our own non-Hunted
+creatures to the lock. Verified in logs: "activated Acorn Catapult
+targeting [Spirit Token]" - it even snipes the opponent's
+Orchard-gifted spirits, double value. A/B at 24 games/arm: policy 75%
++-17% vs builtin 71% +-18% with 37 forces executed - the mechanism
+demonstrably fires; the winrate delta is within noise at this budget
+(the builtin arm itself swung 58% -> 71% between runs; treat n=24 as
+mechanism-check, not ranking).
+
+Behavior cloning (train_pilot.py): `pilot_bridge.py --collect` logs
+(state, candidates, AI choice) per decision in observer mode - 4,456
+decisions from 24 games. Candidate-scoring MLP over frozen MiniLM card
+embeddings (state = pooled hand/battlefield embeddings + scalars;
+candidate = its embedding + flags; pass head). Held-out: 89.4% overall
+(always-pass baseline 84.9%), and on decisions where the AI ACTED it
+picks the exact same action 73% (30-sample test; chance ~10-25%).
+Text-embedding features mean unseen cards get sensible scores - the
+property that lets one policy keep piloting through evolver mutations.
+
+Rung 4 next: scale collection (cheap, it's just sims), serve the BC
+model through the bridge (argmax -> ok/force), then per-deck self-play
+fine-tune with locked-card play rate + winrate objectives; REINFORCE
+or CEM over the BC initialization.
 
 ## Evolver methodology v2 (evolve_core.py) - lessons from run 1
 

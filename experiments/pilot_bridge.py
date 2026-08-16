@@ -36,22 +36,44 @@ from evolve_core import parse_games, aggregate_stats  # noqa: E402
 EXT_CLASSES = Path(__file__).resolve().parent / "forge_ext"
 JAR = FORGE_DIR / "forge-gui-desktop-2.0.14-jar-with-dependencies.jar"
 
-STATS = {"decisions": 0, "vetoes": 0}
+STATS = {"decisions": 0, "vetoes": 0, "forces": 0}
+COLLECT_FILE = {"fh": None}          # set by --collect / experiment
 
 
-def tainted_policy(state: dict) -> list[str]:
-    """Return card names to veto for this decision."""
-    mine = set(state.get("my_battlefield", []))
-    if "Tainted Aether" not in mine:
-        return []
-    vetoes = []
-    for prop in state.get("proposed", []):
-        if "Creature" not in prop.get("type", ""):
-            continue
-        if prop["card"] in ("Hunted Horror", "Hunted Phantasm"):
-            continue
-        vetoes.append(prop["card"])
-    return vetoes
+def tainted_policy(state: dict) -> str:
+    """Protocol-v2 policy encoding the deck's actual plan.
+
+    1. With Tainted Aether on our battlefield, FORCE an Acorn Catapult
+       activation at the opponent (once per turn, enforced Java-side):
+       the squirrel gift becomes a forced sacrifice under the lock.
+    2. Under the lock, veto casting our own creatures - except the
+       Hunted ones, whose ETB token gift feeds the same engine.
+    """
+    mine = state.get("my_battlefield", [])
+    proposed = state.get("proposed", [])
+    lock_up = "Tainted Aether" in mine
+
+    if lock_up:
+        for cand in state.get("candidates", []):
+            if (cand["card"] == "Acorn Catapult"
+                    and cand["zone"] == "battlefield"
+                    and cand.get("targeted")):
+                return f"force\t{cand['i']}\topponent"
+
+    if lock_up and proposed:
+        # proposed is a list of card names in v2
+        vetoes = []
+        by_name = {c["card"]: c for c in state.get("candidates", [])}
+        for name in proposed:
+            cand = by_name.get(name, {})
+            if "Creature" not in cand.get("type", ""):
+                continue
+            if name in ("Hunted Horror", "Hunted Phantasm"):
+                continue
+            vetoes.append(name)
+        if vetoes:
+            return "veto\t" + "\t".join(vetoes)
+    return "ok"
 
 
 class PolicyHandler(socketserver.StreamRequestHandler):
@@ -59,14 +81,18 @@ class PolicyHandler(socketserver.StreamRequestHandler):
         for line in self.rfile:
             try:
                 state = json.loads(line.decode("utf-8"))
-                vetoes = tainted_policy(state)
+                reply = tainted_policy(state)
                 STATS["decisions"] += 1
-                if vetoes:
+                if reply.startswith("veto"):
                     STATS["vetoes"] += 1
-                    reply = "veto\t" + "\t".join(vetoes)
-                else:
-                    reply = "ok"
-            except (json.JSONDecodeError, KeyError):
+                elif reply.startswith("force"):
+                    STATS["forces"] += 1
+                if COLLECT_FILE["fh"] is not None:
+                    state["_reply"] = reply
+                    COLLECT_FILE["fh"].write(
+                        json.dumps(state, separators=(",", ":")) + "\n")
+                    COLLECT_FILE["fh"].flush()
+            except (json.JSONDecodeError, KeyError, ValueError):
                 reply = "ok"
             self.wfile.write((reply + "\n").encode("utf-8"))
 
@@ -127,7 +153,8 @@ def experiment(games: int = 24) -> None:
         print(f"[{label}] TOTAL {stats['wins']}/{stats['games']}"
               f" = {p:.0%} ±{half:.0%}"
               + (f"  ({STATS['decisions']} decisions, "
-                 f"{STATS['vetoes']} vetoed)" if use_port else ""),
+                 f"{STATS['vetoes']} vetoed, {STATS['forces']} forced)"
+                 if use_port else ""),
               flush=True)
         for name, t in stats["tracked"].items():
             print(f"  {name}: played {t['played_in']}, "
@@ -135,17 +162,53 @@ def experiment(games: int = 24) -> None:
     srv.shutdown()
 
 
+def collect(games_per_pair: int = 6) -> None:
+    """Behavior-cloning dataset: observe the BUILT-IN AI's choices.
+
+    The bridge runs in observer mode (policy always answers "ok"), so
+    every logged decision line carries the state, the full candidate
+    list, and what the built-in AI chose (`proposed`). Varied matchups
+    give the pretraining "empty baseline" the user asked for.
+    """
+    global tainted_policy
+    orig_policy = tainted_policy
+    tainted_policy = lambda state: "ok"          # pure observer
+    out_path = Path(__file__).resolve().parent / "output" / "pilot_dataset.jsonl"
+    COLLECT_FILE["fh"] = open(out_path, "a")
+    port = 8879
+    srv = start_server(port)
+    decks = ["evo_tainted2_base", "evo_tainted2_g0",
+             "evo_tainted2_g1", "evo_tainted2_g2"]
+    try:
+        for i, a in enumerate(decks):
+            b = decks[(i + 1) % len(decks)]
+            n0 = STATS["decisions"]
+            run_bridged(a, b, games_per_pair,
+                        120 + 40 * games_per_pair, port, player_filter=a)
+            print(f"{a} vs {b}: +{STATS['decisions'] - n0} decisions",
+                  flush=True)
+    finally:
+        COLLECT_FILE["fh"].close()
+        COLLECT_FILE["fh"] = None
+        tainted_policy = orig_policy
+        srv.shutdown()
+    print(f"dataset -> {out_path}", flush=True)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--serve", type=int, metavar="PORT")
     g.add_argument("--experiment", action="store_true")
+    g.add_argument("--collect", action="store_true")
     ap.add_argument("--games", type=int, default=24)
     args = ap.parse_args()
     if args.serve:
         start_server(args.serve)
         print(f"policy server on 127.0.0.1:{args.serve}; ctrl-c to stop")
         threading.Event().wait()
+    elif args.collect:
+        collect(args.games // 4 or 6)
     else:
         experiment(args.games)
 
