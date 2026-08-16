@@ -1,0 +1,105 @@
+{
+ "name": "roaming",
+ "format": "standard",
+ "locks": [
+  "Random Encounter"
+ ],
+ "ai_blind": [],
+ "incumbent": [
+  [
+   "Breaching Dragonstorm",
+   4
+  ],
+  [
+   "Chimil, the Inner Sun",
+   1
+  ],
+  [
+   "Coliseum Behemoth",
+   1
+  ],
+  [
+   "Devastating Onslaught",
+   1
+  ],
+  [
+   "Forest",
+   8
+  ],
+  [
+   "Ghalta, Stampede Tyrant",
+   1
+  ],
+  [
+   "Mountain",
+   9
+  ],
+  [
+   "Nurturing Bristleback",
+   3
+  ],
+  [
+   "Overlord of the Boilerbilges",
+   4
+  ],
+  [
+   "Overlord of the Hauntwoods",
+   4
+  ],
+  [
+   "Plains",
+   1
+  ],
+  [
+   "Random Encounter",
+   4
+  ],
+  [
+   "Roaming Throne",
+   4
+  ],
+  [
+   "Springbloom Druid",
+   2
+  ],
+  [
+   "Summon: Fenrir",
+   4
+  ],
+  [
+   "Terramorphic Expanse",
+   4
+  ],
+  [
+   "Threefold Thunderhulk",
+   4
+  ],
+  [
+   "Twinmaw Stormbrood // Charring Bite",
+   1
+  ]
+ ],
+ "gauntlet": [
+  "Outcaster Trailblazer + Overlord of the Boilerbilges",
+  "Devastating Onslaught + Llanowar Elves",
+  "Esper Origins + Improvisation Capstone"
+ ],
+ "baseline": {
+  "games": 24,
+  "wins": 12,
+  "avg_turns": 7.5,
+  "avg_lands_t3": 2.0,
+  "avg_lands_t5": 2.88,
+  "mulligan_rate": 0.17,
+  "tracked": {
+   "Random Encounter": {
+    "played_in": "0/24",
+    "avg_casts": 0.0,
+    "median_first_turn": null
+   }
+  },
+  "winrate": 0.5,
+  "ci": 0.2
+ },
+ "history": []
+}
