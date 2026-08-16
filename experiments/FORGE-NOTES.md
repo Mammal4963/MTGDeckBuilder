@@ -136,6 +136,26 @@ cards never seen in training).
   Demonic Consultation 31.6% - hidden-information/library semantics
   compress poorly in text embeddings.
 
+### Post-crawl retrain (2026-08-16, corpus 3.2k -> 12.1k decks)
+
+The scaled Archidekt crawl (6 chunks, commander 1.9k -> 7.3k decks)
+fixed the data starvation diagnosed above:
+
+- Pair-synergy AUC 0.784 -> 0.822; Tainted Aether showcase pairs all
+  rose (Aether Vial + Tainted Aether 91% -> 95.5%).
+- Combo head held 0.834 hard-negative AUC against a 4x larger co-play
+  pool; the Thassa's Oracle blind spot improved 31.6% -> 51.7%.
+- **Brew mode transformed.** Pre-crawl the Tainted Aether deck got
+  generic blue staples (Counterspell, Negate, Cyclonic Rift...);
+  post-crawl it gets on-theme punisher/death-trigger cards: Grave
+  Pact, No Mercy, Hissing Miasma, The Meathook Massacre, Dark
+  Prophecy, Carnival of Souls, Harvester of Souls. Auto-mode
+  similarity 0.62 -> 0.67, still (correctly) routing to brew.
+- Blood Artist [cmd] now in 370 decks; neighbors are pure aristocrats
+  (Yahenni, Bloodghast, Falkenrath Noble, Viscera Seer, Butcher of
+  Malakir).
+- Seeker rebuilt with 6,988 recipe decks and redeployed.
+
 Miner v1 (`mine_combos.py`) now scores with the combo head; novelty =
 not catalogued in Spellbook (deck co-play is reported, not excluded).
 Output character changed exactly as hoped: instead of archetype fits it
