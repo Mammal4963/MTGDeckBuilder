@@ -174,6 +174,34 @@ Consequences:
   scripts (hints stripped) into Forge's custom cards folder, or
   implement a PlayerController that overrides the evaluation.
 
+## Custom AI pilot, rung 1: un-blinding experiment (2026-08-16)
+
+`ai_unblind.py` strips AI:RemoveDeck hints from chosen cards inside
+the install's cardsfolder.zip (backup/restore built in). Applied to
+Tainted Aether + Acorn Catapult, reran the evolved deck's baseline
+(24 games, same gauntlet):
+
+- Cast rates: Tainted Aether 0/18 -> 9/24 games (median turn 5);
+  Acorn Catapult 0/18 -> 12/24. The ban was the only blocker; generic
+  heuristics will cast them.
+- But winrate moved 56% -> 38% (overlapping CIs, direction consistent):
+  conditional on casting Tainted Aether the AI won 3/9 vs 6/15 when it
+  stayed in hand; Catapult 4/12 vs 5/12. The AI casts the lock piece
+  then keeps feeding its own creatures into it, and shoots Catapult
+  while gifting squirrels. **Attempting != piloting** - Forge's devs
+  banned these cards for a reason. This is the empirical case for a
+  learned policy (rung 3+), and why rung 2's bridge overrides
+  decisions rather than just lifting bans.
+
+Rung 2 architecture (from decompiling forge-gui-desktop 2.0.14):
+`forge.game.player.PlayerController` is a ~100-method abstract class -
+full reimplementation is out. Instead: subclass
+`forge.ai.PlayerControllerAi`, override only the macro decisions
+(getAbilityToPlay / spell-choice at priority, chooseTargetsFor,
+later combat), delegate everything else to the built-in AI. Inject via
+a patched LobbyPlayerAi (Forge is GPL; build from source) with the
+policy served over a localhost socket by Python.
+
 ## Evolver methodology v2 (evolve_core.py) - lessons from run 1
 
 Run 1 (self-play reference) accepted "cut 4 Acorn Catapult" in gen 1 -
