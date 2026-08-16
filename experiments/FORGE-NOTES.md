@@ -156,6 +156,32 @@ fixed the data starvation diagnosed above:
   Malakir).
 - Seeker rebuilt with 6,988 recipe decks and redeployed.
 
+## Combo verification in Forge (2026-08-16, verify_combo.py)
+
+Method evolved across two iterations, both worth remembering:
+
+1. **Mirror A/B alone is blind to combos.** Combo shell vs curve-matched
+   null twin, 40-game h2h: the POSITIVE CONTROL (Sanguine Bond +
+   Exquisite Blood, catalogued instant win) came back 50%. Verbose logs
+   showed why: with 4+4 pieces in 60 cards, games end before assembly,
+   so the mirror measures "8 dead cards vs 8 vanilla bodies".
+2. **Assembly-conditional analysis works.** Add symmetric tutors, run
+   verbose, bucket each game by whether both pieces resolved and
+   whether the interaction visibly FIRED (trigger-pattern threshold):
+   - Control: fired games **8/8 wins** (drain chains up to 66 triggers
+     deep in the logs - Forge executes the loop); assembled-but-late
+     67%; unassembled 22%. Methodology validated.
+   - Novel miner candidate (Zodiark, Umbral God + Magnanimous
+     Magistrate): fired games **3/3 wins**, but it fired in only 3/20
+     assembled games - the AI rarely lines up nontoken deaths with
+     Magistrate. Honest verdict: mechanically functional, real when it
+     happens, but low-frequency; most of the arm's 70% assembled
+     winrate is Zodiark being independently strong.
+
+Takeaway for the evolver/product: verify combos by conditional fired
+winrate from verbose logs, never by net A/B winrate; and expect the
+AI-pilot ceiling to under-fire engines that need setup sequencing.
+
 Miner v1 (`mine_combos.py`) now scores with the combo head; novelty =
 not catalogued in Spellbook (deck co-play is reported, not excluded).
 Output character changed exactly as hoped: instead of archetype fits it
