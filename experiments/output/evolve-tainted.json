@@ -1,0 +1,405 @@
+{
+ "format": "legacy",
+ "incumbent": [
+  [
+   "Clutch of the Undercity",
+   4
+  ],
+  [
+   "Dimir House Guard",
+   4
+  ],
+  [
+   "Echoing Truth",
+   4
+  ],
+  [
+   "Forbidden Orchard",
+   4
+  ],
+  [
+   "Grave Pact",
+   3
+  ],
+  [
+   "Hissing Miasma",
+   4
+  ],
+  [
+   "Hunted Horror",
+   3
+  ],
+  [
+   "Island",
+   2
+  ],
+  [
+   "Jwar Isle Refuge",
+   3
+  ],
+  [
+   "Phyrexian Arena",
+   4
+  ],
+  [
+   "Recoil",
+   3
+  ],
+  [
+   "Sign in Blood",
+   2
+  ],
+  [
+   "Swamp",
+   12
+  ],
+  [
+   "Tainted Aether",
+   4
+  ],
+  [
+   "Tainted Isle",
+   4
+  ]
+ ],
+ "generation": 2,
+ "history": [
+  {
+   "gen": 1,
+   "swap": "-4 Acorn Catapult +4 Hissing Miasma",
+   "h2h": [
+    23,
+    40
+   ],
+   "stage2": {
+    "evo_cand_5": [
+     7,
+     10
+    ],
+    "evo_cand_4": [
+     8,
+     10
+    ],
+    "evo_base": [
+     5,
+     20
+    ]
+   },
+   "accepted": true
+  },
+  {
+   "gen": 2,
+   "swap": "-3 Hunted Phantasm +3 Grave Pact",
+   "h2h": [
+    26,
+    40
+   ],
+   "stage2": {
+    "evo_cand_0": [
+     5,
+     10
+    ],
+    "evo_cand_3": [
+     3,
+     10
+    ],
+    "evo_base": [
+     12,
+     20
+    ]
+   },
+   "accepted": true
+  }
+ ],
+ "tried": [
+  [
+   "Acorn Catapult",
+   "Hissing Miasma"
+  ],
+  [
+   "Dimir House Guard",
+   "Agent of the Iron Throne"
+  ],
+  [
+   "Dimir House Guard",
+   "Bubbling Muck"
+  ],
+  [
+   "Dimir House Guard",
+   "Dark Ritual"
+  ],
+  [
+   "Dimir House Guard",
+   "Tainted Remedy"
+  ],
+  [
+   "Echoing Truth",
+   "Carnival of Souls"
+  ],
+  [
+   "Hunted Horror",
+   "No Mercy"
+  ],
+  [
+   "Hunted Phantasm",
+   "Agent of the Iron Throne"
+  ],
+  [
+   "Hunted Phantasm",
+   "Grave Pact"
+  ],
+  [
+   "Phyrexian Arena",
+   "Dark Prophecy"
+  ],
+  [
+   "Phyrexian Arena",
+   "Grave Pact"
+  ],
+  [
+   "Sign in Blood",
+   "The Meathook Massacre"
+  ]
+ ],
+ "gauntlet": [
+  [
+   [
+    "Ancient Tomb",
+    4
+   ],
+   [
+    "Anointed Peacekeeper",
+    4
+   ],
+   [
+    "Archon of Emeria",
+    4
+   ],
+   [
+    "Cavern of Souls",
+    4
+   ],
+   [
+    "Chalice of the Void",
+    4
+   ],
+   [
+    "Chrome Mox",
+    4
+   ],
+   [
+    "City of Traitors",
+    4
+   ],
+   [
+    "Clarion Conqueror",
+    4
+   ],
+   [
+    "Karakas",
+    1
+   ],
+   [
+    "Lotus Petal",
+    4
+   ],
+   [
+    "Plains",
+    3
+   ],
+   [
+    "Seasoned Dungeoneer",
+    4
+   ],
+   [
+    "Sheltered by Ghosts",
+    3
+   ],
+   [
+    "Solitude",
+    1
+   ],
+   [
+    "Thalia, Guardian of Thraben",
+    4
+   ],
+   [
+    "Wasteland",
+    4
+   ],
+   [
+    "Witch Enchanter",
+    4
+   ]
+  ],
+  [
+   [
+    "Abundant Countryside",
+    4
+   ],
+   [
+    "Ancient Tomb",
+    4
+   ],
+   [
+    "Cavern of Souls",
+    4
+   ],
+   [
+    "Chalice of the Void",
+    4
+   ],
+   [
+    "Eldrazi Confluence",
+    2
+   ],
+   [
+    "Eldrazi Linebreaker",
+    4
+   ],
+   [
+    "Eldrazi Temple",
+    4
+   ],
+   [
+    "Eye of Ugin",
+    4
+   ],
+   [
+    "Glaring Fleshraker",
+    4
+   ],
+   [
+    "It That Heralds the End",
+    4
+   ],
+   [
+    "Kozilek's Command",
+    4
+   ],
+   [
+    "Lotus Petal",
+    4
+   ],
+   [
+    "Petrified Hamlet",
+    4
+   ],
+   [
+    "Sire of Seven Deaths",
+    2
+   ],
+   [
+    "Thought-Knot Seer",
+    4
+   ],
+   [
+    "Wastes",
+    1
+   ],
+   [
+    "Wastescape Battlemage",
+    3
+   ]
+  ],
+  [
+   [
+    "Allosaurus Shepherd",
+    4
+   ],
+   [
+    "Atraxa, Grand Unifier",
+    1
+   ],
+   [
+    "Badgermole Cub",
+    4
+   ],
+   [
+    "Bayou",
+    2
+   ],
+   [
+    "Boseiju, Who Endures",
+    1
+   ],
+   [
+    "Craterhoof Behemoth",
+    1
+   ],
+   [
+    "Dryad Arbor",
+    2
+   ],
+   [
+    "Eladamri, Korvecdal",
+    2
+   ],
+   [
+    "Elvish Visionary",
+    1
+   ],
+   [
+    "Forest",
+    2
+   ],
+   [
+    "Formidable Speaker",
+    3
+   ],
+   [
+    "Fyndhorn Elves",
+    3
+   ],
+   [
+    "Gaea's Cradle",
+    4
+   ],
+   [
+    "Green Sun's Zenith",
+    4
+   ],
+   [
+    "Llanowar Elves",
+    2
+   ],
+   [
+    "Misty Rainforest",
+    2
+   ],
+   [
+    "Natural Order",
+    4
+   ],
+   [
+    "Once Upon a Time",
+    3
+   ],
+   [
+    "Quirion Ranger",
+    4
+   ],
+   [
+    "Temur Sabertooth",
+    1
+   ],
+   [
+    "Verdant Catacombs",
+    2
+   ],
+   [
+    "Windswept Heath",
+    2
+   ],
+   [
+    "Wirewood Symbiote",
+    4
+   ],
+   [
+    "Wooded Foothills",
+    2
+   ]
+  ]
+ ],
+ "reference": "self"
+}
