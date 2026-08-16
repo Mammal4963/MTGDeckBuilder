@@ -80,6 +80,11 @@ def main():
     ap.add_argument("--lock", action="append", default=[])
     ap.add_argument("--proposer", choices=["v1", "v2", "brew", "auto"],
                     default="auto")
+    ap.add_argument("--reference", choices=["gauntlet", "self", "auto"],
+                    default="auto",
+                    help="what variants race against: corpus gauntlet, the "
+                         "incumbent itself, or auto (switch to self when the "
+                         "gauntlet proves too strong to give signal)")
     args = ap.parse_args()
 
     imp = Improver(args.format)
@@ -121,10 +126,14 @@ def main():
     locked = {norm(n) for n in args.lock}
     tried = {tuple(t) for t in state["tried"]}
     stale = 0
+    reference = "gauntlet" if args.reference == "auto" else args.reference
+    if state.get("reference"):
+        reference = state["reference"]
 
     def save():
         state["incumbent"] = deck_to_pairs(imp, deck)
         state["tried"] = sorted(tried)
+        state["reference"] = reference
         state_path.write_text(json.dumps(state, indent=1))
         (OUT / f"evolved-{args.name}.txt").write_text(
             "\n".join(f"{q} {n}" for n, q in state["incumbent"]) + "\n")
@@ -151,14 +160,33 @@ def main():
             print(f"  {vname}: -{qty} {imp.meta[cut]['name']}"
                   f" +{qty} {imp.meta[add]['name']}", flush=True)
 
-        r1 = evaluate(list(variants) + ["evo_base"], gauntlet_names,
-                      args.stage1)
+        if reference == "gauntlet":
+            r1 = evaluate(list(variants) + ["evo_base"], gauntlet_names,
+                          args.stage1)
+            pooled_w = sum(w for w, _n in r1.values())
+            pooled_n = sum(n for _w, n in r1.values())
+            if (args.reference == "auto" and pooled_n
+                    and pooled_w / pooled_n < 0.15):
+                print(f"gauntlet too strong for this deck "
+                      f"({pooled_w}/{pooled_n} pooled) - switching to "
+                      f"self-reference racing", flush=True)
+                reference = "self"
+        if reference == "self":
+            # casual decks lose every gauntlet game; the informative
+            # reference at their power level is the incumbent itself
+            r1 = evaluate(list(variants), ["evo_base"], args.stage1 * 2)
         ranked = sorted(variants, key=lambda v: -(r1[v][0] / max(1, r1[v][1])))
         finalists = ranked[:args.finalists]
-        print(f"stage1: " + ", ".join(
+        print(f"stage1 ({reference}): " + ", ".join(
             f"{v} {r1[v][0]}/{r1[v][1]}" for v in ranked), flush=True)
 
-        r2 = evaluate(finalists + ["evo_base"], gauntlet_names, args.stage2)
+        if reference == "gauntlet":
+            r2 = evaluate(finalists + ["evo_base"], gauntlet_names,
+                          args.stage2)
+        else:
+            r2 = evaluate(finalists, ["evo_base"], args.stage2)
+            r2["evo_base"] = (sum(n - w for w, n in r2.values()),
+                              sum(n for _w, n in r2.values()))
         best = max(finalists, key=lambda v: r2[v][0] / max(1, r2[v][1]))
         bp, bh = ci95(*r2[best])
         ip, ih = ci95(*r2["evo_base"])
