@@ -101,5 +101,26 @@
   "winrate": 0.5,
   "ci": 0.2
  },
- "history": []
+ "history": [
+  {
+   "gen": 1,
+   "swap": "-2 Springbloom Druid +2 Esper Origins // Summon: Esper Maduin",
+   "stage2": [
+    17,
+    36
+   ],
+   "vs_baseline": -0.028,
+   "accepted": false
+  },
+  {
+   "gen": 2,
+   "swap": "-1 Chimil, the Inner Sun +1 Lumbering Worldwagon",
+   "stage2": [
+    18,
+    36
+   ],
+   "vs_baseline": 0.0,
+   "accepted": false
+  }
+ ]
 }
