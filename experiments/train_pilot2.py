@@ -191,10 +191,11 @@ def main():
     # we report act-only accuracy separately.
     acts = [x for x in cast if x[3] != len(x[2])]
     passes = [x for x in cast if x[3] == len(x[2])]
+    RNG.shuffle(acts)
     RNG.shuffle(passes)
+    acts = acts[:8000]                     # CPU-tractable cap
     cast = acts + passes[:4 * len(acts)]
-    print(f"after pass-downsampling: {len(cast)} cast samples "
-          f"({len(acts)} act)")
+    print(f"after caps: {len(cast)} cast samples ({len(acts)} act)")
 
     sdim = feat.scalars({}).shape[0]
     cdim = feat.dim + 2

@@ -1,0 +1,16 @@
+[
+ {
+  "iter": 0,
+  "winrate": 0.375,
+  "lock_frac": 0.0625,
+  "baseline": -0.069,
+  "loss": 0.0363
+ },
+ {
+  "iter": 1,
+  "winrate": 0.375,
+  "lock_frac": 0.0,
+  "baseline": -0.124,
+  "loss": -0.0439
+ }
+]
