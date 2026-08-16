@@ -110,6 +110,26 @@
    ],
    "vs_baseline": 0.292,
    "accepted": true
+  },
+  {
+   "gen": 2,
+   "swap": "-2 Sign in Blood +2 Harvester of Souls",
+   "stage2": [
+    14,
+    24
+   ],
+   "vs_baseline": 0.027,
+   "accepted": false
+  },
+  {
+   "gen": 3,
+   "swap": "-4 Dimir House Guard +4 Dark Ritual",
+   "stage2": [
+    13,
+    24
+   ],
+   "vs_baseline": -0.014,
+   "accepted": false
   }
  ]
 }
