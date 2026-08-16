@@ -268,6 +268,15 @@ public class PlayerControllerExt extends PlayerControllerAi {
         }
     }
 
+    private Card findMyCard(int id) {
+        for (Card c : getPlayer().getCardsIn(ZoneType.Battlefield)) {
+            if (c.getId() == id) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void declareAttackers(Player attacker, Combat combat) {
         super.declareAttackers(attacker, combat);
@@ -287,7 +296,37 @@ public class PlayerControllerExt extends PlayerControllerAi {
                 first = false;
             }
             sb.append("]}\n");
-            roundTrip(sb.toString());     // observe-only this rung
+            String reply = roundTrip(sb.toString());
+            // write path: "attack\tid,id,..." replaces the attack set
+            // (legality-checked per card; illegal requests are skipped)
+            if (reply != null && reply.startsWith("attack\t")) {
+                Set<Integer> want = new HashSet<>();
+                for (String s : reply.substring(7).split(",")) {
+                    if (!s.isEmpty()) {
+                        want.add(Integer.parseInt(s.trim()));
+                    }
+                }
+                for (Card c : new CardCollection(combat.getAttackers())) {
+                    if (!want.contains(c.getId())) {
+                        combat.removeFromCombat(c);
+                    }
+                }
+                forge.game.GameEntity defender = null;
+                for (forge.game.GameEntity d : combat.getDefenders()) {
+                    defender = d;
+                    break;
+                }
+                if (defender != null) {
+                    for (int id : want) {
+                        Card c = findMyCard(id);
+                        if (c != null && !combat.isAttacking(c)
+                                && forge.game.combat.CombatUtil
+                                        .canAttack(c, defender)) {
+                            combat.addAttacker(c, defender);
+                        }
+                    }
+                }
+            }
         } catch (Exception ignored) {
         }
     }
@@ -316,7 +355,34 @@ public class PlayerControllerExt extends PlayerControllerAi {
                 }
             }
             sb.append("]}\n");
-            roundTrip(sb.toString());     // observe-only this rung
+            String reply = roundTrip(sb.toString());
+            // write path: "block\tblockerId:attackerId,..." replaces MY
+            // block assignments (legality-checked; illegal pairs skipped)
+            if (reply != null && reply.startsWith("block\t")) {
+                for (Card b : new CardCollection(combat.getAllBlockers())) {
+                    if (b.getController() == defender) {
+                        combat.removeFromCombat(b);
+                    }
+                }
+                for (String pair : reply.substring(6).split(",")) {
+                    if (pair.isEmpty() || !pair.contains(":")) {
+                        continue;
+                    }
+                    String[] ba = pair.split(":");
+                    Card b = findMyCard(Integer.parseInt(ba[0].trim()));
+                    Card a = null;
+                    for (Card c : combat.getAttackers()) {
+                        if (c.getId() == Integer.parseInt(ba[1].trim())) {
+                            a = c;
+                        }
+                    }
+                    if (a != null && b != null
+                            && forge.game.combat.CombatUtil
+                                    .canBlock(a, b, combat)) {
+                        combat.addBlocker(a, b);
+                    }
+                }
+            }
         } catch (Exception ignored) {
         }
     }

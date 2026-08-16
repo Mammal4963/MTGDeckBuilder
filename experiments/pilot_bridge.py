@@ -135,33 +135,99 @@ class ModelPolicy:
             Path(__file__).resolve().parent / "output" / "pilot2.pt"))
         self.model.eval()
 
-    def __call__(self, state: dict) -> str:
-        if state.get("kind") != "cast":
-            return "ok"
-        cands = state.get("candidates", [])
-        if not cands:
-            return "ok"
+    def encode(self, state: dict):
         torch = self.torch
-        tt = lambda x: torch.from_numpy(__import__("numpy")
-                                        .ascontiguousarray(x))
+        tt = self.tt
+        toks, ids = self.feat.tokens_and_ids(state)
+        x = self.model.proj(tt(toks)).unsqueeze(0)
+        x = torch.cat([self.model.state_tok.unsqueeze(0), x], dim=1)
+        h = self.model.enc(x)[0]
+        hs = self.model.state_mlp(torch.cat(
+            [h[0], tt(self.feat.scalars(state))]))
+        return hs, h[1:], ids
+
+    @property
+    def tt(self):
+        torch = self.torch
+        import numpy as np
+        return lambda x: torch.from_numpy(np.ascontiguousarray(x))
+
+    def _pick(self, logits):
+        """argmax, or sample at self.temperature when set (self-play)."""
+        torch = self.torch
+        t = getattr(self, "temperature", 0.0)
+        if t and t > 0:
+            return int(torch.multinomial(
+                torch.softmax(logits / t, dim=0), 1))
+        return int(logits.argmax())
+
+    def __call__(self, state: dict) -> str:
+        torch = self.torch
+        kind = state.get("kind")
         with torch.no_grad():
-            toks, _ids = self.feat.tokens_and_ids(state)
-            x = self.model.proj(tt(toks)).unsqueeze(0)
-            x = torch.cat([self.model.state_tok.unsqueeze(0), x], dim=1)
-            h = self.model.enc(x)[0]
-            hs = self.model.state_mlp(torch.cat(
-                [h[0], tt(self.feat.scalars(state))]))
-            scores = [self.model.cast_head(torch.cat(
-                [hs, self.model.cand_proj(tt(self.feat.cand_vec(c)))]))
-                for c in cands]
-            scores.append(self.model.pass_head(hs))
-            pick = int(torch.cat(scores).argmax())
-        proposed = state.get("proposed", [])
-        if pick == len(cands):                    # model says pass
-            return ("veto\t" + "\t".join(proposed)) if proposed else "ok"
-        if proposed and cands[pick]["card"] == proposed[0]:
-            return "ok"                           # agrees with built-in AI
-        return f"force\t{cands[pick]['i']}"
+            if kind == "cast":
+                cands = state.get("candidates", [])
+                if not cands:
+                    return "ok"
+                hs, _h, _ids = self.encode(state)
+                scores = [self.model.cast_head(torch.cat(
+                    [hs, self.model.cand_proj(
+                        self.tt(self.feat.cand_vec(c)))])) for c in cands]
+                scores.append(self.model.pass_head(hs))
+                pick = self._pick(torch.cat(scores))
+                proposed = state.get("proposed", [])
+                if pick == len(cands):
+                    return ("veto\t" + "\t".join(proposed)) if proposed \
+                        else "ok"
+                if proposed and cands[pick]["card"] == proposed[0]:
+                    return "ok"
+                return f"force\t{cands[pick]['i']}"
+
+            if kind == "attackers":
+                hs, h, ids = self.encode(state)
+                want = []
+                for k, x in enumerate(ids):
+                    if x is None:
+                        continue
+                    side, cid, c = x
+                    if side != "my" or not c.get("cr") or c.get("tapped"):
+                        continue
+                    lg = self.model.atk_head(torch.cat([hs, h[k]]))
+                    t = getattr(self, "temperature", 0.0)
+                    p = float(torch.sigmoid(lg / t if t else lg))
+                    go = (torch.rand(1).item() < p) if t else (p > 0.5)
+                    if go:
+                        want.append(str(cid))
+                return "attack\t" + ",".join(want)
+
+            if kind == "blockers":
+                attackers = state.get("attackers", [])
+                if not attackers:
+                    return "ok"
+                hs, h, ids = self.encode(state)
+                a_tok = {}
+                for k, x in enumerate(ids):
+                    if x is not None and x[1] in {a["id"] for a in attackers}:
+                        a_tok[x[1]] = k
+                if len(a_tok) != len(attackers):
+                    return "ok"
+                a_ids = [a["id"] for a in attackers]
+                pairs = []
+                for k, x in enumerate(ids):
+                    if x is None:
+                        continue
+                    side, cid, c = x
+                    if side != "my" or not c.get("cr") or c.get("tapped"):
+                        continue
+                    scores = [self.model.blk_head(torch.cat(
+                        [hs, h[k], h[a_tok[a]]])) for a in a_ids]
+                    scores.append(self.model.noblk_head(
+                        torch.cat([hs, h[k]])))
+                    pick = self._pick(torch.cat(scores))
+                    if pick < len(a_ids):
+                        pairs.append(f"{cid}:{a_ids[pick]}")
+                return "block\t" + ",".join(pairs)
+        return "ok"
 
 
 class PolicyHandler(socketserver.StreamRequestHandler):
@@ -201,7 +267,7 @@ def run_bridged(deck_a: str, deck_b: str, games: int, timeout_s: int,
         extra = {}
         if port is not None:
             extra = {"FORGE_EXT_POLICY": str(port),
-                     "FORGE_EXT_PLAYER": player_filter or deck_a}
+                     "FORGE_EXT_PLAYER": (deck_a if player_filter is None else player_filter)}
         key = f"bridge-{port}-{player_filter or deck_a}"
         return sim_server.shared_client(key, extra).run(
             deck_a, deck_b, games, quiet=False, timeout_s=timeout_s)
@@ -213,7 +279,7 @@ def run_bridged(deck_a: str, deck_b: str, games: int, timeout_s: int,
     env = dict(os.environ)
     if port is not None:
         env["FORGE_EXT_POLICY"] = str(port)
-        env["FORGE_EXT_PLAYER"] = player_filter or deck_a
+        env["FORGE_EXT_PLAYER"] = (deck_a if player_filter is None else player_filter)
     else:
         env.pop("FORGE_EXT_POLICY", None)
     try:
@@ -272,13 +338,20 @@ def collect(games_per_pair: int = 6) -> None:
     tainted_policy = lambda state: "ok"          # pure observer
     out_path = Path(__file__).resolve().parent / "output" / "pilot_dataset.jsonl"
     COLLECT_FILE["fh"] = open(out_path, "a")
-    port = 8879
-    srv = start_server(port)
+    srv = start_server(0)              # ephemeral port - never collides
+    port = srv.server_address[1]
     # mix in the creature-heavy legacy decks (elves, stompy) so combat
     # decisions - attacks and blocks - are well represented
-    decks = ["evo_tainted2_base", "gauntlet_1", "evo_tainted2_g0",
-             "gauntlet_2", "evo_tainted2_g1", "burn",
-             "evo_tainted2_g2", "gauntlet_0"]
+    import os
+    if os.environ.get("COLLECT_COMBAT") == "1":
+        # combat-dense rotation: creature decks only, where the AI
+        # declares attacks and blocks every few turns
+        decks = ["gauntlet_0", "gauntlet_1", "gauntlet_2", "burn",
+                 "gauntlet_1", "gauntlet_0", "burn", "gauntlet_2"]
+    else:
+        decks = ["evo_tainted2_base", "gauntlet_1", "evo_tainted2_g0",
+                 "gauntlet_2", "evo_tainted2_g1", "burn",
+                 "evo_tainted2_g2", "gauntlet_0"]
     try:
         for i, a in enumerate(decks):
             b = decks[(i + 1) % len(decks)]
@@ -286,7 +359,7 @@ def collect(games_per_pair: int = 6) -> None:
             # player_filter "evo_" bridges BOTH sides: two observed
             # controllers per game = twice the data per sim
             run_bridged(a, b, games_per_pair,
-                        120 + 40 * games_per_pair, port, player_filter="evo_")
+                        120 + 40 * games_per_pair, port, player_filter="")
             print(f"{a} vs {b}: +{STATS['decisions'] - n0} decisions",
                   flush=True)
     finally:
@@ -294,6 +367,7 @@ def collect(games_per_pair: int = 6) -> None:
         COLLECT_FILE["fh"] = None
         tainted_policy = orig_policy
         srv.shutdown()
+        srv.server_close()
     print(f"dataset -> {out_path}", flush=True)
 
 
