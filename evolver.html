@@ -89,6 +89,13 @@
   a Java rules engine that can't run inside a browser. Run the companion on a machine
   with Java 17+ and Forge installed, then reload this page there:</p>
   <p><code>python3 experiments/evolve_server.py</code> &nbsp;→&nbsp; open <code>http://localhost:8765/</code></p>
+  <p class="note"><b>From your phone:</b> the Forge mobile app can't simulate for us
+  (no headless mode) — instead run the companion on your PC with
+  <code>--host 0.0.0.0</code> and open the address it prints
+  (<code>http://&lt;pc-ip&gt;:8765/</code>) in your phone's browser on the same wifi.
+  The phone is the remote control; the PC keeps simulating even when the phone sleeps.
+  Note: that address must be opened directly — this HTTPS page is not allowed to call a
+  plain-HTTP address on your network.</p>
   <p class="note">Setup details: <code>experiments/FORGE-NOTES.md</code> in the repo.</p>
 </div>
 

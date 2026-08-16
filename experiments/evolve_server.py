@@ -126,9 +126,22 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--host", default="127.0.0.1",
+                    help="bind address; use 0.0.0.0 to control the evolver "
+                         "from your phone's browser on the same network")
     args = ap.parse_args()
-    srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"evolver companion listening on http://localhost:{args.port}/")
+    srv = ThreadingHTTPServer((args.host, args.port), Handler)
+    print(f"evolver companion listening on http://{args.host}:{args.port}/")
+    if args.host != "127.0.0.1":
+        import socket
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            ip = s.getsockname()[0]
+            s.close()
+            print(f"on your phone (same wifi), open: http://{ip}:{args.port}/")
+        except OSError:
+            pass
     srv.serve_forever()
 
 
