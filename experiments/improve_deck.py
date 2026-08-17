@@ -42,10 +42,16 @@ from mtg_deckbuilder.collection import parse_collection  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = Path(__file__).resolve().parent / "output"
+import os
 SCRATCH = Path("/tmp/claude-0/-home-user-MTGDeckBuilder/6e07b8e8-48d2-56ad-84cc-9478073b7720/scratchpad")
-FORGE_DIR = SCRATCH / "forge"
-FORGE_DECKS = Path.home() / ".forge" / "decks" / "constructed"
-SUPPORTED_CACHE = SCRATCH / "forge-supported-names.json"
+# On your own machine: FORGE_HOME=/path/to/forge-install (the dir
+# holding forge-gui-desktop-*.jar and res/)
+FORGE_DIR = Path(os.environ.get("FORGE_HOME", SCRATCH / "forge"))
+FORGE_DECKS = Path(os.environ.get(
+    "FORGE_DECKS_DIR", Path.home() / ".forge" / "decks" / "constructed"))
+SUPPORTED_CACHE = (SCRATCH / "forge-supported-names.json"
+                   if (SCRATCH / "forge-supported-names.json").exists()
+                   else OUT / "forge-supported-names.json")
 
 RNG = np.random.default_rng(23)
 
@@ -323,6 +329,15 @@ class Improver:
 
 # ---------------- Forge runner ----------------
 
+def java_prefix():
+    """xvfb-run only where it's needed: headless POSIX without a display.
+    A desktop session (DISPLAY set) or Windows runs java directly."""
+    import os
+    if os.name != "posix" or os.environ.get("DISPLAY"):
+        return ["java"]
+    return ["xvfb-run", "-a", "java"]
+
+
 def write_dck(name: str, main_pairs):
     FORGE_DECKS.mkdir(parents=True, exist_ok=True)
     lines = ["[metadata]", f"Name={name}", "[Main]"]
@@ -346,7 +361,7 @@ def run_match(deck_a: str, deck_b: str, games: int, timeout_s: int):
         wins_a = len(re.findall(
             rf"Game Result.*Ai\(1\)-{re.escape(deck_a)} has won", out))
         return wins_a, len(re.findall(r"Game Result", out))
-    cmd = ["xvfb-run", "-a", "java", "-Xmx3g",
+    cmd = java_prefix() + ["-Xmx3g",
            "-Dio.netty.tryReflectionSetAccessible=true",
            "-Dfile.encoding=UTF-8", "-jar",
            str(FORGE_DIR / "forge-gui-desktop-2.0.14-jar-with-dependencies.jar"),

@@ -90,15 +90,29 @@ def probe_gauntlet(imp, deck, me, size, probe_games, log):
     return [f"fac_g{gi}" for gi in range(len(chosen))]
 
 
-def measure_arm(label, deck_name, gauntlet, games_per_g, port, log):
-    w = n = 0
+def measure_arm(label, deck_name, gauntlet, games_per_g, port, log,
+                parallel=1):
+    """Winrate vs the gauntlet; games split across `parallel` warm JVMs.
+    On a many-core box (--val-parallel 6) validation is minutes."""
+    from concurrent.futures import ThreadPoolExecutor
+    chunks = []
     for g in gauntlet:
-        out = run_bridged(deck_name, g, games_per_g, 90 + 40 * games_per_g,
-                          port, player_filter=deck_name if port else None,
-                          quiet=True)
-        w += len(re.findall(
-            rf"Game Result.*Ai\(1\)-{re.escape(deck_name)} has won", out))
-        n += len(re.findall(r"Game Result", out))
+        per = max(1, games_per_g // parallel)
+        for wk in range(parallel):
+            chunks.append((g, per, wk))
+
+    def one(job):
+        g, per, wk = job
+        return run_bridged(deck_name, g, per, 90 + 40 * per, port,
+                           player_filter=deck_name if port else None,
+                           quiet=True, worker=wk)
+
+    w = n = 0
+    with ThreadPoolExecutor(max_workers=parallel) as pool:
+        for out in pool.map(one, chunks):
+            w += len(re.findall(
+                rf"Game Result.*Ai\(1\)-{re.escape(deck_name)} has won", out))
+            n += len(re.findall(r"Game Result", out))
     p, half = ci95(w, n)
     log(f"[validate] {label}: {w}/{n} = {p:.0%} ±{half:.0%}")
     return {"label": label, "wins": w, "games": n,
@@ -116,6 +130,8 @@ def main():
                     help="training games per iteration")
     ap.add_argument("--val-games", type=int, default=96,
                     help="validation games per arm")
+    ap.add_argument("--val-parallel", type=int, default=1,
+                    help="parallel warm JVMs for validation (use ~cores/2)")
     ap.add_argument("--gauntlet", type=int, default=3)
     ap.add_argument("--probe-games", type=int, default=6)
     ap.add_argument("--temperature", type=float, default=0.7)
@@ -214,13 +230,16 @@ def main():
         per_g = max(4, args.val_games // len(gauntlet))
         arms = []
         pilot_bridge.tainted_policy = lambda s: "ok"      # observer noop
-        arms.append(measure_arm("builtin", me, gauntlet, per_g, None, log))
+        arms.append(measure_arm("builtin", me, gauntlet, per_g, None, log,
+                                parallel=args.val_parallel))
         bc = ModelPolicy()                                # argmax, no temp
         pilot_bridge.tainted_policy = bc
-        arms.append(measure_arm("bc", me, gauntlet, per_g, port, log))
+        arms.append(measure_arm("bc", me, gauntlet, per_g, port, log,
+                                parallel=args.val_parallel))
         tuned = ModelPolicy(ckpt=ckpt)
         pilot_bridge.tainted_policy = tuned
-        arms.append(measure_arm("tuned", me, gauntlet, per_g, port, log))
+        arms.append(measure_arm("tuned", me, gauntlet, per_g, port, log,
+                                parallel=args.val_parallel))
         by = {a["label"]: a for a in arms}
         promoted = by["tuned"]["winrate"] > by["builtin"]["winrate"]
         journal["validation"] = {"arms": arms, "promoted": bool(promoted)}

@@ -28,7 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from improve_deck import FORGE_DIR  # noqa: E402
+from improve_deck import FORGE_DIR, java_prefix  # noqa: E402
 
 EXT_CLASSES = Path(__file__).resolve().parent / "forge_ext"
 JAR = FORGE_DIR / "forge-gui-desktop-2.0.14-jar-with-dependencies.jar"
@@ -47,7 +47,7 @@ class SimClient:
         env = dict(os.environ)
         env.update(self.env_extra)
         self.proc = subprocess.Popen(
-            ["xvfb-run", "-a", "java", "-Xmx3g",
+            java_prefix() + ["-Xmx3g",
              "-Dio.netty.tryReflectionSetAccessible=true",
              "-Dfile.encoding=UTF-8",
              "-cp", f"{EXT_CLASSES}:{JAR}", "forge.view.SimServer"],

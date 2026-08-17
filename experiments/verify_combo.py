@@ -70,7 +70,8 @@ def run_verbose(deck_a: str, deck_b: str, games: int, timeout_s: int) -> str:
         import sim_server
         return sim_server.shared_client("verbose").run(
             deck_a, deck_b, games, quiet=False, timeout_s=timeout_s)
-    cmd = ["xvfb-run", "-a", "java", "-Xmx3g",
+    from improve_deck import java_prefix
+    cmd = java_prefix() + ["-Xmx3g",
            "-Dio.netty.tryReflectionSetAccessible=true",
            "-Dfile.encoding=UTF-8", "-jar",
            str(FORGE_DIR / "forge-gui-desktop-2.0.14-jar-with-dependencies.jar"),
