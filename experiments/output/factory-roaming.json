@@ -7,73 +7,17 @@
  "train": [
   {
    "iter": 0,
-   "winrate": 0.188,
-   "lock_frac": 0.375,
+   "winrate": 0.125,
+   "lock_frac": 0.312,
    "eps": 0.55,
-   "loss": -0.3952
+   "loss": -0.1636
   },
   {
    "iter": 1,
    "winrate": 0.188,
-   "lock_frac": 0.312,
-   "eps": 0.5,
-   "loss": -0.1069
-  },
-  {
-   "iter": 2,
-   "winrate": 0.188,
-   "lock_frac": 0.625,
-   "eps": 0.45,
-   "loss": -0.0212
-  },
-  {
-   "iter": 3,
-   "winrate": 0.312,
-   "lock_frac": 0.5,
-   "eps": 0.4,
-   "loss": 0.2838
-  },
-  {
-   "iter": 4,
-   "winrate": 0.312,
-   "lock_frac": 0.375,
-   "eps": 0.35,
-   "loss": 0.1451
-  },
-  {
-   "iter": 5,
-   "winrate": 0.125,
-   "lock_frac": 0.5,
-   "eps": 0.3,
-   "loss": -0.0784
-  },
-  {
-   "iter": 6,
-   "winrate": 0.25,
-   "lock_frac": 0.25,
-   "eps": 0.25,
-   "loss": 0.1314
-  },
-  {
-   "iter": 7,
-   "winrate": 0.188,
-   "lock_frac": 0.5,
-   "eps": 0.2,
-   "loss": 0.0332
-  },
-  {
-   "iter": 8,
-   "winrate": 0.188,
    "lock_frac": 0.438,
-   "eps": 0.15,
-   "loss": 0.0647
-  },
-  {
-   "iter": 9,
-   "winrate": 0.188,
-   "lock_frac": 0.188,
-   "eps": 0.1,
-   "loss": -0.087
+   "eps": 0.5,
+   "loss": -0.0403
   }
  ],
  "validation": null,
