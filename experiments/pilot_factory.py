@@ -166,7 +166,8 @@ def main():
                     and float(RNG.random()) < self.eps):
                 for cand in state.get("candidates", []):
                     if cand["card"] in self.locks \
-                            and cand["zone"] == "hand":
+                            and cand["zone"] in ("hand", "graveyard"):
+                        # graveyard = the flashback line, when payable
                         reply = f"force\t{cand['i']}"
                         self.buffer.append((state, reply))
                         return reply

@@ -46,14 +46,15 @@ class Featurizer:
         for i, m in enumerate(meta):
             self.rows.setdefault(norm(m["name"]), i)
         self.dim = self.emb.shape[1]
-        self.tok_dim = self.dim + 3 + 5      # zone one-hot + state feats
+        # zones: hand, my bf, opp bf, my graveyard, opp graveyard
+        self.tok_dim = self.dim + 5 + 5      # zone one-hot + state feats
 
     def card_emb(self, name: str) -> np.ndarray:
         r = self.rows.get(norm(name))
         return self.emb[r] if r is not None else np.zeros(self.dim, np.float32)
 
     def token(self, name: str, zone: int, c: dict | None) -> np.ndarray:
-        z = np.zeros(3, np.float32)
+        z = np.zeros(5, np.float32)
         z[zone] = 1.0
         if c is None:
             st = np.zeros(5, np.float32)
@@ -84,6 +85,14 @@ class Featurizer:
             else:
                 toks.append(self.token(c, 2, None))
                 ids.append(None)
+        # graveyards: flashback/escape lines and reanimation targets
+        # live here (names only - no per-card state in the bin)
+        for n in s.get("my_graveyard", [])[-10:]:
+            toks.append(self.token(n, 3, None))
+            ids.append(None)
+        for n in s.get("opp_graveyard", [])[-10:]:
+            toks.append(self.token(n, 4, None))
+            ids.append(None)
         toks = toks[:MAX_TOKENS]
         ids = ids[:MAX_TOKENS]
         if not toks:
@@ -104,6 +113,7 @@ class Featurizer:
     def cand_vec(self, c: dict) -> np.ndarray:
         flags = np.array([
             1.0 if c.get("zone") == "battlefield" else 0.0,
+            1.0 if c.get("zone") in ("graveyard", "exile") else 0.0,
             1.0 if c.get("targeted") else 0.0,
         ], np.float32)
         return np.concatenate([self.card_emb(c.get("card", "")), flags])
@@ -198,7 +208,7 @@ def main():
     print(f"after caps: {len(cast)} cast samples ({len(acts)} act)")
 
     sdim = feat.scalars({}).shape[0]
-    cdim = feat.dim + 2
+    cdim = feat.dim + 3
 
     class Pilot(nn.Module):
         def __init__(self):

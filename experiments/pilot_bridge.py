@@ -107,7 +107,7 @@ class ModelPolicy:
         feat = self.feat
         D = tp.D
         sdim = feat.scalars({}).shape[0]
-        cdim = feat.dim + 2
+        cdim = feat.dim + 3
 
         class Pilot(nn.Module):
             def __init__(self):

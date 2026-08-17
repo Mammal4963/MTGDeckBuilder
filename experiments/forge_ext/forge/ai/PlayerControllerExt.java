@@ -143,13 +143,48 @@ public class PlayerControllerExt extends PlayerControllerAi {
                 first = false;
             }
         }
+        sb.append("],\"my_graveyard\":[");
+        names(sb, me.getCardsIn(ZoneType.Graveyard));
+        sb.append("],\"my_exile\":[");
+        names(sb, me.getCardsIn(ZoneType.Exile));
+        sb.append("],\"opp_graveyard\":[");
+        first = true;
+        for (Player o : me.getOpponents()) {
+            for (Card c : o.getCardsIn(ZoneType.Graveyard)) {
+                if (!first) {
+                    sb.append(",");
+                }
+                sb.append("\"").append(esc(c.getName())).append("\"");
+                first = false;
+            }
+        }
         sb.append("]");
+    }
+
+    private static String zoneOf(Card c) {
+        if (c == null) {
+            return "hand";
+        }
+        if (c.isInPlay()) {
+            return "battlefield";
+        }
+        if (c.isInZone(ZoneType.Graveyard)) {
+            return "graveyard";
+        }
+        if (c.isInZone(ZoneType.Exile)) {
+            return "exile";
+        }
+        return "hand";
     }
 
     private List<SpellAbility> legalCandidates() {
         Player me = getPlayer();
         CardCollection pool = new CardCollection(me.getCardsIn(ZoneType.Hand));
         pool.addAll(me.getCardsIn(ZoneType.Battlefield));
+        // flashback, escape, jump-start, foretell...: castable abilities
+        // live on cards in the graveyard and exile
+        pool.addAll(me.getCardsIn(ZoneType.Graveyard));
+        pool.addAll(me.getCardsIn(ZoneType.Exile));
         List<SpellAbility> result = new ArrayList<>();
         for (SpellAbility sa : ComputerUtilAbility.getSpellAbilities(pool, me)) {
             try {
@@ -213,8 +248,7 @@ public class PlayerControllerExt extends PlayerControllerAi {
                         esc(host == null ? "?" : host.getName()));
                 sb.append("\",\"type\":\"").append(
                         esc(host == null ? "?" : host.getType().toString()));
-                sb.append("\",\"zone\":\"").append(
-                        host != null && host.isInPlay() ? "battlefield" : "hand");
+                sb.append("\",\"zone\":\"").append(zoneOf(host));
                 sb.append("\",\"targeted\":").append(sa.usesTargeting());
                 sb.append(",\"desc\":\"").append(esc(sa.toString())).append("\"}");
                 first = false;
