@@ -259,8 +259,9 @@ def start_server(port: int) -> socketserver.ThreadingTCPServer:
 
 
 def run_bridged(deck_a: str, deck_b: str, games: int, timeout_s: int,
-                port: int | None, player_filter: str | None = None) -> str:
-    """Verbose sim; when port is set, deck_a's AI consults the policy."""
+                port: int | None, player_filter: str | None = None,
+                quiet: bool = False) -> str:
+    """Sim with the policy bridge on matching players (quiet or verbose)."""
     import os
     if os.environ.get("FORGE_SIM_SERVER") == "1":
         import sim_server
@@ -270,12 +271,14 @@ def run_bridged(deck_a: str, deck_b: str, games: int, timeout_s: int,
                      "FORGE_EXT_PLAYER": (deck_a if player_filter is None else player_filter)}
         key = f"bridge-{port}-{player_filter or deck_a}"
         return sim_server.shared_client(key, extra).run(
-            deck_a, deck_b, games, quiet=False, timeout_s=timeout_s)
+            deck_a, deck_b, games, quiet=quiet, timeout_s=timeout_s)
     cmd = ["xvfb-run", "-a", "java", "-Xmx3g",
            "-Dio.netty.tryReflectionSetAccessible=true",
            "-Dfile.encoding=UTF-8",
            "-cp", f"{EXT_CLASSES}:{JAR}", "forge.view.Main",
            "sim", "-d", f"{deck_a}.dck", f"{deck_b}.dck", "-n", str(games)]
+    if quiet:
+        cmd.append("-q")
     env = dict(os.environ)
     if port is not None:
         env["FORGE_EXT_POLICY"] = str(port)

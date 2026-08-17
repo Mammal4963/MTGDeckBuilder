@@ -132,7 +132,15 @@ class Evolution:
                  probe_games: int = 6, baseline_games: int = 24,
                  stage1_games: int = 4, stage2_games: int = 12,
                  candidates: int = 6, gauntlet_size: int = 3,
-                 name: str = "job", on_event=None):
+                 name: str = "job", on_event=None, policy=None):
+        # policy: optional callable(state)->reply served through the
+        # bridge for OUR variants (never the gauntlet) in EVERY sim -
+        # probe, baseline, and races. Without it, decks built around
+        # cards the built-in AI won't cast are scored engine-less and
+        # fitness cannot see lock-card synergy (the Roaming Encounters
+        # lesson: Random Encounter cast 0/24 by the stock AI).
+        self.policy = policy
+        self.policy_port = None
         self.on_event = on_event or (lambda e: None)
         self.imp = Improver(fmt)
         self.fmt = fmt
@@ -189,6 +197,29 @@ class Evolution:
         if self.stop_flag:
             raise InterruptedError("stopped")
 
+    # -- sims (policy-bridged when a pilot policy is set) ----------------
+    def _sim_quiet(self, deck_a, deck_b, games):
+        """-> (wins_a, games_done). Bridges deck_a when policy is set."""
+        if self.policy_port is not None:
+            from pilot_bridge import run_bridged
+            out = run_bridged(deck_a, deck_b, games, 90 + 30 * games,
+                              self.policy_port,
+                              player_filter=f"evo_{self.name}", quiet=True)
+            import re as _re
+            w = len(_re.findall(
+                rf"Game Result.*Ai\(1\)-{_re.escape(deck_a)} has won", out))
+            return w, len(_re.findall(r"Game Result", out))
+        return run_match(deck_a, deck_b, games, 90 + 30 * games)
+
+    def _sim_verbose(self, deck_a, deck_b, games):
+        if self.policy_port is not None:
+            from pilot_bridge import run_bridged
+            return run_bridged(deck_a, deck_b, games, 120 + 30 * games,
+                               self.policy_port,
+                               player_filter=f"evo_{self.name}")
+        from verify_combo import run_verbose
+        return run_verbose(deck_a, deck_b, games, 120 + 30 * games)
+
     # -- phases ----------------------------------------------------------
     def pick_gauntlet(self):
         """Probe nearest corpus neighbors; keep informative opponents."""
@@ -207,10 +238,12 @@ class Evolution:
             if not all(norm(n) in self.imp.supported for n, _q in d["main"]):
                 continue
             probed += 1
-            gname = f"evo_{self.name}_g{len(chosen)}"
+            # "opp_" prefix: must NOT match the policy player filter
+            # ("evo_<name>"), or the pilot would fly the gauntlet too
+            gname = f"opp_{self.name}_g{len(chosen)}"
             write_dck(gname, d["main"])
-            w, n = run_match(f"evo_{self.name}_base", gname,
-                             self.probe_games, 90 + 30 * self.probe_games)
+            w, n = self._sim_quiet(f"evo_{self.name}_base", gname,
+                                   self.probe_games)
             # corpus decks carry no archetype label; name them by their
             # highest-count signature nonland cards
             sig = [nm for nm, q in sorted(d["main"], key=lambda p: -p[1])
@@ -227,7 +260,7 @@ class Evolution:
         # fall back to whatever probed closest to 50% if too few kept
         self.gauntlet = chosen
         for gi, (_label, main) in enumerate(self.gauntlet):
-            write_dck(f"evo_{self.name}_g{gi}", main)
+            write_dck(f"opp_{self.name}_g{gi}", main)
         self.emit("gauntlet", "gauntlet fixed: "
                   + ", ".join(l for l, _m in self.gauntlet))
 
@@ -239,8 +272,7 @@ class Evolution:
         per = max(6, self.baseline_games // max(1, len(self.gauntlet)))
         for gi, (label, _main) in enumerate(self.gauntlet):
             self.check_stop()
-            log = run_verbose(me, f"evo_{self.name}_g{gi}", per,
-                              120 + 30 * per)
+            log = self._sim_verbose(me, f"opp_{self.name}_g{gi}", per)
             games = parse_games(log, me, self.lock_names)
             all_games += games
             self.emit("baseline_part",
@@ -255,19 +287,42 @@ class Evolution:
         return stats
 
     def generation(self, gen: int):
-        gauntlet_names = [f"evo_{self.name}_g{gi}"
+        gauntlet_names = [f"opp_{self.name}_g{gi}"
                           for gi in range(len(self.gauntlet))]
-        swaps, _pres = self.imp.propose(self.deck, self.candidates * 2,
-                                        self.locks, version="auto")
-        swaps = [(c, a, q) for c, a, q in swaps
-                 if (self.imp.meta[c]["name"], self.imp.meta[a]["name"])
-                 not in self.tried and self.imp.playable(a)][:self.candidates]
+        # three proposal sources, interleaved so each generation races a
+        # mix: archetype/brew neighbors, lock-card synergy partners, and
+        # quantity mutations (duplicate-up of promising 1-2-ofs)
+        base, _pres = self.imp.propose(self.deck, self.candidates * 3,
+                                       self.locks, version="auto")
+        pool = [(c, a, q, "proposer") for c, a, q in base]
+        pool += self._extra_swaps()
+        seen_pairs = set()
+        swaps = []
+        for c, a, q, src in pool:
+            key = (self.imp.meta[c]["name"], self.imp.meta[a]["name"])
+            if key in self.tried or key in seen_pairs \
+                    or not self.imp.playable(a):
+                continue
+            seen_pairs.add(key)
+            swaps.append((c, a, q, src))
+        # interleave sources for diversity
+        by_src = {}
+        for s in swaps:
+            by_src.setdefault(s[3], []).append(s)
+        ordered = []
+        while len(ordered) < self.candidates and any(by_src.values()):
+            for src in ("proposer", "lock-partner", "dup-up"):
+                if by_src.get(src):
+                    ordered.append(by_src[src].pop(0))
+                    if len(ordered) >= self.candidates:
+                        break
+        swaps = ordered
         if not swaps:
             self.emit("done", "proposer exhausted")
             return False
 
         variants = {}
-        for vi, (cut, add, qty) in enumerate(swaps):
+        for vi, (cut, add, qty, src) in enumerate(swaps):
             vname = f"evo_{self.name}_c{vi}"
             newdeck = dict(self.deck)
             take = min(qty, newdeck[cut])
@@ -278,7 +333,7 @@ class Evolution:
             variants[vname] = (cut, add, take, newdeck)
             write_dck(vname, self.pairs(newdeck))
             self.emit("candidate",
-                      f"-{take} {self.imp.meta[cut]['name']}"
+                      f"[{src}] -{take} {self.imp.meta[cut]['name']}"
                       f" +{take} {self.imp.meta[add]['name']}", gen=gen)
 
         # stage 1: quick screen vs gauntlet
@@ -287,8 +342,7 @@ class Evolution:
             self.check_stop()
             w = n = 0
             for g in gauntlet_names:
-                wi, ni = run_match(vname, g, self.stage1_games,
-                                   90 + 30 * self.stage1_games)
+                wi, ni = self._sim_quiet(vname, g, self.stage1_games)
                 w, n = w + wi, n + ni
             s1[vname] = (w, n)
             self.emit("stage1", f"{vname}: {w}/{n}")
@@ -300,8 +354,7 @@ class Evolution:
             self.check_stop()
             w = n = 0
             for g in gauntlet_names:
-                wi, ni = run_match(vname, g, self.stage2_games,
-                                   90 + 30 * self.stage2_games)
+                wi, ni = self._sim_quiet(vname, g, self.stage2_games)
                 w, n = w + wi, n + ni
             s2[vname] = (w, n)
             p, half = ci95(w, n)
@@ -309,7 +362,7 @@ class Evolution:
 
         best = max(s2, key=lambda v: s2[v][0] / max(1, s2[v][1]))
         cut, add, take, newdeck = variants[best]
-        for c2, a2, _q in swaps:
+        for c2, a2, _q, _src in swaps:
             self.tried.add((self.imp.meta[c2]["name"], self.imp.meta[a2]["name"]))
         bw, bn = s2[best]
         bp = bw / max(1, bn)
@@ -346,8 +399,104 @@ class Evolution:
         (OUT / f"evolve2-{self.name}.json").write_text(
             json.dumps(self.snapshot(), indent=1))
 
+    # -- lock-aware proposals + quantity mutations -----------------------
+    def _deck_identity(self):
+        ident = set()
+        for r in self.deck:
+            card = self.imp.db.get(self.imp.meta[r]["name"])
+            if card is not None:
+                ident |= set(card.color_identity)
+        return ident
+
+    def _lock_partner_adds(self, k: int):
+        """Cards ranked by trained synergy with the LOCKED cards
+        specifically (pair-synergy + combo head), format-legal, within
+        the deck's colors, Forge-playable, not already in the deck."""
+        try:
+            emb = np.load(OUT / "embeddings.npy").astype(np.float32)
+            pm = np.load(OUT / "pair_model.npz")
+            cm = np.load(OUT / "combo_model.npz")
+        except OSError:
+            return []
+        P, Q = emb @ pm["A"].T, emb @ pm["B"].T
+        Pc, Qc = emb @ cm["A"].T, emb @ cm["B"].T
+        score = np.zeros(len(emb), np.float32)
+        n_locks = 0
+        for ln in self.lock_names:
+            r = self.imp.name_to_row.get(norm(ln))
+            if r is None:
+                continue
+            n_locks += 1
+            score += 0.6 * (P[r] @ Q.T + Q[r] @ P.T)
+            score += 0.4 * (Pc[r] @ Qc.T + Qc[r] @ Pc.T)
+        if not n_locks:
+            return []
+        ident = self._deck_identity()
+        out = []
+        for i in np.argsort(-score):
+            i = int(i)
+            m = self.imp.meta[i]
+            if i in self.deck or self.imp.is_land[i]:
+                continue
+            card = self.imp.db.get(m["name"])
+            if card is None or not self.imp.legal(i) \
+                    or not self.imp.playable(i):
+                continue
+            if not set(card.color_identity) <= ident:
+                continue
+            out.append(i)
+            if len(out) >= k:
+                break
+        return out
+
+    def _cut_candidates(self, n: int):
+        """Lowest-value nonland, non-locked rows (centroid + presence)."""
+        nonland, centroid, _s, _nb, presence = self.imp._neighborhood(
+            self.deck, None)
+        max_p = max(presence.values()) if presence else 1.0
+
+        def cut_score(r):
+            return (float(self.imp.vecs[r] @ centroid)
+                    + presence.get(r, 0) / max_p)
+        rows = [r for r in nonland
+                if norm(self.imp.meta[r]["name"]) not in self.locks]
+        return sorted(rows, key=cut_score)[:n]
+
+    def _extra_swaps(self):
+        """Lock-partner swaps + duplicate-up quantity mutations."""
+        cuts = self._cut_candidates(6)
+        swaps = []
+        # (a) lock partners in, worst cards out
+        partners = self._lock_partner_adds(8)
+        for ci, add in enumerate(partners):
+            cut = cuts[ci % len(cuts)] if cuts else None
+            if cut is None:
+                break
+            qty = min(self.deck[cut], 3)
+            swaps.append((cut, add, qty, "lock-partner"))
+        # (b) duplicate-up: raise counts of promising 1-2-ofs
+        low = [r for r, q in self.deck.items()
+               if q <= 2 and not self.imp.is_land[r]
+               and norm(self.imp.meta[r]["name"]) not in self.locks]
+        for r in low:
+            cut = next((c for c in cuts if c != r
+                        and self.deck.get(c, 0) >= 2), None)
+            if cut is None:
+                continue
+            qty = min(2, 4 - self.deck[r], self.deck[cut])
+            if qty > 0:
+                swaps.append((cut, r, qty, "dup-up"))
+        return swaps
+
     def run(self):
         try:
+            if self.policy is not None:
+                import pilot_bridge
+                pilot_bridge.tainted_policy = self.policy
+                self._srv = pilot_bridge.start_server(0)
+                self.policy_port = self._srv.server_address[1]
+                self.emit("pilot", f"pilot policy active on port "
+                          f"{self.policy_port} for players evo_{self.name}*")
             if self.ai_blind:
                 self.emit("warning",
                           "Forge's AI is forbidden from playing: "
@@ -379,4 +528,7 @@ class Evolution:
         except Exception as exc:                 # surfaced to the UI
             self.emit("error", f"{type(exc).__name__}: {exc}")
         finally:
+            if getattr(self, "_srv", None) is not None:
+                self._srv.shutdown()
+                self._srv.server_close()
             self.save()
