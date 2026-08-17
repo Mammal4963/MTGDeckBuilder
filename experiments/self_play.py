@@ -53,12 +53,29 @@ class RecordingPolicy:
 
 
 def game_lock_frac(decisions, locks):
+    """Fraction of locked cards the pilot actually deployed this game.
+
+    Permanents count via battlefield presence; spells (a sorcery lock
+    like Random Encounter never touches the battlefield) count via the
+    cast decision the pilot took - forced candidate or ok'd proposal.
+    """
     seen = set()
-    for state, _r in decisions:
+    for state, reply in decisions:
         for c in state.get("my_battlefield", []):
             n = c["n"] if isinstance(c, dict) else c
             if n in locks:
                 seen.add(n)
+        if state.get("kind") == "cast":
+            chosen = None
+            if reply.startswith("force\t"):
+                idx = int(reply.split("\t")[1])
+                chosen = next((c["card"] for c in state.get("candidates", [])
+                               if c["i"] == idx), None)
+            elif reply == "ok":
+                proposed = state.get("proposed", [])
+                chosen = proposed[0] if proposed else None
+            if chosen in locks:
+                seen.add(chosen)
     return len(seen) / max(1, len(locks))
 
 
@@ -120,6 +137,40 @@ def reinforce_update(model_policy, torch, batch, baseline, lr_opt):
                             -torch.nn.functional
                             .binary_cross_entropy_with_logits(
                                 lg, torch.tensor(y)))
+                    if not logps:
+                        continue
+                    logp = torch.stack(logps).sum()
+                elif kind == "blockers" and reply.startswith("block\t"):
+                    attackers = state.get("attackers", [])
+                    if not attackers:
+                        continue
+                    hs, h, ids = model_policy.encode(state)
+                    a_ids = [a["id"] for a in attackers]
+                    a_tok = {x[1]: k for k, x in enumerate(ids)
+                             if x is not None and x[1] in set(a_ids)}
+                    if len(a_tok) != len(a_ids):
+                        continue
+                    chosen = {}
+                    for pair in reply[6:].split(","):
+                        if ":" in pair:
+                            b, a = pair.split(":")
+                            chosen[int(b)] = int(a)
+                    logps = []
+                    for k, x in enumerate(ids):
+                        if x is None:
+                            continue
+                        side, cid, c = x
+                        if side != "my" or not c.get("cr") \
+                                or c.get("tapped"):
+                            continue
+                        scores = torch.cat(
+                            [model.blk_head(torch.cat(
+                                [hs, h[k], h[a_tok[a]]])) for a in a_ids]
+                            + [model.noblk_head(torch.cat([hs, h[k]]))])
+                        action = (a_ids.index(chosen[cid])
+                                  if cid in chosen else len(a_ids))
+                        logps.append(
+                            torch.log_softmax(scores, dim=0)[action])
                     if not logps:
                         continue
                     logp = torch.stack(logps).sum()

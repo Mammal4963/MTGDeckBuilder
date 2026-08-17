@@ -96,10 +96,11 @@ class ModelPolicy:
     Combat-object write path in Java).
     """
 
-    def __init__(self):
+    def __init__(self, ckpt=None):
         import torch
         import train_pilot2 as tp
         self.torch = torch
+        self.ckpt = ckpt          # None -> the shared BC checkpoint
         self.feat = tp.Featurizer()
         # rebuild the architecture exactly as trained
         import torch.nn as nn
@@ -131,8 +132,9 @@ class ModelPolicy:
                                                 nn.Linear(D, 1))
 
         self.model = Pilot()
-        self.model.load_state_dict(torch.load(
-            Path(__file__).resolve().parent / "output" / "pilot2.pt"))
+        path = self.ckpt or (Path(__file__).resolve().parent
+                             / "output" / "pilot2.pt")
+        self.model.load_state_dict(torch.load(path))
         self.model.eval()
 
     def encode(self, state: dict):
