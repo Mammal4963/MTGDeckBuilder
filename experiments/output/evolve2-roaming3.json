@@ -11,16 +11,16 @@
    4
   ],
   [
-   "Chimil, the Inner Sun",
-   1
-  ],
-  [
    "Coliseum Behemoth",
    1
   ],
   [
    "Devastating Onslaught",
    1
+  ],
+  [
+   "Earthbender Ascension",
+   3
   ],
   [
    "Forest",
@@ -33,10 +33,6 @@
   [
    "Mountain",
    9
-  ],
-  [
-   "Nurturing Bristleback",
-   3
   ],
   [
    "Overlord of the Boilerbilges",
@@ -57,6 +53,10 @@
   [
    "Roaming Throne",
    4
+  ],
+  [
+   "Shared Roots",
+   1
   ],
   [
    "Springbloom Druid",
@@ -86,20 +86,101 @@
  ],
  "baseline": {
   "games": 24,
-  "wins": 14,
-  "avg_turns": 7.5,
+  "wins": 13,
+  "avg_turns": 7.7,
   "avg_lands_t3": 2.0,
-  "avg_lands_t5": 3.0,
+  "avg_lands_t5": 2.79,
   "mulligan_rate": 0.17,
   "tracked": {
    "Random Encounter": {
-    "played_in": "15/24",
-    "avg_casts": 0.67,
+    "played_in": "14/24",
+    "avg_casts": 0.62,
     "median_first_turn": 6
    }
   },
-  "winrate": 0.583,
-  "ci": 0.197
+  "winrate": 0.542,
+  "ci": 0.199
  },
- "history": []
+ "history": [
+  {
+   "gen": 1,
+   "swap": "-1 Chimil, the Inner Sun +1 The Fire Crystal",
+   "stage2": [
+    20,
+    36
+   ],
+   "vs_baseline": -0.027,
+   "accepted": false
+  },
+  {
+   "gen": 2,
+   "swap": "-3 Nurturing Bristleback +3 Earthbender Ascension",
+   "stage2": [
+    23,
+    36
+   ],
+   "vs_baseline": 0.056,
+   "accepted": true
+  },
+  {
+   "gen": 3,
+   "swap": "-2 Springbloom Druid +2 Icetill Explorer",
+   "stage2": [
+    17,
+    36
+   ],
+   "vs_baseline": 0.014,
+   "accepted": false
+  },
+  {
+   "gen": 4,
+   "swap": "-1 Coliseum Behemoth +1 Esper Origins // Summon: Esper Maduin",
+   "stage2": [
+    17,
+    36
+   ],
+   "vs_baseline": 0.014,
+   "accepted": false
+  },
+  {
+   "gen": 5,
+   "swap": "-1 Chimil, the Inner Sun +1 Shared Roots",
+   "stage2": [
+    21,
+    36
+   ],
+   "vs_baseline": 0.125,
+   "accepted": true
+  },
+  {
+   "gen": 6,
+   "swap": "-2 Springbloom Druid +2 Shared Roots",
+   "stage2": [
+    18,
+    36
+   ],
+   "vs_baseline": -0.042,
+   "accepted": false
+  },
+  {
+   "gen": 7,
+   "swap": "-4 Breaching Dragonstorm +4 Meltstrider's Resolve",
+   "stage2": [
+    16,
+    36
+   ],
+   "vs_baseline": -0.098,
+   "accepted": false
+  },
+  {
+   "gen": 8,
+   "swap": "-3 Roaming Throne +3 The Misty Mountains Cold",
+   "stage2": [
+    15,
+    36
+   ],
+   "vs_baseline": -0.125,
+   "accepted": false
+  }
+ ]
 }
