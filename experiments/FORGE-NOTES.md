@@ -339,6 +339,30 @@ creatures and attacks wins first. User called it immediately. v2:
 - Served to the browser by experiments/evolve_server.py (local
   companion; Forge can't run in a browser) driving evolver.html.
 
+## Validation catches the evolver's false positives (2026-08-17)
+
+Roaming Encounters v3 run (pilot-in-the-loop) accepted two swaps at
++6% and +12% on 36-game stage-2 races. Validation at 96 games/arm vs
+the same gauntlet, both lists piloted identically:
+
+    ORIGINAL: 52/96 = 54% +-10%
+    EVOLVED:  41/96 = 43% +-10%     (h2h: evolved 44% +-14%)
+
+Both accepts were NOISE - the user's original list is the better
+build, by ~11 points. Predicted by our own variance data (builtin arm
+swung 58% -> 71% between identical n=24 runs): a 36-game race has
++-16% CI and a +3% margin gate cannot resolve single-swap deltas.
+The user's domain read also beat the stats: Nurturing Bristleback's
+Forestcycling is hand-smoothing the cast-count stats never see (and
+the AI likely never cycles it).
+
+Fix for the evolver: confirmation stage before accept - a candidate
+that clears the race must then beat the incumbent at ~100 games
+(or SPRT sequential testing: cheap for big effects, exhaustive for
+small ones). Race budgets screen; they must never be the verdict.
+This validation IS the system working - false positives caught
+before the user sleeved cards.
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:
