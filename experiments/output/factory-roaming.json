@@ -18,6 +18,76 @@
    "lock_frac": 0.438,
    "eps": 0.5,
    "loss": -0.0403
+  },
+  {
+   "iter": 2,
+   "winrate": 0.062,
+   "lock_frac": 0.312,
+   "eps": 0.45,
+   "loss": -0.2337
+  },
+  {
+   "iter": 3,
+   "winrate": 0.188,
+   "lock_frac": 0.25,
+   "eps": 0.4,
+   "loss": 0.0798
+  },
+  {
+   "iter": 4,
+   "winrate": 0.062,
+   "lock_frac": 0.375,
+   "eps": 0.35,
+   "loss": -0.0929
+  },
+  {
+   "iter": 5,
+   "winrate": 0.25,
+   "lock_frac": 0.5,
+   "eps": 0.3,
+   "loss": 0.2989
+  },
+  {
+   "iter": 6,
+   "winrate": 0.188,
+   "lock_frac": 0.312,
+   "eps": 0.25,
+   "loss": 0.0907
+  },
+  {
+   "iter": 7,
+   "winrate": 0.125,
+   "lock_frac": 0.438,
+   "eps": 0.2,
+   "loss": 0.0507
+  },
+  {
+   "iter": 8,
+   "winrate": 0.25,
+   "lock_frac": 0.312,
+   "eps": 0.15,
+   "loss": 0.3387
+  },
+  {
+   "iter": 9,
+   "winrate": 0.062,
+   "lock_frac": 0.312,
+   "eps": 0.1,
+   "loss": -0.1355
+  },
+  {
+   "iter": 10,
+   "winrate": 0.062,
+   "lock_frac": 0.188,
+   "eps": 0.05,
+   "loss": 0.0505
+  },
+  {
+   "iter": 11,
+   "winrate": 0.125,
+   "lock_frac": 0.0,
+   "eps": 0.0,
+   "loss": 0.0506
   }
  ],
  "validation": null,
