@@ -21,3 +21,4 @@ experiments/output/*.log
 !experiments/output/pair_model.npz
 !experiments/output/combo_model.npz
 experiments/output/pilot_dataset.jsonl
+experiments/output/pilot-*.pt
