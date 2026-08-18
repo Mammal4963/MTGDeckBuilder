@@ -90,6 +90,31 @@
    "loss": 0.0506
   }
  ],
- "validation": null,
+ "validation": {
+  "arms": [
+   {
+    "label": "builtin",
+    "wins": 25,
+    "games": 96,
+    "winrate": 0.26,
+    "ci": 0.088
+   },
+   {
+    "label": "bc",
+    "wins": 6,
+    "games": 96,
+    "winrate": 0.062,
+    "ci": 0.048
+   },
+   {
+    "label": "tuned",
+    "wins": 3,
+    "games": 96,
+    "winrate": 0.031,
+    "ci": 0.035
+   }
+  ],
+  "promoted": false
+ },
  "gauntlet_size": 3
 }
