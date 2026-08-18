@@ -199,12 +199,14 @@ def main():
     # Downsample pass decisions to 4x the act count: balances the cast
     # head and keeps CPU training tractable. Eval reweights not needed -
     # we report act-only accuracy separately.
+    import os
     acts = [x for x in cast if x[3] != len(x[2])]
     passes = [x for x in cast if x[3] == len(x[2])]
     RNG.shuffle(acts)
     RNG.shuffle(passes)
-    acts = acts[:8000]                     # CPU-tractable cap
-    cast = acts + passes[:4 * len(acts)]
+    acts = acts[:int(os.environ.get("TP2_ACT_CAP", 8000))]
+    ratio = int(os.environ.get("TP2_PASS_RATIO", 4))
+    cast = acts + passes[:ratio * len(acts)]
     print(f"after caps: {len(cast)} cast samples ({len(acts)} act)")
 
     sdim = feat.scalars({}).shape[0]
@@ -300,7 +302,8 @@ def main():
         model.train()
         return res
 
-    for epoch in range(3):
+    import os as _os
+    for epoch in range(int(_os.environ.get("TP2_EPOCHS", 3))):
         jobs = ([("c", x) for x in cast_tr] + [("a", x) for x in atk_tr]
                 + [("b", x) for x in blk_tr])
         RNG.shuffle(jobs)
