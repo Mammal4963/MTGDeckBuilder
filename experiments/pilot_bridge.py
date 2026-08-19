@@ -232,9 +232,15 @@ class ModelPolicy:
         return "ok"
 
 
+_POLICY_ERRORS = {"n": 0}
+
+
 class PolicyHandler(socketserver.StreamRequestHandler):
     def handle(self):
         for line in self.rfile:
+            # NEVER let this thread die: a dead handler turns every
+            # Java-side decision into a 3s socket timeout + fallback,
+            # silently measuring the builtin AI at 1/30th speed.
             try:
                 state = json.loads(line.decode("utf-8"))
                 reply = tainted_policy(state)
@@ -248,9 +254,19 @@ class PolicyHandler(socketserver.StreamRequestHandler):
                     COLLECT_FILE["fh"].write(
                         json.dumps(state, separators=(",", ":")) + "\n")
                     COLLECT_FILE["fh"].flush()
-            except (json.JSONDecodeError, KeyError, ValueError):
+            except Exception:
                 reply = "ok"
-            self.wfile.write((reply + "\n").encode("utf-8"))
+                if _POLICY_ERRORS["n"] < 5:
+                    _POLICY_ERRORS["n"] += 1
+                    import traceback
+                    with open("/tmp/claude-0/-home-user-MTGDeckBuilder/"
+                              "6e07b8e8-48d2-56ad-84cc-9478073b7720/"
+                              "scratchpad/policy_errors.log", "a") as f:
+                        f.write(traceback.format_exc() + "\n---\n")
+            try:
+                self.wfile.write((reply + "\n").encode("utf-8"))
+            except OSError:
+                return
 
 
 def start_server(port: int) -> socketserver.ThreadingTCPServer:
