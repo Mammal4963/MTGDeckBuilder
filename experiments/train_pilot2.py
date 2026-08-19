@@ -211,8 +211,17 @@ def load_dataset(feat: Featurizer):
 
 
 def main():
+    import os
     import torch
     import torch.nn as nn
+    sidecar = OUT / "pilot2_train_state.json"
+    target_epochs = int(os.environ.get("TP2_EPOCHS", 3))
+    done = 0
+    if os.environ.get("TP2_RESUME") == "1" and sidecar.exists():
+        done = json.loads(sidecar.read_text()).get("epochs_done", 0)
+        if done >= target_epochs and (OUT / "pilot2.pt").exists():
+            print(f"already trained ({done}/{target_epochs} epochs) - skip")
+            return
     torch.manual_seed(0)
     torch.set_num_threads(4)
 
@@ -274,6 +283,9 @@ def main():
             return torch.cat(scores)
 
     model = Pilot()
+    if done > 0 and (OUT / "pilot2.pt").exists():
+        model.load_state_dict(torch.load(OUT / "pilot2.pt"))
+        print(f"resumed weights at epoch {done}")
     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
     tt = lambda x: torch.from_numpy(np.ascontiguousarray(x))
 
@@ -328,8 +340,7 @@ def main():
         model.train()
         return res
 
-    import os as _os
-    for epoch in range(int(_os.environ.get("TP2_EPOCHS", 3))):
+    for epoch in range(done, target_epochs):
         jobs = ([("c", x) for x in cast_tr] + [("a", x) for x in atk_tr]
                 + [("b", x) for x in blk_tr])
         RNG.shuffle(jobs)
@@ -367,6 +378,9 @@ def main():
         res = eval_all()
         print(f"epoch {epoch}: loss {total / max(1, len(jobs)):.4f} | "
               + " ".join(f"{k} {v:.0%}" for k, v in res.items()), flush=True)
+        # restart-proof: checkpoint every epoch + progress sidecar
+        torch.save(model.state_dict(), OUT / "pilot2.pt")
+        sidecar.write_text(json.dumps({"epochs_done": epoch + 1}))
 
     torch.save(model.state_dict(), OUT / "pilot2.pt")
     res = eval_all()

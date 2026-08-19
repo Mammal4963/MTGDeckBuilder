@@ -93,11 +93,15 @@ def retrain(log) -> str:
     return tail[-2] if len(tail) >= 2 else ""
 
 
-def validate(val_games: int, log) -> dict:
+def validate(val_games: int, log, existing: dict | None = None,
+             on_arm=None) -> dict:
     gauntlet = ["fac_g0", "fac_g1", "fac_g2"]
     per = max(4, val_games // len(gauntlet))
-    arms = {}
+    arms = dict(existing or {})
     for label, use_policy in (("builtin", False), ("clone", True)):
+        if label in arms:
+            log(f"[validate] {label}: already measured - skip")
+            continue
         if use_policy:
             pilot_bridge.tainted_policy = ModelPolicy()   # fresh reload
             srv = start_server(0)
@@ -121,6 +125,8 @@ def validate(val_games: int, log) -> dict:
         arms[label] = {"wins": w, "games": n,
                        "winrate": round(p, 3), "ci": round(half, 3)}
         log(f"[validate] {label}: {w}/{n} = {p:.0%} ±{half:.0%}")
+        if on_arm:
+            on_arm(arms)                 # journal each arm immediately
     return arms
 
 
@@ -133,8 +139,9 @@ def main():
     ap.add_argument("--temperature", type=float, default=0.25)
     args = ap.parse_args()
 
-    journal = {"rounds": [], "validation": None}
     jpath = OUT / "dagger.json"
+    journal = (json.loads(jpath.read_text()) if jpath.exists()
+               else {"rounds": [], "validation": None})
 
     def log(msg):
         print(msg, flush=True)
@@ -152,7 +159,14 @@ def main():
         save()
 
     log("=== validation: clone vs builtin, same deck, same gauntlet ===")
-    journal["validation"] = validate(args.val_games, log)
+
+    def on_arm(arms):
+        journal["validation"] = arms
+        save()
+
+    journal["validation"] = validate(args.val_games, log,
+                                     existing=journal.get("validation"),
+                                     on_arm=on_arm)
     save()
     b, c = journal["validation"]["builtin"], journal["validation"]["clone"]
     log(f"[verdict] clone {c['winrate']:.0%} vs builtin {b['winrate']:.0%}"
