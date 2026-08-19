@@ -340,12 +340,24 @@ def main():
         model.train()
         return res
 
+    steps_done = 0
+    if os.environ.get("TP2_RESUME") == "1" and sidecar.exists():
+        steps_done = json.loads(sidecar.read_text()).get("steps_done", 0)
     for epoch in range(done, target_epochs):
         jobs = ([("c", x) for x in cast_tr] + [("a", x) for x in atk_tr]
                 + [("b", x) for x in blk_tr])
-        RNG.shuffle(jobs)
+        # per-epoch deterministic shuffle so a mid-epoch resume sees the
+        # same order and can skip already-trained steps
+        np.random.default_rng(1000 + epoch).shuffle(jobs)
         total = 0.0
-        for kind, x in jobs:
+        for ji, (kind, x) in enumerate(jobs):
+            if ji < steps_done:
+                continue
+            if ji % 2000 == 1999:
+                # intra-epoch checkpoint: restarts cost minutes, not epochs
+                torch.save(model.state_dict(), OUT / "pilot2.pt")
+                sidecar.write_text(json.dumps(
+                    {"epochs_done": epoch, "steps_done": ji + 1}))
             if kind == "c":
                 toks, sc, cvs, label = x
                 hs, _h = model.encode(tt(toks), tt(sc))
@@ -380,7 +392,9 @@ def main():
               + " ".join(f"{k} {v:.0%}" for k, v in res.items()), flush=True)
         # restart-proof: checkpoint every epoch + progress sidecar
         torch.save(model.state_dict(), OUT / "pilot2.pt")
-        sidecar.write_text(json.dumps({"epochs_done": epoch + 1}))
+        sidecar.write_text(json.dumps(
+            {"epochs_done": epoch + 1, "steps_done": 0}))
+        steps_done = 0
 
     torch.save(model.state_dict(), OUT / "pilot2.pt")
     res = eval_all()
