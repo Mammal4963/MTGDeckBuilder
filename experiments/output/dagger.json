@@ -6,6 +6,11 @@
    "games": 96,
    "winrate": 0.219,
    "ci": 0.083
+  },
+  "_clone_partial": {
+   "wins": 4,
+   "games": 16,
+   "jobs": 2
   }
  }
 }
