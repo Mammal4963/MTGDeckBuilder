@@ -1,0 +1,11 @@
+{
+ "rounds": [],
+ "validation": {
+  "builtin": {
+   "wins": 21,
+   "games": 96,
+   "winrate": 0.219,
+   "ci": 0.083
+  }
+ }
+}
