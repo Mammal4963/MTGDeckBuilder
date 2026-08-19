@@ -108,22 +108,36 @@ def validate(val_games: int, log, existing: dict | None = None,
             port = srv.server_address[1]
         else:
             srv, port = None, None
-        w = n = 0
+        # sub-arm chunks: a whole arm can outlive a container recycle
+        # window, so bank progress after every ~8-game job and resume
+        pkey = f"_{label}_partial"
+        part = arms.get(pkey, {"wins": 0, "games": 0, "jobs": 0})
+        chunks_per_g = 4
+        per_chunk = max(2, per // chunks_per_g)
+        jobs = [g for g in gauntlet for _c in range(chunks_per_g)]
         try:
-            for g in gauntlet:
-                out = run_bridged("fac_roaming", g, per, 90 + 40 * per,
-                                  port, player_filter="fac_roaming",
-                                  quiet=True)
-                w += len(re.findall(
+            for ji, g in enumerate(jobs):
+                if ji < part["jobs"]:
+                    continue
+                out = run_bridged("fac_roaming", g, per_chunk,
+                                  90 + 40 * per_chunk, port,
+                                  player_filter="fac_roaming", quiet=True)
+                part["wins"] += len(re.findall(
                     r"Game Result.*Ai\(1\)-fac_roaming has won", out))
-                n += len(re.findall(r"Game Result", out))
+                part["games"] += len(re.findall(r"Game Result", out))
+                part["jobs"] = ji + 1
+                arms[pkey] = part
+                if on_arm:
+                    on_arm(arms)
         finally:
             if srv:
                 srv.shutdown()
                 srv.server_close()
+        w, n = part["wins"], part["games"]
         p, half = ci95(w, n)
         arms[label] = {"wins": w, "games": n,
                        "winrate": round(p, 3), "ci": round(half, 3)}
+        arms.pop(pkey, None)
         log(f"[validate] {label}: {w}/{n} = {p:.0%} ±{half:.0%}")
         if on_arm:
             on_arm(arms)                 # journal each arm immediately
