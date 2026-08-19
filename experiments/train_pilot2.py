@@ -120,10 +120,36 @@ class Featurizer:
 
 
 def load_dataset(feat: Featurizer):
-    """-> dict of samples per head."""
+    """-> samples per head. Streams with bounded memory: ALL combat
+    lines, ALL cast lines in the file's tail (recent DAgger rounds -
+    the on-policy data that matters most), and a reservoir sample of
+    older cast lines. Featurizing every line of a 300k+ dataset at
+    once flirts with OOM on small boxes."""
+    import os
+    path = OUT / "pilot_dataset.jsonl"
+    total = sum(1 for _ in open(path, "rb"))
+    tail_n = int(os.environ.get("TP2_TAIL", 40000))
+    old_cap = int(os.environ.get("TP2_OLD_CAST", 70000))
+    tail_start = max(0, total - tail_n)
+    rest, old_cast, old_seen = [], [], 0
+    with open(path) as fh:
+        for li, line in enumerate(fh):
+            is_combat = '"kind":"attackers"' in line \
+                or '"kind":"blockers"' in line
+            if is_combat or li >= tail_start:
+                rest.append(line)
+            else:
+                old_seen += 1
+                if len(old_cast) < old_cap:
+                    old_cast.append(line)
+                elif RNG.random() < old_cap / old_seen:
+                    old_cast[int(RNG.integers(0, old_cap))] = line
+    kept = old_cast + rest
+    print(f"loaded {len(kept)}/{total} lines "
+          f"(tail {tail_n} + old-cast cap {old_cap} + all combat)")
     cast, atk, blk = [], [], []
-    with open(OUT / "pilot_dataset.jsonl") as fh:
-        for line in fh:
+    if True:
+        for line in kept:
             try:
                 s = json.loads(line)
             except json.JSONDecodeError:
