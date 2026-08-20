@@ -69,16 +69,23 @@ def main():
         srv = start_server(0)
         port = srv.server_address[1]
         try:
+            CH = 5   # sub-chunk: slow matchups can outlive a recycle window
             for pi, (a, b) in enumerate(PAIRS):
                 if pi < state["pairs_done"]:
                     continue
-                out = run_bridged(a, b, per, 90 + 40 * per, port,
-                                  player_filter=a, quiet=True)
-                done = len(re.findall(r"Game Result", out))
-                state["games_flown"] += done
+                nch = (per + CH - 1) // CH
+                for ci in range(state.get("chunks_done", 0), nch):
+                    n = min(CH, per - ci * CH)
+                    out = run_bridged(a, b, n, 90 + 40 * n, port,
+                                      player_filter=a, quiet=True)
+                    state["games_flown"] += len(
+                        re.findall(r"Game Result", out))
+                    state["chunks_done"] = ci + 1
+                    save()
                 state["pairs_done"] = pi + 1
+                state["chunks_done"] = 0
                 save()
-                log(f"[fly] {a} vs {b}: {done} games "
+                log(f"[fly] {a} vs {b}: done "
                     f"({state['games_flown']} total)")
         finally:
             COLLECT_FILE["fh"].close()
