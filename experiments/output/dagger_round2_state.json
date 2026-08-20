@@ -1,6 +1,6 @@
 {
- "pairs_done": 6,
- "games_flown": 170,
- "retrain": null,
- "chunks_done": 4
+ "pairs_done": 8,
+ "games_flown": 200,
+ "retrain": "started",
+ "chunks_done": 0
 }
