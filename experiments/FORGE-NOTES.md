@@ -363,6 +363,30 @@ small ones). Race budgets screen; they must never be the verdict.
 This validation IS the system working - false positives caught
 before the user sleeved cards.
 
+## DAgger closes the cloning gap (2026-08-19)
+
+Pre-DAgger the clone collapsed from compounding error: 6% winrate vs
+its teacher's 26% (identical deck, identical gauntlet). One DAgger
+round - 196 clone-flown games with free teacher labels (`proposed` +
+combat choices are in every bridge message), retrain on the
+aggregate - and the 96-game/arm validation reads:
+
+    builtin: 21/96 = 22% +-8%
+    clone:   24/96 = 25% +-9%
+
+The DAgger'd clone plays AT PARITY with the built-in AI (difference
+within noise). Training metrics on the harder mixed distribution:
+cast 87% / act-only 57%, attackers 72.7% F1, blockers 54%. Parity is
+the victory condition for cloning; going BEYOND the teacher is
+self-play's job, now standing on a base that actually works.
+
+Engineering that made it converge on ~hourly-recycled containers:
+per-epoch AND per-2000-step training checkpoints, per-8-game-chunk
+validation banking, append-only dataset, a self-healing scheduled
+check-in chain, and a policy handler that can never die (a dead
+handler had silently degraded games to 3s-timeout builtin fallbacks -
+diagnosed via near-idle JVM CPU, fixed with catch-all + error log).
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:
