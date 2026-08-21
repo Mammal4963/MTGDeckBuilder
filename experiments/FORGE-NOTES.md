@@ -387,6 +387,36 @@ check-in chain, and a policy handler that can never die (a dead
 handler had silently degraded games to 3s-timeout builtin fallbacks -
 diagnosed via near-idle JVM CPU, fixed with catch-all + error log).
 
+## DAgger round 2: parity holds, still no separation (2026-08-21)
+
+Round 2 at the same scale (dagger_round.py: 200 clone-flown games ->
+dataset 382,984 lines -> 3-epoch retrain -> 96-game clone arm;
+builtin arm carried forward, it is model-independent):
+
+    builtin:        21/96 = 22% +-8%
+    clone round 1:  24/96 = 25% +-9%
+    clone round 2:  25/96 = 26% +-9%
+
+Honest read: round 2 is statistically indistinguishable from both the
+builtin AI and round 1 - parity is CONFIRMED at a second independent
+sample, not improved on. That is the expected shape: DAgger fixes
+distribution shift, and once the clone is on-distribution, more
+imitation of the same teacher converges to the teacher, not past it.
+Training metrics did move (act-only cast agreement 57.3% -> 61.2%,
+cast 87.8%, atk F1 70.1%, blk 53.1%), confirming the extra labels
+tightened imitation without changing game outcomes - the teacher's
+ceiling. Beyond-teacher requires self-play (RL), which is the 3090
+plan, warm-starting from this checkpoint.
+
+dagger_round.py is the reusable one-round driver: stage-banked
+(per-5-game fly chunks - a slow control mirror outlived the ~hourly
+recycle window and re-flew forever until chunked; sidecar-resumed
+retrain with a one-shot sidecar clear so the previous round's "done"
+state can't fast-skip it; per-chunk validation banking), safe to
+re-run after any interruption. Both rounds' final promotion step was
+killed by a recycle and hand-promoted from fully-banked chunks -
+if extending the driver, fold promotion into the banked state too.
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:

@@ -13,10 +13,11 @@
    "winrate": 0.219,
    "ci": 0.083
   },
-  "_clone_partial": {
-   "wins": 15,
-   "games": 72,
-   "jobs": 9
+  "clone": {
+   "wins": 25,
+   "games": 96,
+   "winrate": 0.26,
+   "ci": 0.088
   }
  },
  "history": [
