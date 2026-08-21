@@ -1,17 +1,34 @@
 {
- "rounds": [],
+ "rounds": [
+  {
+   "round": 2,
+   "games_flown": 200,
+   "final": "final: cast 87.8% cast_act 61.2% atk_acc 60.4% atk_f1 70.1% blk 53.1%"
+  }
+ ],
  "validation": {
   "builtin": {
    "wins": 21,
    "games": 96,
    "winrate": 0.219,
    "ci": 0.083
-  },
-  "clone": {
-   "wins": 24,
-   "games": 96,
-   "winrate": 0.25,
-   "ci": 0.087
   }
- }
+ },
+ "history": [
+  {
+   "round": 1,
+   "builtin": {
+    "wins": 21,
+    "games": 96,
+    "winrate": 0.219,
+    "ci": 0.083
+   },
+   "clone": {
+    "wins": 24,
+    "games": 96,
+    "winrate": 0.25,
+    "ci": 0.087
+   }
+  }
+ ]
 }

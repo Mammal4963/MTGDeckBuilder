@@ -1,6 +1,11 @@
 {
  "pairs_done": 8,
  "games_flown": 200,
- "retrain": "started",
- "chunks_done": 0
+ "retrain": "done",
+ "chunks_done": 0,
+ "retrain_final": [
+  "epoch 2: loss 0.0700 | cast 88% cast_act 61% atk_acc 60% atk_f1 70% blk 53%",
+  "final: cast 87.8% cast_act 61.2% atk_acc 60.4% atk_f1 70.1% blk 53.1%",
+  "wrote /home/user/MTGDeckBuilder/experiments/output/pilot2.pt"
+ ]
 }
