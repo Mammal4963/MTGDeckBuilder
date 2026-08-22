@@ -1,0 +1,19 @@
+{
+ "train": [
+  {
+   "iter": 0,
+   "winrate": 0.188,
+   "lock_frac": 0.25,
+   "eps": 0.5,
+   "loss": -0.0207
+  },
+  {
+   "iter": 1,
+   "winrate": 0.312,
+   "lock_frac": 0.562,
+   "eps": 0.46,
+   "loss": 0.7843
+  }
+ ],
+ "validation": {}
+}
