@@ -90,6 +90,13 @@
    "lock_frac": 0.125,
    "eps": 0.07,
    "loss": -0.0984
+  },
+  {
+   "iter": 13,
+   "winrate": 0.312,
+   "lock_frac": 0.0,
+   "eps": 0.04,
+   "loss": -0.055
   }
  ],
  "validation": {}
