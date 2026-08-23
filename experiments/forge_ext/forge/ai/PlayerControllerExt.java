@@ -46,6 +46,37 @@ public class PlayerControllerExt extends PlayerControllerAi {
 
     public PlayerControllerExt(Game game, Player p, LobbyPlayer lp) {
         super(game, p, lp);
+        // final-state feed: on game end, ship both players' REAL life
+        // totals (can be negative) so the archive's last frame shows
+        // the fatal blow. Reply is ignored; fail-open like everything.
+        if (System.getenv("FORGE_EXT_POLICY") != null) {
+            game.subscribeToEvents(new Object() {
+                @com.google.common.eventbus.Subscribe
+                public void onFinished(
+                        forge.game.event.GameEventGameFinished ev) {
+                    try {
+                        Player me = getPlayer();
+                        StringBuilder sb = new StringBuilder(256);
+                        sb.append("{\"kind\":\"game_end\"");
+                        sb.append(",\"turn\":").append(
+                                getGame().getPhaseHandler().getTurn());
+                        sb.append(",\"my_life\":").append(me.getLife());
+                        int oppLife = 0;
+                        boolean oppLost = false;
+                        for (Player o : me.getOpponents()) {
+                            oppLife = o.getLife();
+                            oppLost = o.hasLost();
+                        }
+                        sb.append(",\"opp_life\":").append(oppLife);
+                        sb.append(",\"i_lost\":").append(me.hasLost());
+                        sb.append(",\"opp_lost\":").append(oppLost)
+                          .append("}\n");
+                        roundTrip(sb.toString());
+                    } catch (Throwable ignored) {
+                    }
+                }
+            });
+        }
     }
 
     private static synchronized void ensureSocket() throws Exception {
@@ -299,6 +330,173 @@ public class PlayerControllerExt extends PlayerControllerAi {
             return def;
         } catch (Exception e) {
             return def;
+        }
+    }
+
+    /**
+     * Protocol v4: trigger/spell target selection through the bridge.
+     * Gated by FORGE_EXT_TARGETS=1 (in addition to FORGE_EXT_POLICY) so
+     * v3 pipelines are byte-identical without it. The built-in AI picks
+     * first; its choice ships as `proposed` (free behavior-cloning
+     * labels in observe mode). Reply "target\t&lt;i&gt;" retargets to
+     * candidate i; "ok"/null keeps the built-in choice. This rung
+     * covers single-target, non-divided abilities only.
+     */
+    @Override
+    public boolean chooseTargetsFor(SpellAbility sa) {
+        boolean ok = super.chooseTargetsFor(sa);
+        if (ok) {
+            maybeRetarget(sa);
+        }
+        return ok;
+    }
+
+    /**
+     * Triggered abilities never reach chooseTargetsFor: static triggers
+     * route through playTrigger, and normal ones land on the stack as a
+     * WrappedAbility whose resolve() calls playSpellAbilityNoStack -
+     * which picks targets (AiController.doTrigger) and RESOLVES in one
+     * breath. Override both, inserting the bridge between the AI's
+     * target choice and resolution.
+     */
+    @Override
+    public boolean playTrigger(Card host,
+            forge.game.trigger.WrappedAbility wrapper, boolean isMandatory) {
+        boolean play = super.playTrigger(host, wrapper, isMandatory);
+        if (play) {
+            try {
+                SpellAbility inner = wrapper.getWrappedAbility();
+                maybeRetarget(inner == null ? wrapper : inner);
+            } catch (Throwable t) {
+                if (System.getenv("FORGE_EXT_DEBUG") != null) {
+                    System.err.println("EXTDBG playTrigger EX " + t);
+                }
+            }
+        }
+        return play;
+    }
+
+    @Override
+    public void playSpellAbilityNoStack(SpellAbility sa, boolean mandatory) {
+        if (System.getenv("FORGE_EXT_POLICY") == null
+                || System.getenv("FORGE_EXT_TARGETS") == null) {
+            super.playSpellAbilityNoStack(sa, mandatory);
+            return;
+        }
+        // replicate super (doTrigger -> playNoStack), bridging between
+        if (mandatory) {
+            try {
+                getAi().doTrigger(sa, true);
+            } catch (Throwable t) {
+                if (System.getenv("FORGE_EXT_DEBUG") != null) {
+                    System.err.println("EXTDBG doTrigger EX " + t);
+                }
+            }
+        }
+        try {
+            maybeRetarget(sa);
+        } catch (Throwable ignored) {
+        }
+        ComputerUtil.playNoStack(getPlayer(), sa, getGame(), true);
+    }
+
+    private void maybeRetarget(SpellAbility sa) {
+        if (System.getenv("FORGE_EXT_POLICY") == null
+                || System.getenv("FORGE_EXT_TARGETS") == null) {
+            return;
+        }
+        boolean dbg = System.getenv("FORGE_EXT_DEBUG") != null;
+        try {
+            if (dbg) {
+                System.err.println("EXTDBG maybeRetarget cls="
+                        + sa.getClass().getSimpleName()
+                        + " host=" + (sa.getHostCard() == null ? "?"
+                                : sa.getHostCard().getName())
+                        + " usesTargeting=" + sa.usesTargeting());
+            }
+            if (!sa.usesTargeting()) {
+                return;         // check first: the max-target accessors
+            }                   // can throw on non-targeted subabilities
+            if (sa.isDividedAsYouChoose() || sa.getMaxTargets() != 1) {
+                return;
+            }
+            forge.game.spellability.TargetRestrictions tgt =
+                    sa.getTargetRestrictions();
+            if (tgt == null) {
+                return;
+            }
+            List<forge.game.GameEntity> cands = tgt.getAllCandidates(sa, true);
+            if (dbg) {
+                System.err.println("EXTDBG cands=" + cands.size());
+            }
+            if (cands.size() < 2) {
+                return;         // no real choice to make
+            }
+            Player me = getPlayer();
+            Card host = sa.getHostCard();
+            StringBuilder sb = new StringBuilder(1536);
+            stateCommon(sb, "target");
+            sb.append(",\"host\":\"").append(
+                    esc(host == null ? "?" : host.getName())).append("\"");
+            sb.append(",\"ability\":\"").append(esc(sa.toString())).append("\"");
+            sb.append(",\"proposed\":[");
+            boolean first = true;
+            for (forge.game.GameObject o : sa.getTargets()) {
+                int idx = cands.indexOf(o);
+                if (idx >= 0) {
+                    if (!first) {
+                        sb.append(",");
+                    }
+                    sb.append(idx);
+                    first = false;
+                }
+            }
+            sb.append("],\"candidates\":[");
+            first = true;
+            for (int i = 0; i < cands.size(); i++) {
+                forge.game.GameEntity e = cands.get(i);
+                if (!first) {
+                    sb.append(",");
+                }
+                if (e instanceof Card) {
+                    Card c = (Card) e;
+                    sb.append("{\"i\":").append(i);
+                    sb.append(",\"kind\":\"card\",\"id\":").append(c.getId());
+                    sb.append(",\"n\":\"").append(esc(c.getName())).append("\"");
+                    sb.append(",\"mine\":").append(c.getController() == me);
+                    sb.append(",\"cr\":").append(c.isCreature());
+                    sb.append(",\"p\":").append(
+                            c.isCreature() ? c.getNetPower() : 0);
+                    sb.append(",\"t\":").append(
+                            c.isCreature() ? c.getNetToughness() : 0)
+                      .append("}");
+                } else if (e instanceof Player) {
+                    Player p = (Player) e;
+                    sb.append("{\"i\":").append(i);
+                    sb.append(",\"kind\":\"player\",\"n\":\"")
+                      .append(esc(p.getName())).append("\"");
+                    sb.append(",\"mine\":").append(p == me);
+                    sb.append(",\"life\":").append(p.getLife()).append("}");
+                } else {
+                    sb.append("{\"i\":").append(i)
+                      .append(",\"kind\":\"other\",\"n\":\"")
+                      .append(esc(e.toString())).append("\"}");
+                }
+                first = false;
+            }
+            sb.append("]}\n");
+            String reply = roundTrip(sb.toString());
+            if (reply == null || !reply.startsWith("target\t")) {
+                return;
+            }
+            int idx = Integer.parseInt(reply.substring(7).trim().split(",")[0]);
+            if (idx < 0 || idx >= cands.size()) {
+                return;
+            }
+            sa.resetTargets();
+            sa.getTargets().add(cands.get(idx));
+        } catch (Exception e) {
+            // fail open: builtin targets stand
         }
     }
 

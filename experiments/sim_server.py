@@ -50,7 +50,7 @@ class SimClient:
             java_prefix() + ["-Xmx3g",
              "-Dio.netty.tryReflectionSetAccessible=true",
              "-Dfile.encoding=UTF-8",
-             "-cp", f"{EXT_CLASSES}:{JAR}", "forge.view.SimServer"],
+             "-cp", f"{EXT_CLASSES}{os.pathsep}{JAR}", "forge.view.SimServer"],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL, text=True, cwd=FORGE_DIR, env=env)
         self.jobs = 0

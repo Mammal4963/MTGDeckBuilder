@@ -1,0 +1,110 @@
+{
+ "train": [
+  {
+   "iter": 0,
+   "winrate": 0.188,
+   "lock_frac": 0.25,
+   "eps": 0.5,
+   "loss": -0.0207
+  },
+  {
+   "iter": 1,
+   "winrate": 0.312,
+   "lock_frac": 0.562,
+   "eps": 0.46,
+   "loss": 0.7843
+  },
+  {
+   "iter": 2,
+   "winrate": 0.25,
+   "lock_frac": 0.375,
+   "eps": 0.43,
+   "loss": 0.2425
+  },
+  {
+   "iter": 3,
+   "winrate": 0.125,
+   "lock_frac": 0.375,
+   "eps": 0.39,
+   "loss": -0.1729
+  },
+  {
+   "iter": 4,
+   "winrate": 0.5,
+   "lock_frac": 0.375,
+   "eps": 0.36,
+   "loss": 1.0828
+  },
+  {
+   "iter": 5,
+   "winrate": 0.562,
+   "lock_frac": 0.562,
+   "eps": 0.32,
+   "loss": 0.8345
+  },
+  {
+   "iter": 6,
+   "winrate": 0.375,
+   "lock_frac": 0.188,
+   "eps": 0.29,
+   "loss": 0.0269
+  },
+  {
+   "iter": 7,
+   "winrate": 0.312,
+   "lock_frac": 0.625,
+   "eps": 0.25,
+   "loss": 0.2346
+  },
+  {
+   "iter": 8,
+   "winrate": 0.312,
+   "lock_frac": 0.25,
+   "eps": 0.21,
+   "loss": 0.1115
+  },
+  {
+   "iter": 9,
+   "winrate": 0.312,
+   "lock_frac": 0.375,
+   "eps": 0.18,
+   "loss": 0.2436
+  },
+  {
+   "iter": 10,
+   "winrate": 0.25,
+   "lock_frac": 0.312,
+   "eps": 0.14,
+   "loss": 0.1487
+  },
+  {
+   "iter": 11,
+   "winrate": 0.375,
+   "lock_frac": 0.25,
+   "eps": 0.11,
+   "loss": 0.2219
+  },
+  {
+   "iter": 12,
+   "winrate": 0.188,
+   "lock_frac": 0.125,
+   "eps": 0.07,
+   "loss": -0.0984
+  },
+  {
+   "iter": 13,
+   "winrate": 0.312,
+   "lock_frac": 0.0,
+   "eps": 0.04,
+   "loss": -0.055
+  }
+ ],
+ "validation": {
+  "rl": {
+   "wins": 30,
+   "games": 96,
+   "winrate": 0.312,
+   "ci": 0.093
+  }
+ }
+}

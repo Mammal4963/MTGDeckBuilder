@@ -40,14 +40,34 @@ RNG = np.random.default_rng(3)
 
 
 class RecordingPolicy:
-    """Wraps ModelPolicy: journals (state, reply) per game."""
+    """Wraps ModelPolicy: journals (state, reply) per game.
+
+    Each state is stamped with timing for the benchmark lane:
+    _dt_ms   wall time since the previous decision this game — mostly
+             Forge engine + built-in-AI (opponent) work between our
+             decision points
+    _model_ms  our own forward-pass cost for this decision
+    """
 
     def __init__(self, inner):
         self.inner = inner
         self.buffer = []
+        self._last_t = 0.0
 
-    def __call__(self, state):
+    def _stamp(self, state):
+        import time
+        now = time.monotonic()
+        if self.buffer:
+            state["_dt_ms"] = int(1000 * (now - self._last_t))
+        self._last_t = now
+
+    def __call__(self, state, _stamped=False):
+        import time
+        if not _stamped:
+            self._stamp(state)
+        t0 = time.monotonic()
         reply = self.inner(state)
+        state["_model_ms"] = int(1000 * (time.monotonic() - t0))
         self.buffer.append((state, reply))
         return reply
 

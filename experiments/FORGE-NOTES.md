@@ -450,6 +450,60 @@ and completed on relaunch with zero hand-editing. ~12 recycles total,
 no lost stages. Scale knobs for the 3090: --iters/--games up 20x,
 plus the exploration fixes above.
 
+## Scaled self-play on the 3090: parity confirmed, gain refuted (2026-08-23)
+
+The handoff's main event, run at 26x container scale on the owner's PC
+(60 iters x 96 games, 8 parallel warm JVMs, all three exploration
+fixes: eps floored at 0.1, lock-bonus 0.5, large batches). ~5,760
+training games in ~2h wall. The 96-game gate then the confirmation:
+
+    96-game gate:      rl 30% +-9%  vs clone 26% vs builtin 22%
+    CONFIRMATION       rl 78/288 = 27% +-5%
+    (288 games/arm):   builtin 76/288 = 26% +-5%   -> NO DETECTABLE CHANGE
+
+Honest read: the fourth point-estimate advantage refuted at
+confirmation scale (after two evolver accepts and a factory
+promotion). The container's 31% and this run's 30% gate reads were
+both noise around parity; note the builtin arm itself moved 22% -> 26%
+between samples, exactly the +-CI swing the measurement culture
+warns about. Sparse win/loss REINFORCE from the parity clone, even at
+26x scale with exploration fixes, converges to the teacher - not past
+it.
+
+Second negative finding, sharper than the container's: the lock habit
+did not internalize AT ALL. Training lock_frac (~0.20-0.25 at the eps
+floor) was pure forcing: the greedy pilot deployed Random Encounter in
+0/48 sampled validation-style games. The +0.5 bonus rewards the
+forced cast but the policy gradient never transfers it to the unforced
+distribution. Implication: the Random Encounter line needs either
+denser/shaped reward (credit the *effects* of the cast, not the cast)
+or the pilot must own more of the decision (protocol v4 targeting) so
+the line actually wins games it otherwise loses.
+
+Infrastructure shipped this session (Windows port of the whole
+pipeline): os.pathsep classpaths, Java-17 recompile of forge_ext,
+daemonized policy servers (a blocking server_close hung every run at
+exit), --parallel collection/validation in self_play_round.py,
+per-game trajectory archives + games_index.jsonl, a live dashboard
+(experiments/watch_train.py: charts, games browser, board-state
+visualizer with per-decision timeline), decision-timing benchmark
+(bench_decisions.py: Forge combat on 10+ creature boards averages
+209ms/decision vs 35ms on small boards; single worst gap 41.9s on a
+41-creature COMBAT_DECLARE_ATTACKERS; our net is 1-9ms), a game_end
+bridge event carrying real final life totals, and PROTOCOL V4:
+chooseTargetsFor + playSpellAbilityNoStack routed through the bridge
+(env-gated FORGE_EXT_TARGETS=1) - trigger targeting observed AND
+overridable, proven by flipping Boilerbilges triggers to face in live
+games (builtin picks creatures ~70% of the time). Confirmation driver:
+confirm_round.py (288 games/arm, banked, resume-safe).
+
+Next levers (in order of expected value): protocol v4 targeting head
+(BC from builtin's choices, then RL - the pilot finally owns a
+decision the teacher is weak at), both-sides trajectory collection
+(pilot flies our deck AND the gauntlet deck: 2x data/game, adaptive
+opponent, same matchup distribution as validation - NOT mirrors, per
+the run-1 lesson), and reward shaping for the lock line.
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:

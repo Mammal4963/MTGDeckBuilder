@@ -243,7 +243,8 @@ class PolicyHandler(socketserver.StreamRequestHandler):
             # silently measuring the builtin AI at 1/30th speed.
             try:
                 state = json.loads(line.decode("utf-8"))
-                reply = tainted_policy(state)
+                policy = getattr(self.server, "policy", None) or tainted_policy
+                reply = policy(state)
                 STATS["decisions"] += 1
                 if reply.startswith("veto"):
                     STATS["vetoes"] += 1
@@ -259,19 +260,37 @@ class PolicyHandler(socketserver.StreamRequestHandler):
                 if _POLICY_ERRORS["n"] < 5:
                     _POLICY_ERRORS["n"] += 1
                     import traceback
-                    with open("/tmp/claude-0/-home-user-MTGDeckBuilder/"
-                              "6e07b8e8-48d2-56ad-84cc-9478073b7720/"
-                              "scratchpad/policy_errors.log", "a") as f:
-                        f.write(traceback.format_exc() + "\n---\n")
+                    try:
+                        with open(Path(__file__).resolve().parent / "output"
+                                  / "policy_errors.log", "a") as f:
+                            f.write(traceback.format_exc() + "\n---\n")
+                    except OSError:
+                        pass
             try:
                 self.wfile.write((reply + "\n").encode("utf-8"))
             except OSError:
                 return
 
 
-def start_server(port: int) -> socketserver.ThreadingTCPServer:
-    socketserver.ThreadingTCPServer.allow_reuse_address = True
-    srv = socketserver.ThreadingTCPServer(("127.0.0.1", port), PolicyHandler)
+class _PolicyServer(socketserver.ThreadingTCPServer):
+    allow_reuse_address = True
+    # Handler threads block on reads from the JVM's persistent socket;
+    # without these, server_close() waits on them and the process hangs
+    # at exit even after all games are done.
+    daemon_threads = True
+    block_on_close = False
+
+    def handle_error(self, request, client_address):
+        # connection teardown races at shutdown are expected; the
+        # per-decision catch-all inside PolicyHandler already logs
+        # real policy failures to output/policy_errors.log
+        pass
+
+
+def start_server(port: int, policy=None) -> socketserver.ThreadingTCPServer:
+    """policy=None -> handlers use the module-global tainted_policy."""
+    srv = _PolicyServer(("127.0.0.1", port), PolicyHandler)
+    srv.policy = policy
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv
 
@@ -294,7 +313,7 @@ def run_bridged(deck_a: str, deck_b: str, games: int, timeout_s: int,
     cmd = java_prefix() + ["-Xmx3g",
            "-Dio.netty.tryReflectionSetAccessible=true",
            "-Dfile.encoding=UTF-8",
-           "-cp", f"{EXT_CLASSES}:{JAR}", "forge.view.Main",
+           "-cp", f"{EXT_CLASSES}{os.pathsep}{JAR}", "forge.view.Main",
            "sim", "-d", f"{deck_a}.dck", f"{deck_b}.dck", "-n", str(games)]
     if quiet:
         cmd.append("-q")
