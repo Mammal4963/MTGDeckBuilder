@@ -41,6 +41,20 @@
    "lock_frac": 0.562,
    "eps": 0.32,
    "loss": 0.8345
+  },
+  {
+   "iter": 6,
+   "winrate": 0.375,
+   "lock_frac": 0.188,
+   "eps": 0.29,
+   "loss": 0.0269
+  },
+  {
+   "iter": 7,
+   "winrate": 0.312,
+   "lock_frac": 0.625,
+   "eps": 0.25,
+   "loss": 0.2346
   }
  ],
  "validation": {}
