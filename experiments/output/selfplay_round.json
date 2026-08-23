@@ -100,10 +100,11 @@
   }
  ],
  "validation": {
-  "_rl_partial": {
-   "wins": 23,
-   "games": 72,
-   "jobs": 9
+  "rl": {
+   "wins": 30,
+   "games": 96,
+   "winrate": 0.312,
+   "ci": 0.093
   }
  }
 }

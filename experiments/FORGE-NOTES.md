@@ -417,6 +417,39 @@ re-run after any interruption. Both rounds' final promotion step was
 killed by a recycle and hand-promoted from fully-banked chunks -
 if extending the driver, fold promotion into the banked state too.
 
+## Self-play shakedown from the parity warm start (2026-08-23)
+
+self_play_round.py: one REINFORCE round (14 iters x 16 games,
+fac_roaming vs its gauntlet, reward = win/loss + 0.3 x lock-frac for
+Random Encounter, eps-guided lock exploration 0.5 annealed to 0) from
+pilot2.pt into pilot2_rl.pt, then the 96-game gate:
+
+    builtin:  21/96 = 22% +-8%
+    clone:    25/96 = 26% +-9%   (imitation ceiling, 2x confirmed)
+    rl:       30/96 = 31% +-9%
+
+Honest read: the RL arm's point estimate is the highest of the three
+but all CIs overlap - consistent with parity-or-slightly-above, NOT a
+confirmed gain. ~220 training games of sparse win/loss is a small
+signal; the run's real product is that the whole loop now works.
+
+Key negative finding - the lock line does not self-sustain at this
+scale: lock_frac tracked eps down (0.25-0.63 mid-run -> 0.13 at
+eps 0.07 -> 0.0 at eps 0.04). The +0.3 bonus with 16-game batches is
+too weak for REINFORCE to keep casting Random Encounter once forcing
+stops. For the 3090 run: floor eps at ~0.1 (or anneal much slower),
+raise the lock bonus, and use larger batches so credit assignment has
+support. The winrate spike mid-run (50%, 56% at iters 4-5) faded the
+same way - suggestive, not durable.
+
+Pipeline validated end to end on a ~hourly-recycled container:
+per-iteration model+optimizer+baseline bundle (pilot2_rl_state.pt),
+banked validation chunks, and promotion folded into the resume path
+(the dagger_round lesson) - the final promotion survived being killed
+and completed on relaunch with zero hand-editing. ~12 recycles total,
+no lost stages. Scale knobs for the 3090: --iters/--games up 20x,
+plus the exploration fixes above.
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:
