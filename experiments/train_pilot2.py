@@ -39,7 +39,7 @@ def norm(name: str) -> str:
 
 
 class Featurizer:
-    def __init__(self):
+    def __init__(self, deck_ctx: bool = False):
         self.emb = np.load(OUT / "embeddings.npy").astype(np.float32)
         meta = json.loads((OUT / "cards_meta.json").read_text())
         self.rows = {}
@@ -48,6 +48,32 @@ class Featurizer:
         self.dim = self.emb.shape[1]
         # zones: hand, my bf, opp bf, my graveyard, opp graveyard
         self.tok_dim = self.dim + 5 + 5      # zone one-hot + state feats
+        # deck context (round 3+): one extra token per state = the
+        # count-weighted mean embedding of the seat's decklist, so the
+        # net can judge a hand RELATIVE to the deck's plan (mulligans)
+        self.deck_ctx = deck_ctx
+        self._deck_cache: dict = {}
+
+    def deck_emb(self, player: str) -> np.ndarray | None:
+        """player 'Ai(1)-fac_roaming' -> mean embedding of fac_roaming.dck"""
+        deck = re.sub(r"^Ai\(\d\)-", "", player or "")
+        if not deck:
+            return None
+        if deck not in self._deck_cache:
+            path = Path(__file__).resolve().parent / "decks" / f"{deck}.dck"
+            vec = None
+            if path.exists():
+                vecs, weights = [], []
+                for ln in path.read_text().splitlines():
+                    m = re.match(r"(\d+)\s+(.+)", ln.strip())
+                    if m:
+                        vecs.append(self.card_emb(m.group(2)))
+                        weights.append(int(m.group(1)))
+                if vecs:
+                    vec = np.average(np.stack(vecs), axis=0,
+                                     weights=weights).astype(np.float32)
+            self._deck_cache[deck] = vec
+        return self._deck_cache[deck]
 
     def card_emb(self, name: str) -> np.ndarray:
         r = self.rows.get(norm(name))
@@ -93,6 +119,12 @@ class Featurizer:
         for n in s.get("opp_graveyard", [])[-10:]:
             toks.append(self.token(n, 4, None))
             ids.append(None)
+        if self.deck_ctx:
+            dv = self.deck_emb(s.get("player", ""))
+            if dv is not None:
+                toks.append(np.concatenate(
+                    [dv, np.zeros(10, np.float32)]))
+                ids.append(None)
         toks = toks[:MAX_TOKENS]
         ids = ids[:MAX_TOKENS]
         if not toks:
@@ -117,6 +149,22 @@ class Featurizer:
             1.0 if c.get("targeted") else 0.0,
         ], np.float32)
         return np.concatenate([self.card_emb(c.get("card", "")), flags])
+
+    def tgt_vec(self, c: dict) -> np.ndarray:
+        """Protocol v4 target candidate: card embedding (zeros for a
+        player) + [is_player, mine, is_creature, p, t, life]."""
+        flags = np.array([
+            1.0 if c.get("kind") == "player" else 0.0,
+            1.0 if c.get("mine") else 0.0,
+            1.0 if c.get("cr") else 0.0,
+            c.get("p", 0) / 10.0,
+            c.get("t", 0) / 10.0,
+            c.get("life", 0) / 20.0,
+        ], np.float32)
+        emb = (self.card_emb(c.get("n", ""))
+               if c.get("kind") == "card"
+               else np.zeros(self.dim, np.float32))
+        return np.concatenate([emb, flags])
 
 
 def load_dataset(feat: Featurizer):

@@ -58,6 +58,8 @@ public class PlayerControllerExt extends PlayerControllerAi {
                         Player me = getPlayer();
                         StringBuilder sb = new StringBuilder(256);
                         sb.append("{\"kind\":\"game_end\"");
+                        sb.append(",\"player\":\"").append(esc(me.getName()))
+                          .append("\"");
                         sb.append(",\"turn\":").append(
                                 getGame().getPhaseHandler().getTurn());
                         sb.append(",\"my_life\":").append(me.getLife());
@@ -150,6 +152,8 @@ public class PlayerControllerExt extends PlayerControllerAi {
     private void stateCommon(StringBuilder sb, String kind) {
         Player me = getPlayer();
         sb.append("{\"kind\":\"").append(kind).append("\"");
+        // seat identity for both-sides trajectory separation
+        sb.append(",\"player\":\"").append(esc(me.getName())).append("\"");
         sb.append(",\"turn\":").append(getGame().getPhaseHandler().getTurn());
         sb.append(",\"phase\":\"").append(
                 getGame().getPhaseHandler().getPhase()).append("\"");
@@ -236,12 +240,20 @@ public class PlayerControllerExt extends PlayerControllerAi {
         return result;
     }
 
+    private static boolean primaryMode() {
+        // model-primary: skip the built-in AI's evaluation on casts and
+        // combat (we pay it on every decision otherwise, then usually
+        // discard its answer - it's the bulk of per-decision wall time)
+        return System.getenv("FORGE_EXT_PRIMARY") != null;
+    }
+
     @Override
     public List<SpellAbility> chooseSpellAbilityToPlay() {
-        List<SpellAbility> def = super.chooseSpellAbilityToPlay();
         if (System.getenv("FORGE_EXT_POLICY") == null) {
-            return def;
+            return super.chooseSpellAbilityToPlay();
         }
+        List<SpellAbility> def = primaryMode() ? null
+                : super.chooseSpellAbilityToPlay();
         try {
             Player me = getPlayer();
             int turn = getGame().getPhaseHandler().getTurn();
@@ -286,7 +298,11 @@ public class PlayerControllerExt extends PlayerControllerAi {
             }
             sb.append("]}\n");
             String reply = roundTrip(sb.toString());
-            if (reply == null || reply.equals("ok")) {
+            if (reply == null) {
+                // dead bridge in primary mode must NOT become pass-forever
+                return primaryMode() ? super.chooseSpellAbilityToPlay() : def;
+            }
+            if (reply.equals("ok")) {
                 return def;
             }
             if (reply.startsWith("veto\t")) {
@@ -500,6 +516,61 @@ public class PlayerControllerExt extends PlayerControllerAi {
         }
     }
 
+    /**
+     * Mulligan through the bridge (gated by FORGE_EXT_MULL=1): the
+     * built-in AI decides first (free BC label in `proposed`); reply
+     * "keep" or "mull" overrides it. tuckCardsViaMulligan (London
+     * bottoming) is observe-only this rung.
+     */
+    @Override
+    public boolean mulliganKeepHand(Player player, int cardsToReturn) {
+        boolean keep = super.mulliganKeepHand(player, cardsToReturn);
+        if (System.getenv("FORGE_EXT_POLICY") == null
+                || System.getenv("FORGE_EXT_MULL") == null) {
+            return keep;
+        }
+        try {
+            StringBuilder sb = new StringBuilder(1024);
+            stateCommon(sb, "mulligan");
+            sb.append(",\"cards_to_return\":").append(cardsToReturn);
+            sb.append(",\"proposed\":\"").append(keep ? "keep" : "mull")
+              .append("\"}\n");
+            String reply = roundTrip(sb.toString());
+            if ("keep".equals(reply)) {
+                return true;
+            }
+            if ("mull".equals(reply)) {
+                return false;
+            }
+        } catch (Exception ignored) {
+        }
+        return keep;
+    }
+
+    @Override
+    public forge.game.card.CardCollectionView tuckCardsViaMulligan(
+            forge.game.card.CardCollectionView cards, int amount) {
+        forge.game.card.CardCollectionView chosen =
+                super.tuckCardsViaMulligan(cards, amount);
+        if (System.getenv("FORGE_EXT_POLICY") == null
+                || System.getenv("FORGE_EXT_MULL") == null) {
+            return chosen;
+        }
+        try {
+            StringBuilder sb = new StringBuilder(1024);
+            stateCommon(sb, "mulligan_tuck");
+            sb.append(",\"amount\":").append(amount);
+            sb.append(",\"options\":[");
+            names(sb, cards);
+            sb.append("],\"proposed\":[");
+            names(sb, chosen);
+            sb.append("]}\n");
+            roundTrip(sb.toString());   // observe-only this rung
+        } catch (Exception ignored) {
+        }
+        return chosen;
+    }
+
     private Card findMyCard(int id) {
         for (Card c : getPlayer().getCardsIn(ZoneType.Battlefield)) {
             if (c.getId() == id) {
@@ -511,9 +582,13 @@ public class PlayerControllerExt extends PlayerControllerAi {
 
     @Override
     public void declareAttackers(Player attacker, Combat combat) {
-        super.declareAttackers(attacker, combat);
         if (System.getenv("FORGE_EXT_POLICY") == null) {
+            super.declareAttackers(attacker, combat);
             return;
+        }
+        boolean ranSuper = !primaryMode();
+        if (ranSuper) {
+            super.declareAttackers(attacker, combat);
         }
         try {
             StringBuilder sb = new StringBuilder(1024);
@@ -529,6 +604,10 @@ public class PlayerControllerExt extends PlayerControllerAi {
             }
             sb.append("]}\n");
             String reply = roundTrip(sb.toString());
+            if (reply == null && !ranSuper) {
+                super.declareAttackers(attacker, combat);   // fail open
+                return;
+            }
             // write path: "attack\tid,id,..." replaces the attack set
             // (legality-checked per card; illegal requests are skipped)
             if (reply != null && reply.startsWith("attack\t")) {
@@ -565,9 +644,13 @@ public class PlayerControllerExt extends PlayerControllerAi {
 
     @Override
     public void declareBlockers(Player defender, Combat combat) {
-        super.declareBlockers(defender, combat);
         if (System.getenv("FORGE_EXT_POLICY") == null) {
+            super.declareBlockers(defender, combat);
             return;
+        }
+        boolean ranSuper = !primaryMode();
+        if (ranSuper) {
+            super.declareBlockers(defender, combat);
         }
         try {
             StringBuilder sb = new StringBuilder(1024);
@@ -588,6 +671,10 @@ public class PlayerControllerExt extends PlayerControllerAi {
             }
             sb.append("]}\n");
             String reply = roundTrip(sb.toString());
+            if (reply == null && !ranSuper) {
+                super.declareBlockers(defender, combat);    // fail open
+                return;
+            }
             // write path: "block\tblockerId:attackerId,..." replaces MY
             // block assignments (legality-checked; illegal pairs skipped)
             if (reply != null && reply.startsWith("block\t")) {

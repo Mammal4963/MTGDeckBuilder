@@ -121,14 +121,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--games-per-deck", type=int, default=96)  # x3 decks
     ap.add_argument("--parallel", type=int, default=8)
+    ap.add_argument("--ckpt", default=str(OUT / "pilot2_rl.pt"))
+    ap.add_argument("--arm", default="rl",
+                    help="journal key for the pilot arm (e.g. rl2)")
     args = ap.parse_args()
 
     jpath = OUT / "confirm_round.json"
     journal = json.loads(jpath.read_text()) if jpath.exists() else {}
 
     # arm 1: RL pilot (greedy, no exploration), games archived
-    rl = run_arm("rl", journal, jpath, args.games_per_deck,
-                 args.parallel, ckpt=OUT / "pilot2_rl.pt")
+    rl = run_arm(args.arm, journal, jpath, args.games_per_deck,
+                 args.parallel, ckpt=Path(args.ckpt))
     import sim_server
     with sim_server._SHARED_LOCK:
         for c in sim_server._SHARED.values():
@@ -142,8 +145,9 @@ def main():
     pr, hr = ci95(rl["wins"], rl["games"])
     pb, hb = ci95(bi["wins"], bi["games"])
     sep = (pr - hr) > (pb + hb)
-    log(f"[confirm-verdict] rl {pr:.0%} ±{hr:.0%} vs builtin {pb:.0%} "
-        f"±{hb:.0%} -> {'CONFIRMED GAIN' if sep else 'no detectable change'}")
+    log(f"[confirm-verdict] {args.arm} {pr:.0%} ±{hr:.0%} vs builtin "
+        f"{pb:.0%} ±{hb:.0%} -> "
+        f"{'CONFIRMED GAIN' if sep else 'no detectable change'}")
 
 
 if __name__ == "__main__":

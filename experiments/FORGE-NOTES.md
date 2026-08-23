@@ -504,6 +504,33 @@ decision the teacher is weak at), both-sides trajectory collection
 opponent, same matchup distribution as validation - NOT mirrors, per
 the run-1 lesson), and reward shaping for the lock line.
 
+## Round 2: both-seats self-play + targeting head (2026-08-23)
+
+Protocol v4 targeting head BC'd from 569 builtin choices (holdout 100%
+vs 46% first-candidate baseline - the builtin's targeting rule is
+simple), then 60 iters x 64 games of ONE-network-both-seats self-play
+(no mirror decks: our deck vs the gauntlet decks, 2 trajectories/game,
+128/iter). 96-game gate rl2 30% +-9%; confirmation at 288 games:
+
+    rl2:     84/288 = 29% +-5%
+    rl:      78/288 = 27% +-5%   (round 1)
+    builtin: 76/288 = 26% +-5%   -> NO DETECTABLE CHANGE (again)
+
+Honest read: three pilot arms now sit 1-3 points above builtin at
+288-game scale and none separates. If a real ~+3% effect exists,
+resolving it needs ~2,000 games/arm (+-2% CI). Random Encounter still
+mostly eps-driven in training (lock_frac ~0.2 at the floor); in the
+few unforced casts the avg first-cast turn is ~13 - it's a
+nothing-else-to-do play, not a plan.
+
+New instrumentation: mulligan bridge hooks (FORGE_EXT_MULL, keep/mull
+write path + London-tuck observe), deck-context token (count-weighted
+mean decklist embedding appended to every state; opt-in deck_ctx),
+mull head + REINFORCE branches, model-primary mode (FORGE_EXT_PRIMARY:
+skip the builtin's cast/combat evaluation entirely - we pay its
+thinking cost on every decision otherwise), dashboard deck stats
+(ramp curve, per-iteration first-cast-turn + cast-rate series).
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:

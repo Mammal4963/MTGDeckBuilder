@@ -140,6 +140,41 @@ def reinforce_update(model_policy, torch, batch, baseline, lr_opt):
                     if action is None:
                         continue
                     logp = torch.log_softmax(logits, dim=0)[action]
+                elif kind == "mulligan":
+                    if not hasattr(model, "mull_head") \
+                            or reply not in ("keep", "mull"):
+                        continue
+                    hs, _h, _ids = model_policy.encode(state)
+                    ctr = torch.tensor(
+                        [state.get("cards_to_return", 0) / 7.0])
+                    lg = model.mull_head(torch.cat([hs, ctr]))[0]
+                    logp = -torch.nn.functional \
+                        .binary_cross_entropy_with_logits(
+                            lg, torch.tensor(
+                                1.0 if reply == "keep" else 0.0))
+                elif kind == "target":
+                    cands = state.get("candidates", [])
+                    if not cands or not hasattr(model, "tgt_head"):
+                        continue
+                    hs, _h, _ids = model_policy.encode(state)
+                    hostv = model.cand_proj(model_policy.tt(
+                        model_policy.feat.cand_vec(
+                            {"card": state.get("host", "")})))
+                    logits = torch.cat([model.tgt_head(torch.cat(
+                        [hs, model.tgt_proj(model_policy.tt(
+                            model_policy.feat.tgt_vec(c))), hostv]))
+                        for c in cands])
+                    if reply.startswith("target\t"):
+                        idx = int(reply.split("\t")[1])
+                        action = next((k for k, c in enumerate(cands)
+                                       if c["i"] == idx), None)
+                    else:
+                        prop = state.get("proposed", [])
+                        action = next((k for k, c in enumerate(cands)
+                                       if prop and c["i"] == prop[0]), None)
+                    if action is None:
+                        continue
+                    logp = torch.log_softmax(logits, dim=0)[action]
                 elif kind == "attackers" and reply.startswith("attack\t"):
                     hs, h, ids = model_policy.encode(state)
                     want = {int(x) for x in reply[7:].split(",") if x}

@@ -96,12 +96,12 @@ class ModelPolicy:
     Combat-object write path in Java).
     """
 
-    def __init__(self, ckpt=None):
+    def __init__(self, ckpt=None, deck_ctx=False):
         import torch
         import train_pilot2 as tp
         self.torch = torch
         self.ckpt = ckpt          # None -> the shared BC checkpoint
-        self.feat = tp.Featurizer()
+        self.feat = tp.Featurizer(deck_ctx=deck_ctx)
         # rebuild the architecture exactly as trained
         import torch.nn as nn
         feat = self.feat
@@ -130,11 +130,25 @@ class ModelPolicy:
                                               nn.Linear(D, 1))
                 self.noblk_head = nn.Sequential(nn.Linear(2 * D, D), nn.ReLU(),
                                                 nn.Linear(D, 1))
+                # protocol v4: target-candidate scoring
+                # [state, tgt_proj(candidate), cand_proj(host card)]
+                self.tgt_proj = nn.Sequential(nn.Linear(feat.dim + 6, D),
+                                              nn.ReLU())
+                self.tgt_head = nn.Sequential(nn.Linear(3 * D, D), nn.ReLU(),
+                                              nn.Linear(D, 1))
+                # round 3: keep-or-mulligan (logit; sigmoid = P(keep))
+                self.mull_head = nn.Sequential(nn.Linear(D + 1, D), nn.ReLU(),
+                                               nn.Linear(D, 1))
 
         self.model = Pilot()
         path = self.ckpt or (Path(__file__).resolve().parent
                              / "output" / "pilot2.pt")
-        self.model.load_state_dict(torch.load(path))
+        # strict=False: pre-v4 checkpoints lack tgt_* (they stay at init
+        # and are only consulted when the checkpoint trained them)
+        missing, _unexpected = self.model.load_state_dict(
+            torch.load(path), strict=False)
+        self.has_tgt = not any(k.startswith("tgt_") for k in missing)
+        self.has_mull = not any(k.startswith("mull_") for k in missing)
         self.model.eval()
 
     def encode(self, state: dict):
@@ -184,6 +198,33 @@ class ModelPolicy:
                 if proposed and cands[pick]["card"] == proposed[0]:
                     return "ok"
                 return f"force\t{cands[pick]['i']}"
+
+            if kind == "mulligan":
+                if not getattr(self, "has_mull", False):
+                    return "ok"     # untrained: builtin's keep stands
+                hs, _h, _ids = self.encode(state)
+                ctr = torch.tensor([state.get("cards_to_return", 0) / 7.0])
+                logit = self.model.mull_head(torch.cat([hs, ctr]))
+                t = getattr(self, "temperature", 0.0)
+                p = float(torch.sigmoid(logit / t if t else logit))
+                keep = (torch.rand(1).item() < p) if t else (p > 0.5)
+                return "keep" if keep else "mull"
+
+            if kind == "target":
+                cands = state.get("candidates", [])
+                if not cands or not getattr(self, "has_tgt", False):
+                    return "ok"     # untrained head: keep builtin's pick
+                hs, _h, _ids = self.encode(state)
+                hostv = self.model.cand_proj(self.tt(self.feat.cand_vec(
+                    {"card": state.get("host", "")})))
+                scores = [self.model.tgt_head(torch.cat(
+                    [hs, self.model.tgt_proj(self.tt(self.feat.tgt_vec(c))),
+                     hostv])) for c in cands]
+                pick = self._pick(torch.cat(scores))
+                proposed = state.get("proposed", [])
+                if proposed and cands[pick]["i"] == proposed[0]:
+                    return "ok"
+                return f"target\t{cands[pick]['i']}"
 
             if kind == "attackers":
                 hs, h, ids = self.encode(state)

@@ -27,6 +27,119 @@ from urllib.parse import parse_qs, urlparse
 OUT = Path(__file__).resolve().parent / "output"
 GAMES = OUT / "games"
 
+LOCKS = ("Random Encounter",)
+_LANDS = None
+_STATS_CACHE = {"key": None, "data": None}
+
+
+def land_names():
+    global _LANDS
+    if _LANDS is None:
+        meta = json.loads((OUT / "cards_meta.json").read_text())
+        _LANDS = {m["name"] for m in meta if "Land" in m.get("type_line", "")}
+    return _LANDS
+
+
+def chosen_card(state, reply):
+    if state.get("kind") != "cast":
+        return None
+    if reply == "ok":
+        p = state.get("proposed", [])
+        return p[0] if p else None
+    if reply.startswith("force\t"):
+        idx = int(reply.split("\t")[1])
+        return next((c["card"] for c in state.get("candidates", [])
+                     if c["i"] == idx), None)
+    return None
+
+
+def iter_num(v):
+    """games_index iter field -> orderable int ('r2-12' -> 12, 7 -> 7)."""
+    if isinstance(v, int):
+        return v
+    m = re.search(r"(\d+)$", str(v))
+    return int(m.group(1)) if m else None
+
+
+def compute_stats(limit=600):
+    """Ramp + locked-card timing over the newest `limit` archived games."""
+    idx = OUT / "games_index.jsonl"
+    if not idx.exists():
+        return None
+    key = (idx.stat().st_mtime, limit)
+    if _STATS_CACHE["key"] == key:
+        return _STATS_CACHE["data"]
+    rows = [json.loads(ln) for ln in
+            idx.read_text(encoding="utf-8").splitlines()][-limit:]
+    lands = land_names()
+    ramp = {}          # turn -> [sum_lands, sum_untapped, n]
+    first_cast = []
+    by_iter = {}       # iter -> [sum_first_turns, n_cast, n_games]
+    n_games = 0
+    for r in rows:
+        try:
+            with gzip.open(OUT / "games" / r["file"], "rt",
+                           encoding="utf-8") as f:
+                g = json.load(f)
+        except OSError:
+            continue
+        n_games += 1
+        per_turn = {}   # turn -> (lands, untapped) at last seen decision
+        cast_turn = None
+        for state, reply in g["decisions"]:
+            if state.get("kind") == "game_end":
+                continue
+            if g.get("deck") and g["deck"] not in state.get("player",
+                                                            g["deck"]):
+                continue          # our seat only
+            t = state.get("turn", 0)
+            bf = state.get("my_battlefield", [])
+            nl = nu = 0
+            for c in bf:
+                name = c["n"] if isinstance(c, dict) else c
+                if name in lands:
+                    nl += 1
+                    if not (isinstance(c, dict) and c.get("tapped")):
+                        nu += 1
+            per_turn[t] = (nl, nu)
+            if cast_turn is None and chosen_card(state, reply) in LOCKS:
+                cast_turn = t
+        for t, (nl, nu) in per_turn.items():
+            if 1 <= t <= 12:
+                a = ramp.setdefault(t, [0, 0, 0])
+                a[0] += nl
+                a[1] += nu
+                a[2] += 1
+        if cast_turn is not None:
+            first_cast.append(cast_turn)
+        itn = iter_num(r.get("iter"))
+        if itn is not None:
+            a = by_iter.setdefault(itn, [0, 0, 0])
+            a[2] += 1
+            if cast_turn is not None:
+                a[0] += cast_turn
+                a[1] += 1
+    lock_series = [
+        {"iter": it,
+         "avg_turn": (round(a[0] / a[1], 2) if a[1] else None),
+         "rate": round(a[1] / a[2], 3), "n": a[2]}
+        for it, a in sorted(by_iter.items())]
+    data = {
+        "lock_series": lock_series,
+        "games": n_games,
+        "ramp": {t: {"lands": round(a[0] / a[2], 2),
+                     "untapped": round(a[1] / a[2], 2), "n": a[2]}
+                 for t, a in sorted(ramp.items())},
+        "lock_cast_rate": round(len(first_cast) / max(1, n_games), 3),
+        "lock_first_turn": (round(sum(first_cast) / len(first_cast), 1)
+                            if first_cast else None),
+        "lock_casts": len(first_cast),
+    }
+    _STATS_CACHE["key"] = key
+    _STATS_CACHE["data"] = data
+    return data
+
+
 PAGE = """<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -129,6 +242,30 @@ PAGE = """<!DOCTYPE html>
 <div class="chartbox"><h2>REINFORCE loss</h2>
 <canvas id="c2"></canvas></div>
 
+<div class="panel">
+<h2>Deck stats <span id="stats-n" style="color:#8b93a1;font-weight:400"></span></h2>
+<div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+  <div style="flex:1;min-width:260px">
+    <div class="legend"><span><i class="dot" style="background:#5aa9e6"></i>lands in play</span>
+    <span><i class="dot" style="background:#7ce38b"></i>untapped (mana available)</span></div>
+    <canvas id="c-ramp" style="height:140px"></canvas>
+  </div>
+  <div id="lock-stats" style="min-width:200px;font-size:13px"></div>
+</div>
+<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:10px">
+  <div style="flex:1;min-width:260px">
+    <div class="legend"><span><i class="dot" style="background:#e0b050"></i>avg first
+    Random Encounter cast turn (gaps = no casts that iteration)</span></div>
+    <canvas id="c-lock" style="height:130px"></canvas>
+  </div>
+  <div style="flex:1;min-width:260px">
+    <div class="legend"><span><i class="dot" style="background:#c792ea"></i>Random
+    Encounter cast rate per iteration</span></div>
+    <canvas id="c-lockrate" style="height:130px"></canvas>
+  </div>
+</div>
+</div>
+
 <div class="panel" id="confirm-panel" style="display:none">
 <h2>Confirmation run &mdash; 288 games/arm, greedy pilot vs builtin</h2>
 <div id="confirm-body"></div>
@@ -176,12 +313,15 @@ PAGE = """<!DOCTYPE html>
 
 <script>
 let IDX = [];
-function draw(cv, series, ymin, ymax) {
+function draw(cv, series, ymin, ymax, xopts) {
+  // xopts: {x0: first x value, label: axis name} - x ticks are drawn
+  // for every chart (default: index starting at 0, no axis name)
+  const x0 = (xopts && xopts.x0) || 0;
   const ctx = cv.getContext("2d");
   const W = cv.width = cv.clientWidth * devicePixelRatio;
   const H = cv.height = cv.clientHeight * devicePixelRatio;
   ctx.clearRect(0, 0, W, H);
-  const padL = 42 * devicePixelRatio, padB = 18 * devicePixelRatio,
+  const padL = 42 * devicePixelRatio, padB = 30 * devicePixelRatio,
         padT = 8 * devicePixelRatio, padR = 8 * devicePixelRatio;
   const n = Math.max(...series.map(s => s.data.length));
   if (!n) return;
@@ -194,6 +334,22 @@ function draw(cv, series, ymin, ymax) {
     ctx.beginPath(); ctx.moveTo(padL, y(v)); ctx.lineTo(W - padR, y(v)); ctx.stroke();
     ctx.fillText(v.toFixed(2), 4 * devicePixelRatio, y(v) + 4 * devicePixelRatio);
   }
+  // x axis: baseline, ticks, numeric labels, optional axis name
+  ctx.strokeStyle = "#3a4150";
+  ctx.beginPath(); ctx.moveTo(padL, H - padB); ctx.lineTo(W - padR, H - padB);
+  ctx.stroke();
+  ctx.textAlign = "center";
+  const step = Math.max(1, Math.ceil(n / 10));
+  for (let i = 0; i < n; i += step) {
+    ctx.strokeStyle = "#3a4150";
+    ctx.beginPath(); ctx.moveTo(x(i), H - padB);
+    ctx.lineTo(x(i), H - padB + 4 * devicePixelRatio); ctx.stroke();
+    ctx.fillText(String(x0 + i), x(i), H - padB + 16 * devicePixelRatio);
+  }
+  if (xopts && xopts.label)
+    ctx.fillText(xopts.label, padL + (W - padL - padR) / 2,
+                 H - 3 * devicePixelRatio);
+  ctx.textAlign = "left";
   for (const s of series) {
     ctx.strokeStyle = s.color; ctx.lineWidth = 2 * devicePixelRatio;
     ctx.beginPath();
@@ -244,36 +400,123 @@ async function tick() {
         `${(100 * v.winrate).toFixed(0)}% &plusmn;${(100 * v.ci).toFixed(0)}%`);
     else if (p) cards += card("validation (partial)", `${p.wins}/${p.games}`);
     cards += card("journal age", age + "s", "", age > 3600 ? "stale" : "");
+    if (d.live)
+      cards += card("in flight",
+        `iter ${d.live.iter}`,
+        `${d.live.wins}/${d.live.games} won · ` +
+        `${d.live.lock} cast Random Encounter`);
+    else if (d.stage && d.stage.target_events != null)
+      cards += card("round 2 stage",
+        d.journal.includes("round2") ? "training" :
+          d.stage.v4_ckpt ? "v4 ready" : "collecting",
+        `${d.stage.target_events} target events` +
+        (d.stage.collect_chunks != null ?
+          ` · ${d.stage.collect_chunks}/100 chunks` : ""));
+    if (d.live && !d.journal.includes("round2"))
+      document.getElementById("status").textContent +=
+        " · CHARTS STILL SHOW ROUND 1 — round 2's first iteration banks" +
+        " its journal when the REINFORCE update finishes";
     document.getElementById("cards").innerHTML = cards;
+    let stg = "";
+    if (d.stage) {
+      const s = d.stage;
+      stg = ` · round-2 pipeline: ${s.target_events || 0} target events` +
+        ` collected${s.collect_chunks != null ?
+          ` (${s.collect_chunks} chunks)` : ""}` +
+        `${s.v4_ckpt ? " · v4 checkpoint ready" : ""}`;
+    }
     document.getElementById("status").textContent =
-      `${d.journal} — updated ${new Date(d.mtime * 1000).toLocaleTimeString()}`;
+      `${d.journal} — updated ` +
+      `${new Date(d.mtime * 1000).toLocaleTimeString()}${stg}`;
     draw(document.getElementById("c1"),
       [{color: "#5aa9e6", data: t.map(e => e.winrate)},
        {color: "#7ce38b", data: t.map(e => e.lock_frac)},
-       {color: "#8b93a1", data: t.map(e => e.eps)}], 0, 1);
+       {color: "#8b93a1", data: t.map(e => e.eps)}], 0, 1,
+      {label: "iteration"});
     const losses = t.map(e => e.loss).filter(x => x != null);
     const lo = Math.min(0, ...losses), hi = Math.max(0.1, ...losses);
     draw(document.getElementById("c2"),
-      [{color: "#e6785a", data: t.map(e => e.loss)}], lo, hi);
-    renderConfirm(d.confirm);
+      [{color: "#e6785a", data: t.map(e => e.loss)}], lo, hi,
+      {label: "iteration"});
+    renderConfirm(d.confirm, d.journal);
+    renderProgress(d, t);
   } catch (e) {
     document.getElementById("status").textContent = "journal not readable: " + e;
   }
   loadGames();
+  loadStats();
 }
-function renderConfirm(c) {
+async function loadStats() {
+  try {
+    const r = await fetch("/stats"); const s = await r.json();
+    if (!s.ramp) return;
+    document.getElementById("stats-n").textContent =
+      `— last ${s.games} archived games (our seat)`;
+    const turns = Object.keys(s.ramp).map(Number).sort((a, b) => a - b);
+    draw(document.getElementById("c-ramp"),
+      [{color: "#5aa9e6", data: turns.map(t => s.ramp[t].lands)},
+       {color: "#7ce38b", data: turns.map(t => s.ramp[t].untapped)}],
+      0, Math.max(6, ...turns.map(t => s.ramp[t].lands)),
+      {x0: turns[0], label: "turn"});
+    if (s.lock_series && s.lock_series.length > 1) {
+      const ls = s.lock_series;
+      draw(document.getElementById("c-lock"),
+        [{color: "#e0b050", data: ls.map(e => e.avg_turn)}],
+        0, Math.max(10, ...ls.map(e => e.avg_turn || 0)),
+        {x0: ls[0].iter, label: "iteration"});
+      draw(document.getElementById("c-lockrate"),
+        [{color: "#c792ea", data: ls.map(e => e.rate)}], 0, 1,
+        {x0: ls[0].iter, label: "iteration"});
+    }
+    document.getElementById("lock-stats").innerHTML =
+      `<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+        color:#8b93a1">Random Encounter</div>
+      <div style="font-size:20px;font-weight:600">${(100*s.lock_cast_rate).toFixed(0)}%
+        <span style="font-size:12px;color:#8b93a1">of games cast</span></div>
+      <div>${s.lock_first_turn != null ?
+        `avg first cast: turn <b>${s.lock_first_turn}</b> (${s.lock_casts} games)` :
+        "not cast in this sample"}</div>
+      <div style="color:#8b93a1;font-size:11px;margin-top:4px">
+        ramp x-axis = turn 1..${turns[turns.length-1] || 0}</div>`;
+  } catch (e) {}
+}
+const RUN_ITERS = 60;   // matches the launched --iters
+function renderProgress(d, t) {
+  let el = document.getElementById("run-progress");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "run-progress";
+    el.style.cssText = "margin:-8px 0 16px";
+    document.getElementById("cards").after(el);
+  }
+  const perIter = t.length ? (t[t.length-1].games || 64) : 64;
+  const total = RUN_ITERS * perIter;
+  const done = t.reduce((a, e) => a + (e.games || perIter), 0) +
+               (d.live ? d.live.games : 0);
+  const pct = Math.min(100, 100 * done / total);
+  el.innerHTML = `<div style="font-size:12px;color:#8b93a1;margin-bottom:3px">
+      run progress: ${done.toLocaleString()} / ${total.toLocaleString()} games
+      (${pct.toFixed(0)}%)</div>
+    <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:10px">
+      <div style="background:#5aa9e6;height:10px;border-radius:5px;width:${pct}%"></div>
+    </div>`;
+}
+function renderConfirm(c, journalName) {
   const panel = document.getElementById("confirm-panel");
   if (!c) { panel.style.display = "none"; return; }
   panel.style.display = "block";
+  panel.querySelector("h2").textContent =
+    "Confirmation runs — 288 games/arm, greedy pilots vs builtin";
   const TARGET = 288;
   let html = "";
-  for (const arm of ["rl", "builtin"]) {
+  const armColor = {rl2: "#5aa9e6", rl: "#8b93a1", builtin: "#e6785a"};
+  for (const arm of ["rl2", "rl", "builtin"]) {
     const a = c[arm];
     if (!a) continue;
     const p = a.games ? a.wins / a.games : 0;
     const ci = a.games ? 1.96 * Math.sqrt(p * (1 - p) / a.games) : 0;
     const done = Math.min(100, 100 * a.games / TARGET);
-    const col = arm === "rl" ? "#5aa9e6" : "#8b93a1";
+    const col = armColor[arm] || "#8b93a1";
     html += `<div style="margin:6px 0">
       <span style="display:inline-block;width:60px">${arm}</span>
       <span style="font-variant-numeric:tabular-nums">${a.wins}/${a.games}
@@ -282,14 +525,19 @@ function renderConfirm(c) {
         <div style="background:${col};height:8px;border-radius:4px;width:${done}%"></div>
       </div></div>`;
   }
-  if (c.rl && c.builtin && c.rl.games >= TARGET && c.builtin.games >= TARGET) {
-    const pr = c.rl.wins / c.rl.games, pb = c.builtin.wins / c.builtin.games;
-    const hr = 1.96 * Math.sqrt(pr * (1-pr) / c.rl.games);
+  const best = c.rl2 || c.rl;
+  if (best && c.builtin && best.games >= TARGET
+      && c.builtin.games >= TARGET) {
+    const pr = best.wins / best.games, pb = c.builtin.wins / c.builtin.games;
+    const hr = 1.96 * Math.sqrt(pr * (1-pr) / best.games);
     const hb = 1.96 * Math.sqrt(pb * (1-pb) / c.builtin.games);
     const sep = (pr - hr) > (pb + hb);
     html += `<div style="margin-top:8px;font-weight:600;color:${sep ?
       "#7ce38b" : "#e0b050"}">${sep ? "CONFIRMED GAIN" :
-      "no detectable change (CIs overlap)"}</div>`;
+      "verdict: no detectable change (CIs overlap)"} — ` +
+      `<span style="font-weight:400;color:#8b93a1">every pilot arm sits ` +
+      `1–3 pts above builtin; resolving a gap that small needs ` +
+      `~2,000 games/arm</span></div>`;
   }
   document.getElementById("confirm-body").innerHTML = html;
 }
@@ -584,14 +832,56 @@ def main():
         def do_GET(self):
             url = urlparse(self.path)
             if url.path == "/data":
+                # round 2's journal takes over the charts once it exists
+                j2 = OUT / "selfplay_round2.json"
+                active = j2 if j2.exists() else journal
                 try:
-                    body = json.loads(journal.read_text())
-                    mtime = journal.stat().st_mtime
+                    body = json.loads(active.read_text())
+                    mtime = active.stat().st_mtime
                 except (OSError, json.JSONDecodeError):
                     body, mtime = {"train": [], "validation": {}}, 0
                 body["mtime"] = mtime
                 body["now"] = time.time()
-                body["journal"] = journal.name
+                body["journal"] = active.name
+                # round-2 pipeline stage indicators
+                stage = {}
+                sc = OUT / "target_events_state.json"
+                te = OUT / "target_events.jsonl"
+                if sc.exists():
+                    try:
+                        stage["collect_chunks"] = json.loads(
+                            sc.read_text()).get("done", 0)
+                    except (OSError, json.JSONDecodeError):
+                        pass
+                if te.exists():
+                    try:
+                        with open(te, "rb") as f:
+                            stage["target_events"] = sum(1 for _ in f)
+                    except OSError:
+                        pass
+                stage["v4_ckpt"] = (OUT / "pilot2_v4.pt").exists()
+                body["stage"] = stage
+                # live in-flight iteration from the games index (games
+                # archive per game; the journal only banks per iteration)
+                gidx = OUT / "games_index.jsonl"
+                if gidx.exists():
+                    try:
+                        rows = [json.loads(ln) for ln in
+                                gidx.read_text(encoding="utf-8")
+                                .splitlines()[-300:]]
+                        r2 = [r for r in rows if str(r.get("iter", ""))
+                              .startswith("r2-")]
+                        if r2:
+                            cur = max(int(r["iter"][3:]) for r in r2)
+                            mine = [r for r in r2
+                                    if r["iter"] == f"r2-{cur}"]
+                            body["live"] = {
+                                "iter": cur, "games": len(mine),
+                                "wins": sum(1 for r in mine if r["won"]),
+                                "lock": sum(1 for r in mine
+                                            if r.get("lock_frac", 0) > 0)}
+                    except (OSError, json.JSONDecodeError, ValueError):
+                        pass
                 cpath = OUT / "confirm_round.json"
                 if cpath.exists():
                     try:
@@ -600,6 +890,12 @@ def main():
                     except (OSError, json.JSONDecodeError):
                         pass
                 self._send(json.dumps(body).encode(), "application/json")
+            elif url.path == "/stats":
+                try:
+                    data = compute_stats() or {}
+                except Exception:
+                    data = {}
+                self._send(json.dumps(data).encode(), "application/json")
             elif url.path == "/games":
                 rows, total = [], 0
                 idx = OUT / "games_index.jsonl"
@@ -617,7 +913,7 @@ def main():
             elif url.path == "/game":
                 f = parse_qs(url.query).get("f", [""])[0]
                 if not re.fullmatch(
-                        r"(it\d+_w\d+|cf\w+_j\d+)_\d+\.json\.gz", f) \
+                        r"(r2)?(it\d+_w\d+|cf\w+_j\d+)_\d+\.json\.gz", f) \
                         or not (GAMES / f).exists():
                     self.send_error(404)
                     return
