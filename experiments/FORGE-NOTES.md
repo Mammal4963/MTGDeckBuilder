@@ -661,3 +661,11 @@ needs a different class of change (bigger trunk, value-derived
 shaping, curiosity) - or spend the pilot where it already wins: the
 evolver rerun.
 
+
+Round 11 (pure +-1 + potential-based shaping beta=0.5 from the frozen
+value head, all manual bonuses OFF): confirmation 114/288 = 40% +-6% -
+below rl8. Value-derived shaping does not beat the hand-tuned recipe
+for winrate. Real finding though: lock_frac held ~0.45 the whole round
+with ZERO lock bonus - the Random Encounter habit is now intrinsic.
+rl8 remains champion. Next per roadmap: bigger trunk (option 2).
+

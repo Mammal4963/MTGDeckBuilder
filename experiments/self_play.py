@@ -220,31 +220,60 @@ def decision_logp(model_policy, torch, state, reply):
 
 
 def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
-               lock_credit=None, val_coef=0.5, max_decisions=None):
+               lock_credit=None, val_coef=0.5, max_decisions=None,
+               potential=0.0):
     """PPO-style: value-head baseline (advantage = R - V(s)) + clipped
     multi-epoch replay of the same batch. batch: [(decisions, R)].
     Returns (policy_loss, value_loss, mean_V)."""
     import numpy as np
     model = model_policy.model
-    # flatten to (state, reply, R), optionally subsample for cost
-    flat = [(s, r, R) for dec, R in batch for s, r in dec]
-    if max_decisions and len(flat) > max_decisions:
-        idx = np.random.default_rng(0).choice(
-            len(flat), max_decisions, replace=False)
-        flat = [flat[i] for i in sorted(idx)]
-    # epoch 0 pass: old log-probs under the collection policy (frozen)
+    # flatten to (state, reply, R, traj, pos); potential-based shaping
+    # needs trajectory adjacency, so subsample whole trajectories
+    if max_decisions:
+        total = sum(len(dec) for dec, _R in batch)
+        if total > max_decisions:
+            rng = np.random.default_rng(0)
+            order = rng.permutation(len(batch))
+            kept, cnt = [], 0
+            for ti in order:
+                kept.append(batch[ti])
+                cnt += len(batch[ti][0])
+                if cnt >= max_decisions:
+                    break
+            batch = kept
+    flat = [(s, r, R, ti, pi) for ti, (dec, R) in enumerate(batch)
+            for pi, (s, r) in enumerate(dec)]
+    traj_len = {ti: len(dec) for ti, (dec, _R) in enumerate(batch)}
+    # epoch 0 pass: old log-probs + frozen state-values (the potentials)
     model.eval()
-    old = []
+    old, vold = [], []
     with torch.no_grad():
-        for s, r, R in flat:
+        for s, r, R, ti, pi in flat:
             out = decision_logp(model_policy, torch, s, r)
-            old.append(float(out[0]) if out is not None else None)
+            if out is None:
+                old.append(None)
+                vold.append(None)
+            else:
+                old.append(float(out[0]))
+                vold.append(float(model.val_head(out[1])[0]))
+    # shaping[k] = potential * (V(next state) - V(state)), frozen V;
+    # terminal transition uses the actual outcome R as the final value
+    shaping = [0.0] * len(flat)
+    if potential:
+        for k, (s, r, R, ti, pi) in enumerate(flat):
+            if vold[k] is None:
+                continue
+            if pi + 1 < traj_len[ti] and k + 1 < len(flat) \
+                    and vold[k + 1] is not None and flat[k + 1][3] == ti:
+                shaping[k] = potential * (vold[k + 1] - vold[k])
+            else:
+                shaping[k] = potential * (R - vold[k])
     ptot = vtot = vsum = vn = 0.0
     for ep in range(epochs):
         model.train()
         opt.zero_grad()
         nterms = 0
-        for k, (s, r, R) in enumerate(flat):
+        for k, (s, r, R, ti, pi) in enumerate(flat):
             if old[k] is None:
                 continue
             try:
@@ -253,7 +282,7 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                     continue
                 logp, hs, chosen = out
                 v = model.val_head(hs)[0]
-                adv = R - float(v.detach())
+                adv = R - float(v.detach()) + shaping[k]
                 if lock_credit and chosen is not None \
                         and chosen in lock_credit["locks"]:
                     t = s.get("turn", 16)

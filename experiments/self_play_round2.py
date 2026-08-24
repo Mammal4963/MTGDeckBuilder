@@ -167,6 +167,9 @@ def main():
     ap.add_argument("--lock-credit", type=float, default=0.0,
                     help="per-decision advantage boost for early lock "
                     "casts (surgical gradient, not trajectory-diluted)")
+    ap.add_argument("--potential", type=float, default=0.0,
+                    help="value-derived shaping weight: adv += "
+                    "beta*(V(s') - V(s)) from the frozen value head")
     ap.add_argument("--ppo-epochs", type=int, default=0,
                     help=">0: PPO update (value-head baseline + clipped "
                     "K-epoch replay) instead of one-shot REINFORCE")
@@ -276,7 +279,8 @@ def main():
                     loss, vloss, meanv = ppo_update(
                         inner, torch, batch, opt,
                         epochs=args.ppo_epochs, lock_credit=lc,
-                        max_decisions=args.max_decisions)
+                        max_decisions=args.max_decisions,
+                        potential=args.potential)
                 else:
                     loss = reinforce_update(inner, torch, batch,
                                             baseline, opt, lock_credit=lc)
