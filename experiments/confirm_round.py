@@ -124,14 +124,20 @@ def main():
     ap.add_argument("--ckpt", default=str(OUT / "pilot2_rl.pt"))
     ap.add_argument("--arm", default="rl",
                     help="journal key for the pilot arm (e.g. rl2)")
+    ap.add_argument("--journal", default="confirm_round.json",
+                    help="journal filename (new deck = new journal)")
+    ap.add_argument("--skip-pilot", action="store_true",
+                    help="builtin arm only")
     args = ap.parse_args()
 
-    jpath = OUT / "confirm_round.json"
+    jpath = OUT / args.journal
     journal = json.loads(jpath.read_text()) if jpath.exists() else {}
 
     # arm 1: RL pilot (greedy, no exploration), games archived
-    rl = run_arm(args.arm, journal, jpath, args.games_per_deck,
-                 args.parallel, ckpt=Path(args.ckpt))
+    rl = None
+    if not args.skip_pilot:
+        rl = run_arm(args.arm, journal, jpath, args.games_per_deck,
+                     args.parallel, ckpt=Path(args.ckpt))
     import sim_server
     with sim_server._SHARED_LOCK:
         for c in sim_server._SHARED.values():
@@ -142,6 +148,10 @@ def main():
     bi = run_arm("builtin", journal, jpath, args.games_per_deck,
                  args.parallel, ckpt=None)
 
+    if rl is None:
+        pb, hb = ci95(bi["wins"], bi["games"])
+        log(f"[confirm-verdict] builtin {pb:.0%} ±{hb:.0%} (baseline only)")
+        return
     pr, hr = ci95(rl["wins"], rl["games"])
     pb, hb = ci95(bi["wins"], bi["games"])
     sep = (pr - hr) > (pb + hb)

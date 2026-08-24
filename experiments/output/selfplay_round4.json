@@ -1,0 +1,275 @@
+{
+ "train": [
+  {
+   "iter": 0,
+   "winrate": 0.406,
+   "lock_frac": 0.531,
+   "eps": 0.4,
+   "loss": 0.1099,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787535721
+  },
+  {
+   "iter": 1,
+   "winrate": 0.453,
+   "lock_frac": 0.438,
+   "eps": 0.39,
+   "loss": 0.1365,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787535810
+  },
+  {
+   "iter": 2,
+   "winrate": 0.453,
+   "lock_frac": 0.484,
+   "eps": 0.39,
+   "loss": 0.1061,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787535887
+  },
+  {
+   "iter": 3,
+   "winrate": 0.438,
+   "lock_frac": 0.484,
+   "eps": 0.38,
+   "loss": 0.1329,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787535961
+  },
+  {
+   "iter": 4,
+   "winrate": 0.469,
+   "lock_frac": 0.281,
+   "eps": 0.37,
+   "loss": 0.0913,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536033
+  },
+  {
+   "iter": 5,
+   "winrate": 0.391,
+   "lock_frac": 0.453,
+   "eps": 0.37,
+   "loss": 0.0684,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536128
+  },
+  {
+   "iter": 6,
+   "winrate": 0.547,
+   "lock_frac": 0.453,
+   "eps": 0.36,
+   "loss": 0.095,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536215
+  },
+  {
+   "iter": 7,
+   "winrate": 0.406,
+   "lock_frac": 0.422,
+   "eps": 0.35,
+   "loss": 0.0689,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536296
+  },
+  {
+   "iter": 8,
+   "winrate": 0.422,
+   "lock_frac": 0.453,
+   "eps": 0.35,
+   "loss": 0.0998,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536374
+  },
+  {
+   "iter": 9,
+   "winrate": 0.438,
+   "lock_frac": 0.438,
+   "eps": 0.34,
+   "loss": 0.1142,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536442
+  },
+  {
+   "iter": 10,
+   "winrate": 0.406,
+   "lock_frac": 0.281,
+   "eps": 0.33,
+   "loss": 0.0702,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536516
+  },
+  {
+   "iter": 11,
+   "winrate": 0.391,
+   "lock_frac": 0.344,
+   "eps": 0.33,
+   "loss": 0.0688,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536596
+  },
+  {
+   "iter": 12,
+   "winrate": 0.422,
+   "lock_frac": 0.375,
+   "eps": 0.32,
+   "loss": 0.0888,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536669
+  },
+  {
+   "iter": 13,
+   "winrate": 0.359,
+   "lock_frac": 0.328,
+   "eps": 0.31,
+   "loss": 0.0655,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536744
+  },
+  {
+   "iter": 14,
+   "winrate": 0.469,
+   "lock_frac": 0.469,
+   "eps": 0.31,
+   "loss": 0.1058,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536818
+  },
+  {
+   "iter": 15,
+   "winrate": 0.484,
+   "lock_frac": 0.312,
+   "eps": 0.3,
+   "loss": 0.1032,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787536902
+  },
+  {
+   "iter": 16,
+   "winrate": 0.484,
+   "lock_frac": 0.359,
+   "eps": 0.29,
+   "loss": 0.0695,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537001
+  },
+  {
+   "iter": 17,
+   "winrate": 0.391,
+   "lock_frac": 0.359,
+   "eps": 0.29,
+   "loss": 0.0761,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537083
+  },
+  {
+   "iter": 18,
+   "winrate": 0.422,
+   "lock_frac": 0.422,
+   "eps": 0.28,
+   "loss": 0.0889,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537155
+  },
+  {
+   "iter": 19,
+   "winrate": 0.484,
+   "lock_frac": 0.406,
+   "eps": 0.27,
+   "loss": 0.0836,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537248
+  },
+  {
+   "iter": 20,
+   "winrate": 0.5,
+   "lock_frac": 0.406,
+   "eps": 0.27,
+   "loss": 0.0677,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537351
+  },
+  {
+   "iter": 21,
+   "winrate": 0.469,
+   "lock_frac": 0.5,
+   "eps": 0.26,
+   "loss": 0.0572,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537444
+  },
+  {
+   "iter": 22,
+   "winrate": 0.375,
+   "lock_frac": 0.312,
+   "eps": 0.25,
+   "loss": 0.0814,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537512
+  },
+  {
+   "iter": 23,
+   "winrate": 0.453,
+   "lock_frac": 0.328,
+   "eps": 0.25,
+   "loss": 0.0391,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537582
+  },
+  {
+   "iter": 24,
+   "winrate": 0.375,
+   "lock_frac": 0.359,
+   "eps": 0.24,
+   "loss": 0.0786,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537656
+  },
+  {
+   "iter": 25,
+   "winrate": 0.453,
+   "lock_frac": 0.328,
+   "eps": 0.23,
+   "loss": 0.0987,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537827
+  },
+  {
+   "iter": 26,
+   "winrate": 0.469,
+   "lock_frac": 0.391,
+   "eps": 0.23,
+   "loss": 0.0736,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787537916
+  }
+ ],
+ "validation": {}
+}

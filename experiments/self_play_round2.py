@@ -1,4 +1,4 @@
-"""Round 2 self-play: ONE pilot, BOTH seats, targeting head live.
+﻿"""Round 2 self-play: ONE pilot, BOTH seats, targeting head live.
 
 Differences from self_play_round.py (round 1, parity-confirmed):
   - Both players route through the bridge (no FORGE_EXT_PLAYER filter):
@@ -73,6 +73,43 @@ class SeatAwarePolicy(RecordingPolicy):
         return super().__call__(state, _stamped=True)
 
 
+def chosen_card(state, reply):
+    if state.get("kind") != "cast":
+        return None
+    if reply == "ok":
+        p = state.get("proposed", [])
+        return p[0] if p else None
+    if reply.startswith("force\t"):
+        idx = int(reply.split("\t")[1])
+        return next((c["card"] for c in state.get("candidates", [])
+                     if c["i"] == idx), None)
+    return None
+
+
+def shaped_bonus(dec, locks, feat, ramp_w, lock_w):
+    """Small shaped rewards, our seat only. Win/loss stays dominant:
+    ramp = ramp_w * min(1, lands in play by turn 5 / 5)
+    lock = lock_w * (16 - first lock cast turn)/12, clamped to [0, lock_w]
+    """
+    from train_pilot2 import norm
+    lands5, first_lock = 0, None
+    for s, r in dec:
+        if s.get("kind") == "game_end":
+            continue
+        t = s.get("turn", 0)
+        if t <= 5:
+            n = sum(1 for c in s.get("my_battlefield", [])
+                    if norm(c["n"] if isinstance(c, dict) else c)
+                    in feat.lands)
+            lands5 = max(lands5, n)
+        if first_lock is None and chosen_card(s, r) in locks:
+            first_lock = t
+    ramp = ramp_w * min(1.0, lands5 / 5.0)
+    lock = (lock_w * max(0.0, min(1.0, (16 - first_lock) / 12.0))
+            if first_lock is not None else 0.0)
+    return ramp + lock, first_lock
+
+
 def split_seats(buffer):
     """-> {player_name: (decisions, won)} using each seat's game_end.
 
@@ -121,19 +158,32 @@ def main():
     ap.add_argument("--eps-floor", type=float, default=0.1)
     ap.add_argument("--parallel", type=int, default=8)
     ap.add_argument("--ckpt", default=str(OUT / "pilot2_v4.pt"))
+    ap.add_argument("--tag", default="2",
+                    help="round tag: journal/ckpt/archive names")
+    ap.add_argument("--mull", action="store_true",
+                    help="route mulligans through the bridge")
+    ap.add_argument("--ramp-bonus", type=float, default=0.0,
+                    help="reward for lands in play by turn 5 (our seat)")
+    ap.add_argument("--lock-credit", type=float, default=0.0,
+                    help="per-decision advantage boost for early lock "
+                    "casts (surgical gradient, not trajectory-diluted)")
     args = ap.parse_args()
     locks = args.lock if args.lock else ["Random Encounter"]
+    global TAG
+    TAG = args.tag
 
     import torch
-    jpath = OUT / "selfplay_round2.json"
+    if args.mull:
+        os.environ["FORGE_EXT_MULL"] = "1"
+    jpath = OUT / f"selfplay_round{args.tag}.json"
     journal = (json.loads(jpath.read_text()) if jpath.exists()
                else {"train": [], "validation": {}})
 
     def save():
         jpath.write_text(json.dumps(journal, indent=1))
 
-    rl_ckpt = OUT / "pilot2_rl2.pt"
-    rl_state = OUT / "pilot2_rl2_state.pt"
+    rl_ckpt = OUT / f"pilot2_rl{args.tag}.pt"
+    rl_state = OUT / f"pilot2_rl{args.tag}_state.pt"
 
     inner = ModelPolicy(ckpt=Path(args.ckpt))
     assert inner.has_tgt, "checkpoint lacks target head - run train_targets"
@@ -156,17 +206,17 @@ def main():
     index_lock = threading.Lock()
 
     def archive(it, wk, seq, opp, dec, won):
-        name = f"r2it{it:03d}_w{wk}_{seq:02d}.json.gz"
+        name = f"r{TAG}it{it:03d}_w{wk}_{seq:02d}.json.gz"
         lf = game_lock_frac(dec, set(locks))
         dur = round(sum(s.get("_dt_ms", 0) for s, _r in dec) / 1000, 1)
-        rec = {"iter": f"r2-{it}", "worker": wk, "seq": seq, "opp": opp,
+        rec = {"iter": f"r{TAG}-{it}", "worker": wk, "seq": seq, "opp": opp,
                "won": won, "lock_frac": lf, "deck": DECK, "dur_s": dur,
                "decisions": dec}
         with gzip.open(games_dir / name, "wt", encoding="utf-8") as f:
             json.dump(rec, f, separators=(",", ":"))
         with index_lock, open(OUT / "games_index.jsonl", "a",
                               encoding="utf-8") as f:
-            f.write(json.dumps({"iter": f"r2-{it}", "worker": wk,
+            f.write(json.dumps({"iter": f"r{TAG}-{it}", "worker": wk,
                                 "opp": opp, "won": won, "lock_frac": lf,
                                 "dur_s": dur, "n_dec": len(dec),
                                 "t": int(time.time()), "file": name})
@@ -187,8 +237,12 @@ def main():
                 for name, (dec, won) in seats.items():
                     ours = DECK in name
                     lf = game_lock_frac(dec, set(locks)) if ours else 0.0
-                    reward = (1.0 if won else -1.0) \
-                        + (args.lock_bonus * lf if ours else 0.0)
+                    bonus = 0.0
+                    if ours:
+                        bonus, _flt = shaped_bonus(
+                            dec, set(locks), inner.feat,
+                            args.ramp_bonus, args.lock_bonus)
+                    reward = (1.0 if won else -1.0) + bonus
                     results.append((dec, reward, won, lf, ours))
                     if ours:
                         try:
@@ -211,7 +265,10 @@ def main():
                             for wk in range(nwk)]
                     flown = [r for f in futs for r in f.result()]
                 batch = [(dec, r) for dec, r, _w, _lf, _o in flown]
-                loss = reinforce_update(inner, torch, batch, baseline, opt)
+                lc = ({"locks": set(locks), "w": args.lock_credit}
+                      if args.lock_credit else None)
+                loss = reinforce_update(inner, torch, batch, baseline, opt,
+                                        lock_credit=lc)
                 rewards = [r for _d, r in batch]
                 baseline = 0.7 * baseline + 0.3 * float(np.mean(rewards))
                 ours = [x for x in flown if x[4]]
@@ -241,7 +298,8 @@ def main():
 
     # ---- validation: our seat only, builtin opponent, greedy ------------
     val = journal["validation"]
-    if "rl2" not in val:
+    vkey = f"rl{args.tag}"
+    if vkey not in val:
         per = max(4, args.val_games // len(GAUNTLET))
         chunks_per_g = 4
         per_chunk = max(2, per // chunks_per_g)
@@ -277,15 +335,16 @@ def main():
                 srv.server_close()
         w, n = part["wins"], part["games"]
         p, half = ci95(w, n)
-        val["rl2"] = {"wins": w, "games": n,
+        val[vkey] = {"wins": w, "games": n,
                       "winrate": round(p, 3), "ci": round(half, 3)}
         val.pop("_partial", None)
         save()
 
-    r = val["rl2"]
-    log(f"[verdict] rl2 {r['winrate']:.0%} ±{r['ci']:.0%}"
+    r = val[vkey]
+    log(f"[verdict] {vkey} {r['winrate']:.0%} Â±{r['ci']:.0%}"
         f" vs round-1 rl 27% vs builtin 26% (288-game confirmation arms)")
 
 
 if __name__ == "__main__":
     main()
+

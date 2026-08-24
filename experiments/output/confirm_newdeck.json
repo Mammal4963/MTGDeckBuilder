@@ -1,0 +1,12 @@
+{
+ "builtin": {
+  "wins": 103,
+  "games": 288,
+  "jobs": 36
+ },
+ "rl5": {
+  "wins": 90,
+  "games": 288,
+  "jobs": 36
+ }
+}

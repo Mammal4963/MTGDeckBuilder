@@ -531,6 +531,47 @@ skip the builtin's cast/combat evaluation entirely - we pay its
 thinking cost on every decision otherwise), dashboard deck stats
 (ramp curve, per-iteration first-cast-turn + cast-rate series).
 
+## Rounds 3-5: shaping, mulligans, corrected deck (2026-08-23/24)
+
+Rapid-iteration block; every hypothesis measured, most refuted:
+
+- Model-primary mode (skip builtin's cast/combat eval): NO speedup
+  (2.10 vs 2.13 s/game) - engine + our own candidate enumeration
+  dominate; builtin thinking only matters on rare swarm boards.
+  Shelved.
+- Deck-context token appended to the state: trained trunk pays it
+  ~zero attention (L2 delta 1e-7) - inert. Deck embedding now feeds
+  the mulligan/tuck heads DIRECTLY instead.
+- Per-decision lock credit (gradient on the RE-cast decision itself,
+  earliness-scaled): works - P(cast RE | castable) 5.4% -> 10% over
+  ~40 iters, vs glacial movement under trajectory-level bonus alone.
+  Still far from greedy dominance (argmax 0/255).
+- WHY RE casts average turn ~12: it costs {4}{R}{R} (6 MV), real land
+  curve reaches 6 lands ~turn 8-9, and RE is undrawn by turn 6 in 38%
+  of games. Turn-6 casts need the perfect ramp curve; realistic
+  average floor is ~8-9, not 6.
+- Corrected decklist (-4 Threefold Thunderhulk, +1 Coliseum Behemoth,
+  +1 Ghalta, +2 Pelakka Wurm): builtin baseline jumped 26% -> 36% +-6%
+  at 288 games - the deck fix is worth ~10 points by itself. ALL
+  old-deck arms are obsolete as baselines.
+- Mulligan ownership rung 1: keep/mull + London tuck heads BC'd from
+  builtin (old-deck data). First trainer collapsed to bias (frozen
+  trunk is near-blind on turn-0 hand-only states); fixed with direct
+  hand features (lands, curve, early plays). But live A/B on the new
+  deck: pilot mulligans 27% vs builtin mulligans 34% on the same
+  checkpoint - the head UNDER-mulls (kept 96/98 hands) and costs
+  points. Disabled until retrained on new-deck collection.
+- Round-5 confirmation (targeting on, mulls builtin, 288 games):
+  rl5 31% +-5% vs builtin 36% +-6% - first time a pilot arm points
+  BELOW builtin (CIs graze). Suspects: shaping tax on general play,
+  or insufficient adaptation to the new list. rl2-on-new-deck arm
+  running to separate the two.
+
+Meta-lesson standing after ~18k games: every capability rung (combat,
+targeting, mulligans) lands mechanically and clones cleanly, but no
+training recipe has yet produced a CONFIRMED winrate gain over the
+builtin teacher at 288-game scale.
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:

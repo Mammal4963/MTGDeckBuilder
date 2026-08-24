@@ -1,0 +1,612 @@
+{
+ "train": [
+  {
+   "iter": 0,
+   "winrate": 0.469,
+   "lock_frac": 0.406,
+   "eps": 0.4,
+   "loss": 0.1173,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539316
+  },
+  {
+   "iter": 1,
+   "winrate": 0.344,
+   "lock_frac": 0.438,
+   "eps": 0.39,
+   "loss": 0.07,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539408
+  },
+  {
+   "iter": 2,
+   "winrate": 0.516,
+   "lock_frac": 0.453,
+   "eps": 0.39,
+   "loss": 0.1026,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539479
+  },
+  {
+   "iter": 3,
+   "winrate": 0.5,
+   "lock_frac": 0.391,
+   "eps": 0.38,
+   "loss": 0.0861,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539554
+  },
+  {
+   "iter": 4,
+   "winrate": 0.547,
+   "lock_frac": 0.406,
+   "eps": 0.37,
+   "loss": 0.079,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539627
+  },
+  {
+   "iter": 5,
+   "winrate": 0.594,
+   "lock_frac": 0.562,
+   "eps": 0.37,
+   "loss": 0.0612,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539709
+  },
+  {
+   "iter": 6,
+   "winrate": 0.562,
+   "lock_frac": 0.469,
+   "eps": 0.36,
+   "loss": 0.1249,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539773
+  },
+  {
+   "iter": 7,
+   "winrate": 0.438,
+   "lock_frac": 0.406,
+   "eps": 0.35,
+   "loss": 0.0344,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539845
+  },
+  {
+   "iter": 8,
+   "winrate": 0.5,
+   "lock_frac": 0.391,
+   "eps": 0.35,
+   "loss": 0.0541,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539917
+  },
+  {
+   "iter": 9,
+   "winrate": 0.453,
+   "lock_frac": 0.391,
+   "eps": 0.34,
+   "loss": 0.1201,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787539991
+  },
+  {
+   "iter": 10,
+   "winrate": 0.531,
+   "lock_frac": 0.453,
+   "eps": 0.33,
+   "loss": 0.0883,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540065
+  },
+  {
+   "iter": 11,
+   "winrate": 0.5,
+   "lock_frac": 0.422,
+   "eps": 0.33,
+   "loss": 0.0479,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540135
+  },
+  {
+   "iter": 12,
+   "winrate": 0.578,
+   "lock_frac": 0.5,
+   "eps": 0.32,
+   "loss": 0.0962,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540194
+  },
+  {
+   "iter": 13,
+   "winrate": 0.453,
+   "lock_frac": 0.312,
+   "eps": 0.31,
+   "loss": 0.0755,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540266
+  },
+  {
+   "iter": 14,
+   "winrate": 0.5,
+   "lock_frac": 0.453,
+   "eps": 0.31,
+   "loss": 0.0625,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540337
+  },
+  {
+   "iter": 15,
+   "winrate": 0.594,
+   "lock_frac": 0.391,
+   "eps": 0.3,
+   "loss": 0.0693,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540405
+  },
+  {
+   "iter": 16,
+   "winrate": 0.578,
+   "lock_frac": 0.5,
+   "eps": 0.29,
+   "loss": 0.092,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540483
+  },
+  {
+   "iter": 17,
+   "winrate": 0.453,
+   "lock_frac": 0.312,
+   "eps": 0.29,
+   "loss": 0.0582,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540548
+  },
+  {
+   "iter": 18,
+   "winrate": 0.438,
+   "lock_frac": 0.422,
+   "eps": 0.28,
+   "loss": 0.0742,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540611
+  },
+  {
+   "iter": 19,
+   "winrate": 0.484,
+   "lock_frac": 0.312,
+   "eps": 0.27,
+   "loss": 0.0395,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540680
+  },
+  {
+   "iter": 20,
+   "winrate": 0.453,
+   "lock_frac": 0.375,
+   "eps": 0.27,
+   "loss": 0.0625,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540757
+  },
+  {
+   "iter": 21,
+   "winrate": 0.422,
+   "lock_frac": 0.328,
+   "eps": 0.26,
+   "loss": 0.0922,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540828
+  },
+  {
+   "iter": 22,
+   "winrate": 0.469,
+   "lock_frac": 0.312,
+   "eps": 0.25,
+   "loss": 0.0878,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540897
+  },
+  {
+   "iter": 23,
+   "winrate": 0.344,
+   "lock_frac": 0.297,
+   "eps": 0.25,
+   "loss": 0.056,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787540967
+  },
+  {
+   "iter": 24,
+   "winrate": 0.453,
+   "lock_frac": 0.281,
+   "eps": 0.24,
+   "loss": 0.0769,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541040
+  },
+  {
+   "iter": 25,
+   "winrate": 0.469,
+   "lock_frac": 0.406,
+   "eps": 0.23,
+   "loss": 0.0486,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541212
+  },
+  {
+   "iter": 26,
+   "winrate": 0.562,
+   "lock_frac": 0.375,
+   "eps": 0.23,
+   "loss": 0.0373,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541289
+  },
+  {
+   "iter": 27,
+   "winrate": 0.453,
+   "lock_frac": 0.359,
+   "eps": 0.22,
+   "loss": 0.0504,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541360
+  },
+  {
+   "iter": 28,
+   "winrate": 0.547,
+   "lock_frac": 0.562,
+   "eps": 0.21,
+   "loss": 0.0927,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541434
+  },
+  {
+   "iter": 29,
+   "winrate": 0.516,
+   "lock_frac": 0.5,
+   "eps": 0.21,
+   "loss": 0.1111,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541499
+  },
+  {
+   "iter": 30,
+   "winrate": 0.531,
+   "lock_frac": 0.344,
+   "eps": 0.2,
+   "loss": 0.0226,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541570
+  },
+  {
+   "iter": 31,
+   "winrate": 0.453,
+   "lock_frac": 0.422,
+   "eps": 0.19,
+   "loss": 0.0354,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541640
+  },
+  {
+   "iter": 32,
+   "winrate": 0.438,
+   "lock_frac": 0.344,
+   "eps": 0.19,
+   "loss": 0.0446,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541720
+  },
+  {
+   "iter": 33,
+   "winrate": 0.359,
+   "lock_frac": 0.344,
+   "eps": 0.18,
+   "loss": 0.0687,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541786
+  },
+  {
+   "iter": 34,
+   "winrate": 0.484,
+   "lock_frac": 0.344,
+   "eps": 0.17,
+   "loss": 0.0783,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541864
+  },
+  {
+   "iter": 35,
+   "winrate": 0.344,
+   "lock_frac": 0.328,
+   "eps": 0.17,
+   "loss": 0.0398,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787541944
+  },
+  {
+   "iter": 36,
+   "winrate": 0.516,
+   "lock_frac": 0.312,
+   "eps": 0.16,
+   "loss": 0.011,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542011
+  },
+  {
+   "iter": 37,
+   "winrate": 0.438,
+   "lock_frac": 0.312,
+   "eps": 0.15,
+   "loss": 0.0481,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542094
+  },
+  {
+   "iter": 38,
+   "winrate": 0.422,
+   "lock_frac": 0.312,
+   "eps": 0.15,
+   "loss": 0.0056,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542186
+  },
+  {
+   "iter": 39,
+   "winrate": 0.406,
+   "lock_frac": 0.25,
+   "eps": 0.14,
+   "loss": 0.0049,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542254
+  },
+  {
+   "iter": 40,
+   "winrate": 0.5,
+   "lock_frac": 0.344,
+   "eps": 0.13,
+   "loss": 0.0315,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542330
+  },
+  {
+   "iter": 41,
+   "winrate": 0.406,
+   "lock_frac": 0.312,
+   "eps": 0.13,
+   "loss": 0.0569,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542403
+  },
+  {
+   "iter": 42,
+   "winrate": 0.406,
+   "lock_frac": 0.297,
+   "eps": 0.12,
+   "loss": 0.0543,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542470
+  },
+  {
+   "iter": 43,
+   "winrate": 0.391,
+   "lock_frac": 0.328,
+   "eps": 0.11,
+   "loss": 0.0286,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542548
+  },
+  {
+   "iter": 44,
+   "winrate": 0.422,
+   "lock_frac": 0.312,
+   "eps": 0.11,
+   "loss": 0.0512,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542622
+  },
+  {
+   "iter": 45,
+   "winrate": 0.562,
+   "lock_frac": 0.469,
+   "eps": 0.1,
+   "loss": 0.0875,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542690
+  },
+  {
+   "iter": 46,
+   "winrate": 0.438,
+   "lock_frac": 0.297,
+   "eps": 0.1,
+   "loss": 0.0382,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542757
+  },
+  {
+   "iter": 47,
+   "winrate": 0.438,
+   "lock_frac": 0.25,
+   "eps": 0.1,
+   "loss": 0.0384,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542824
+  },
+  {
+   "iter": 48,
+   "winrate": 0.484,
+   "lock_frac": 0.297,
+   "eps": 0.1,
+   "loss": 0.0335,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542886
+  },
+  {
+   "iter": 49,
+   "winrate": 0.375,
+   "lock_frac": 0.312,
+   "eps": 0.1,
+   "loss": 0.0751,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787542955
+  },
+  {
+   "iter": 50,
+   "winrate": 0.484,
+   "lock_frac": 0.234,
+   "eps": 0.1,
+   "loss": -0.0095,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543129
+  },
+  {
+   "iter": 51,
+   "winrate": 0.5,
+   "lock_frac": 0.281,
+   "eps": 0.1,
+   "loss": 0.0756,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543206
+  },
+  {
+   "iter": 52,
+   "winrate": 0.5,
+   "lock_frac": 0.266,
+   "eps": 0.1,
+   "loss": 0.0239,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543279
+  },
+  {
+   "iter": 53,
+   "winrate": 0.516,
+   "lock_frac": 0.312,
+   "eps": 0.1,
+   "loss": 0.0225,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543353
+  },
+  {
+   "iter": 54,
+   "winrate": 0.453,
+   "lock_frac": 0.219,
+   "eps": 0.1,
+   "loss": 0.017,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543422
+  },
+  {
+   "iter": 55,
+   "winrate": 0.359,
+   "lock_frac": 0.266,
+   "eps": 0.1,
+   "loss": 0.0397,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543495
+  },
+  {
+   "iter": 56,
+   "winrate": 0.391,
+   "lock_frac": 0.281,
+   "eps": 0.1,
+   "loss": 0.0899,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543564
+  },
+  {
+   "iter": 57,
+   "winrate": 0.422,
+   "lock_frac": 0.234,
+   "eps": 0.1,
+   "loss": 0.0013,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543636
+  },
+  {
+   "iter": 58,
+   "winrate": 0.438,
+   "lock_frac": 0.203,
+   "eps": 0.1,
+   "loss": 0.047,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543706
+  },
+  {
+   "iter": 59,
+   "winrate": 0.453,
+   "lock_frac": 0.25,
+   "eps": 0.1,
+   "loss": 0.0281,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787543779
+  }
+ ],
+ "validation": {
+  "rl5": {
+   "wins": 28,
+   "games": 96,
+   "winrate": 0.292,
+   "ci": 0.091
+  }
+ }
+}

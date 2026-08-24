@@ -400,6 +400,8 @@ async function tick() {
         `${(100 * v.winrate).toFixed(0)}% &plusmn;${(100 * v.ci).toFixed(0)}%`);
     else if (p) cards += card("validation (partial)", `${p.wins}/${p.games}`);
     cards += card("journal age", age + "s", "", age > 3600 ? "stale" : "");
+    if (d.alltime) cards += card("total games", d.alltime.toLocaleString(),
+                                 "all runs, this box");
     if (d.live)
       cards += card("in flight",
         `iter ${d.live.iter}`,
@@ -832,9 +834,11 @@ def main():
         def do_GET(self):
             url = urlparse(self.path)
             if url.path == "/data":
-                # round 2's journal takes over the charts once it exists
-                j2 = OUT / "selfplay_round2.json"
-                active = j2 if j2.exists() else journal
+                # the newest round's journal takes over the charts
+                cands = [p for p in OUT.glob("selfplay_round*.json")
+                         if re.fullmatch(r"selfplay_round\d*\.json", p.name)]
+                cands.sort(key=lambda p: p.stat().st_mtime)
+                active = cands[-1] if cands else journal
                 try:
                     body = json.loads(active.read_text())
                     mtime = active.stat().st_mtime
@@ -861,6 +865,34 @@ def main():
                         pass
                 stage["v4_ckpt"] = (OUT / "pilot2_v4.pt").exists()
                 body["stage"] = stage
+                # all-time games simulated on this box, from every journal
+                total = 0
+                for jf in OUT.glob("selfplay_round*.json"):
+                    if not re.fullmatch(r"selfplay_round\d*\.json", jf.name):
+                        continue
+                    try:
+                        j = json.loads(jf.read_text())
+                        total += sum(e.get("games", 96)
+                                     for e in j.get("train", []))
+                        for v in j.get("validation", {}).values():
+                            if isinstance(v, dict):
+                                total += v.get("games", 0)
+                    except (OSError, json.JSONDecodeError):
+                        pass
+                try:
+                    c = json.loads((OUT / "confirm_round.json").read_text())
+                    total += sum(a.get("games", 0) for a in c.values()
+                                 if isinstance(a, dict))
+                except (OSError, json.JSONDecodeError):
+                    pass
+                for sc, per in (("target_events_state.json", 4),
+                                ("round3_events_state.json", 4)):
+                    try:
+                        total += json.loads(
+                            (OUT / sc).read_text()).get("done", 0) * per
+                    except (OSError, json.JSONDecodeError):
+                        pass
+                body["alltime"] = total
                 # live in-flight iteration from the games index (games
                 # archive per game; the journal only banks per iteration)
                 gidx = OUT / "games_index.jsonl"
@@ -913,7 +945,7 @@ def main():
             elif url.path == "/game":
                 f = parse_qs(url.query).get("f", [""])[0]
                 if not re.fullmatch(
-                        r"(r2)?(it\d+_w\d+|cf\w+_j\d+)_\d+\.json\.gz", f) \
+                        r"(r\d+)?(it\d+_w\d+|cf\w+_j\d+)_\d+\.json\.gz", f) \
                         or not (GAMES / f).exists():
                     self.send_error(404)
                     return

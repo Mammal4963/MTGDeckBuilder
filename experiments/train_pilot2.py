@@ -43,8 +43,13 @@ class Featurizer:
         self.emb = np.load(OUT / "embeddings.npy").astype(np.float32)
         meta = json.loads((OUT / "cards_meta.json").read_text())
         self.rows = {}
+        self.lands = set()
+        self.mv = {}
         for i, m in enumerate(meta):
             self.rows.setdefault(norm(m["name"]), i)
+            if "Land" in m.get("type_line", ""):
+                self.lands.add(norm(m["name"]))
+            self.mv[norm(m["name"])] = m.get("mana_value") or 0
         self.dim = self.emb.shape[1]
         # zones: hand, my bf, opp bf, my graveyard, opp graveyard
         self.tok_dim = self.dim + 5 + 5      # zone one-hot + state feats
@@ -149,6 +154,24 @@ class Featurizer:
             1.0 if c.get("targeted") else 0.0,
         ], np.float32)
         return np.concatenate([self.card_emb(c.get("card", "")), flags])
+
+    def hand_feats(self, s: dict) -> np.ndarray:
+        """Direct mulligan features: the trunk encodes mid-game boards
+        poorly for turn-0 hand-only states, but keep/mull is mostly a
+        land-count + curve question - hand it over explicitly."""
+        hand = s.get("my_hand", [])
+        n = len(hand)
+        n_lands = sum(1 for c in hand if norm(c) in self.lands)
+        mvs = [self.mv.get(norm(c), 0) for c in hand
+               if norm(c) not in self.lands]
+        n_early = sum(1 for v in mvs if v <= 3)   # ramp package visibility
+        return np.array([
+            n / 7.0,
+            n_lands / 7.0,
+            (sum(mvs) / len(mvs) / 8.0) if mvs else 0.0,
+            min(mvs) / 8.0 if mvs else 0.0,
+            n_early / 7.0,
+        ], np.float32)
 
     def tgt_vec(self, c: dict) -> np.ndarray:
         """Protocol v4 target candidate: card embedding (zeros for a

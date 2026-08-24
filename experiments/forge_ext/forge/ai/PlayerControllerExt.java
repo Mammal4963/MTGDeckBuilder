@@ -561,11 +561,39 @@ public class PlayerControllerExt extends PlayerControllerAi {
             stateCommon(sb, "mulligan_tuck");
             sb.append(",\"amount\":").append(amount);
             sb.append(",\"options\":[");
-            names(sb, cards);
+            boolean first = true;
+            for (Card c : cards) {
+                if (!first) {
+                    sb.append(",");
+                }
+                sb.append("{\"id\":").append(c.getId());
+                sb.append(",\"n\":\"").append(esc(c.getName())).append("\"}");
+                first = false;
+            }
             sb.append("],\"proposed\":[");
             names(sb, chosen);
             sb.append("]}\n");
-            roundTrip(sb.toString());   // observe-only this rung
+            String reply = roundTrip(sb.toString());
+            // write path: "tuck\tid,id,..." picks WHICH cards go to the
+            // bottom (must be exactly `amount` valid ids; else builtin)
+            if (reply != null && reply.startsWith("tuck\t")) {
+                forge.game.card.CardCollection pick =
+                        new forge.game.card.CardCollection();
+                for (String s : reply.substring(5).split(",")) {
+                    if (s.isEmpty()) {
+                        continue;
+                    }
+                    int id = Integer.parseInt(s.trim());
+                    for (Card c : cards) {
+                        if (c.getId() == id && !pick.contains(c)) {
+                            pick.add(c);
+                        }
+                    }
+                }
+                if (pick.size() == amount) {
+                    return pick;
+                }
+            }
         } catch (Exception ignored) {
         }
         return chosen;

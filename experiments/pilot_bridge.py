@@ -136,19 +136,33 @@ class ModelPolicy:
                                               nn.ReLU())
                 self.tgt_head = nn.Sequential(nn.Linear(3 * D, D), nn.ReLU(),
                                               nn.Linear(D, 1))
-                # round 3: keep-or-mulligan (logit; sigmoid = P(keep))
-                self.mull_head = nn.Sequential(nn.Linear(D + 1, D), nn.ReLU(),
-                                               nn.Linear(D, 1))
+                # round 3: keep-or-mulligan (logit; sigmoid = P(keep)).
+                # Deck embedding enters DIRECTLY (the trained trunk pays
+                # ~zero attention to the appended deck token), so the
+                # head judges the hand relative to the deck's plan.
+                self.deck_proj = nn.Sequential(nn.Linear(feat.dim, D),
+                                               nn.ReLU())
+                self.mull_head = nn.Sequential(nn.Linear(2 * D + 6, D),
+                                               nn.ReLU(), nn.Linear(D, 1))
+                # London tuck: keep-value per card in the drawn 7
+                self.tuck_head = nn.Sequential(
+                    nn.Linear(D + feat.dim, D), nn.ReLU(), nn.Linear(D, 1))
 
         self.model = Pilot()
         path = self.ckpt or (Path(__file__).resolve().parent
                              / "output" / "pilot2.pt")
-        # strict=False: pre-v4 checkpoints lack tgt_* (they stay at init
-        # and are only consulted when the checkpoint trained them)
-        missing, _unexpected = self.model.load_state_dict(
-            torch.load(path), strict=False)
+        # tolerant load: older checkpoints may lack newer heads (missing
+        # keys) or carry old-shaped ones (dropped) - both stay at init
+        # and are only consulted when the checkpoint trained them
+        sd = torch.load(path)
+        own = self.model.state_dict()
+        filtered = {k: v for k, v in sd.items()
+                    if k in own and own[k].shape == v.shape}
+        missing = [k for k in own if k not in filtered]
+        self.model.load_state_dict(filtered, strict=False)
         self.has_tgt = not any(k.startswith("tgt_") for k in missing)
         self.has_mull = not any(k.startswith("mull_") for k in missing)
+        self.has_tuck = not any(k.startswith("tuck_") for k in missing)
         self.model.eval()
 
     def encode(self, state: dict):
@@ -203,12 +217,39 @@ class ModelPolicy:
                 if not getattr(self, "has_mull", False):
                     return "ok"     # untrained: builtin's keep stands
                 hs, _h, _ids = self.encode(state)
-                ctr = torch.tensor([state.get("cards_to_return", 0) / 7.0])
-                logit = self.model.mull_head(torch.cat([hs, ctr]))
+                import numpy as np
+                dv = self.feat.deck_emb(state.get("player", ""))
+                if dv is None:
+                    dv = np.zeros(self.feat.dim, np.float32)
+                dk = self.model.deck_proj(self.tt(dv))
+                ex = torch.cat([
+                    torch.tensor([state.get("cards_to_return", 0) / 7.0]),
+                    self.tt(self.feat.hand_feats(state))])
+                logit = self.model.mull_head(torch.cat([hs, dk, ex]))
                 t = getattr(self, "temperature", 0.0)
                 p = float(torch.sigmoid(logit / t if t else logit))
                 keep = (torch.rand(1).item() < p) if t else (p > 0.5)
                 return "keep" if keep else "mull"
+
+            if kind == "mulligan_tuck":
+                opts = state.get("options", [])
+                amount = state.get("amount", 0)
+                if not opts or amount <= 0 \
+                        or not getattr(self, "has_tuck", False):
+                    return "ok"     # builtin's bottoming stands
+                import numpy as np
+                dv = self.feat.deck_emb(state.get("player", ""))
+                if dv is None:
+                    dv = np.zeros(self.feat.dim, np.float32)
+                dk = self.model.deck_proj(self.tt(dv))
+                scored = []
+                for o in opts:
+                    v = self.model.tuck_head(torch.cat(
+                        [dk, self.tt(self.feat.card_emb(o.get("n", "")))]))
+                    scored.append((float(v), o["id"]))
+                scored.sort()               # lowest keep-value first
+                ids = [str(i) for _v, i in scored[:amount]]
+                return "tuck\t" + ",".join(ids)
 
             if kind == "target":
                 cands = state.get("candidates", [])

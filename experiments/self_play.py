@@ -99,9 +99,15 @@ def game_lock_frac(decisions, locks):
     return len(seen) / max(1, len(locks))
 
 
-def reinforce_update(model_policy, torch, batch, baseline, lr_opt):
+def reinforce_update(model_policy, torch, batch, baseline, lr_opt,
+                     lock_credit=None):
     """batch: list of (decisions, reward). Recompute log-probs and
-    ascend reward-weighted likelihood."""
+    ascend reward-weighted likelihood.
+
+    lock_credit: optional {"locks": set, "w": float} - adds w*(16-t)/12
+    directly to the advantage of THE decision that cast a locked card
+    (per-decision credit; the trajectory-level bonus alone spreads over
+    ~230 decisions and moves a suppressed prior glacially)."""
     model = model_policy.model
     model.train()
     total_loss = 0.0
@@ -140,14 +146,30 @@ def reinforce_update(model_policy, torch, batch, baseline, lr_opt):
                     if action is None:
                         continue
                     logp = torch.log_softmax(logits, dim=0)[action]
+                    if lock_credit and action < len(cands) \
+                            and cands[action]["card"] in lock_credit["locks"]:
+                        t = state.get("turn", 16)
+                        extra = lock_credit["w"] * max(
+                            0.0, min(1.0, (16 - t) / 12.0))
+                        loss = -extra * logp
+                        loss.backward(retain_graph=True)
+                        total_loss += float(loss.detach())
                 elif kind == "mulligan":
                     if not hasattr(model, "mull_head") \
                             or reply not in ("keep", "mull"):
                         continue
                     hs, _h, _ids = model_policy.encode(state)
-                    ctr = torch.tensor(
-                        [state.get("cards_to_return", 0) / 7.0])
-                    lg = model.mull_head(torch.cat([hs, ctr]))[0]
+                    import numpy as _np
+                    dv = model_policy.feat.deck_emb(state.get("player", ""))
+                    if dv is None:
+                        dv = _np.zeros(model_policy.feat.dim, _np.float32)
+                    dk = model.deck_proj(model_policy.tt(dv))
+                    ex = torch.cat([
+                        torch.tensor(
+                            [state.get("cards_to_return", 0) / 7.0]),
+                        model_policy.tt(
+                            model_policy.feat.hand_feats(state))])
+                    lg = model.mull_head(torch.cat([hs, dk, ex]))[0]
                     logp = -torch.nn.functional \
                         .binary_cross_entropy_with_logits(
                             lg, torch.tensor(
