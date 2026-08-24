@@ -512,8 +512,10 @@ function renderConfirm(c, journalName) {
     "Confirmation runs — 288 games/arm, greedy pilots vs builtin";
   const TARGET = 288;
   let html = "";
-  const armColor = {rl2: "#5aa9e6", rl: "#8b93a1", builtin: "#e6785a"};
-  for (const arm of ["rl2", "rl", "builtin"]) {
+  const armColor = {rl8: "#7ce38b", rl7: "#5aa9e6", builtin: "#e6785a"};
+  const arms = Object.keys(c).filter(k => k !== "_mtime")
+    .sort((a, b) => (b === "builtin" ? -1 : a === "builtin" ? 1 : b.localeCompare(a)));
+  for (const arm of arms) {
     const a = c[arm];
     if (!a) continue;
     const p = a.games ? a.wins / a.games : 0;
@@ -915,7 +917,9 @@ def main():
                                             if r.get("lock_frac", 0) > 0)}
                     except (OSError, json.JSONDecodeError, ValueError):
                         pass
-                cpath = OUT / "confirm_round.json"
+                cpath = (OUT / "confirm_newdeck.json"
+                         if (OUT / "confirm_newdeck.json").exists()
+                         else OUT / "confirm_round.json")
                 if cpath.exists():
                     try:
                         body["confirm"] = json.loads(cpath.read_text())
