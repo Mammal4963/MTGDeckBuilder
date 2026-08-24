@@ -42,7 +42,7 @@ import pilot_bridge  # noqa: E402
 from pilot_bridge import ModelPolicy, start_server, run_bridged  # noqa: E402
 from improve_deck import ci95  # noqa: E402
 from self_play import (RecordingPolicy, reinforce_update,  # noqa: E402
-                       game_lock_frac)
+                       ppo_update, game_lock_frac)
 
 OUT = Path(__file__).resolve().parent / "output"
 DECK = "fac_roaming"
@@ -167,6 +167,11 @@ def main():
     ap.add_argument("--lock-credit", type=float, default=0.0,
                     help="per-decision advantage boost for early lock "
                     "casts (surgical gradient, not trajectory-diluted)")
+    ap.add_argument("--ppo-epochs", type=int, default=0,
+                    help=">0: PPO update (value-head baseline + clipped "
+                    "K-epoch replay) instead of one-shot REINFORCE")
+    ap.add_argument("--max-decisions", type=int, default=12000,
+                    help="PPO: subsample cap per batch (update cost)")
     args = ap.parse_args()
     locks = args.lock if args.lock else ["Random Encounter"]
     global TAG
@@ -267,8 +272,15 @@ def main():
                 batch = [(dec, r) for dec, r, _w, _lf, _o in flown]
                 lc = ({"locks": set(locks), "w": args.lock_credit}
                       if args.lock_credit else None)
-                loss = reinforce_update(inner, torch, batch, baseline, opt,
-                                        lock_credit=lc)
+                if args.ppo_epochs > 0:
+                    loss, vloss, meanv = ppo_update(
+                        inner, torch, batch, opt,
+                        epochs=args.ppo_epochs, lock_credit=lc,
+                        max_decisions=args.max_decisions)
+                else:
+                    loss = reinforce_update(inner, torch, batch,
+                                            baseline, opt, lock_credit=lc)
+                    vloss = meanv = None
                 rewards = [r for _d, r in batch]
                 baseline = 0.7 * baseline + 0.3 * float(np.mean(rewards))
                 ours = [x for x in flown if x[4]]
@@ -279,6 +291,9 @@ def main():
                          "eps": round(eps, 2), "loss": round(loss, 4),
                          "games": len(ours), "trajs": len(flown),
                          "t": int(time.time())}
+                if vloss is not None:
+                    entry["vloss"] = round(vloss, 4)
+                    entry["meanV"] = round(meanv, 3)
                 journal["train"].append(entry)
                 log(f"[train] {json.dumps(entry)}")
                 torch.save(inner.model.state_dict(), rl_ckpt)

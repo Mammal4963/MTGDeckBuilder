@@ -170,4 +170,28 @@
   },
   {
    "iter": 14,
-   
+   "winrate": 0.578,
+   "lock_frac": 0.516,
+   "eps": 0.31,
+   "loss": -0.027,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787576884,
+   "vloss": 0.9323,
+   "meanV": 0.133
+  },
+  {
+   "iter": 15,
+   "winrate": 0.5,
+   "lock_frac": 0.594,
+   "eps": 0.3,
+   "loss": -0.0278,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787576965,
+   "vloss": 0.8939,
+   "meanV": 0.185
+  }
+ ],
+ "validation": {}
+}

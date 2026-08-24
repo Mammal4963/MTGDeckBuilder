@@ -1,4 +1,4 @@
-"""Rung 2: external-policy pilot bridge - Python side + A/B experiment.
+﻿"""Rung 2: external-policy pilot bridge - Python side + A/B experiment.
 
 The Java side (forge_ext/) shadows LobbyPlayerAi on the classpath and
 routes every "what does the AI want to cast?" decision through a
@@ -147,6 +147,9 @@ class ModelPolicy:
                 # London tuck: keep-value per card in the drawn 7
                 self.tuck_head = nn.Sequential(
                     nn.Linear(D + feat.dim, D), nn.ReLU(), nn.Linear(D, 1))
+                # PPO: state-value head (expected final reward from here)
+                self.val_head = nn.Sequential(nn.Linear(D, D), nn.ReLU(),
+                                              nn.Linear(D, 1))
 
         self.model = Pilot()
         path = self.ckpt or (Path(__file__).resolve().parent

@@ -1,4 +1,4 @@
-"""Live dashboard for self-play training: charts the journal as it grows,
+﻿"""Live dashboard for self-play training: charts the journal as it grows,
 counts games, and lets you open any archived training game and step
 through every decision the pilot made in it.
 
@@ -54,11 +54,12 @@ def chosen_card(state, reply):
 
 
 def iter_num(v):
-    """games_index iter field -> orderable int ('r2-12' -> 12, 7 -> 7)."""
+    """games_index iter field -> orderable (round, iter) key, or None
+    for non-training archives (cf-* confirmation games)."""
     if isinstance(v, int):
-        return v
-    m = re.search(r"(\d+)$", str(v))
-    return int(m.group(1)) if m else None
+        return (0, v)
+    m = re.fullmatch(r"r(\d+)-(\d+)", str(v))
+    return (int(m.group(1)), int(m.group(2))) if m else None
 
 
 def compute_stats(limit=600):
@@ -120,7 +121,7 @@ def compute_stats(limit=600):
                 a[0] += cast_turn
                 a[1] += 1
     lock_series = [
-        {"iter": it,
+        {"iter": f"r{it[0]}-{it[1]}" if it[0] else it[1],
          "avg_turn": (round(a[0] / a[1], 2) if a[1] else None),
          "rate": round(a[1] / a[2], 3), "n": a[2]}
         for it, a in sorted(by_iter.items())]
@@ -465,10 +466,10 @@ async function loadStats() {
       draw(document.getElementById("c-lock"),
         [{color: "#e0b050", data: ls.map(e => e.avg_turn)}],
         0, Math.max(10, ...ls.map(e => e.avg_turn || 0)),
-        {x0: ls[0].iter, label: "iteration"});
+        {x0: 0, label: "iterations in window (oldest -> newest)"});
       draw(document.getElementById("c-lockrate"),
         [{color: "#c792ea", data: ls.map(e => e.rate)}], 0, 1,
-        {x0: ls[0].iter, label: "iteration"});
+        {x0: 0, label: "iterations in window (oldest -> newest)"});
     }
     document.getElementById("lock-stats").innerHTML =
       `<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;

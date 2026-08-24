@@ -1,4 +1,4 @@
-"""Rung 5: self-play fine-tuning - REINFORCE over the BC initialization.
+﻿"""Rung 5: self-play fine-tuning - REINFORCE over the BC initialization.
 
 The loop the whole ladder was built for:
   1. the pilot (pilot2 BC weights) plays games through the bridge with
@@ -97,6 +97,191 @@ def game_lock_frac(decisions, locks):
             if chosen in locks:
                 seen.add(chosen)
     return len(seen) / max(1, len(locks))
+
+
+def decision_logp(model_policy, torch, state, reply):
+    """log-prob of the taken action under the CURRENT policy, plus the
+    state encoding hs (for the value head) and the chosen cast card
+    (for lock credit). Returns (logp, hs, chosen) or None."""
+    import numpy as _np
+    model = model_policy.model
+    kind = state.get("kind")
+    if kind == "cast":
+        cands = state.get("candidates", [])
+        if not cands:
+            return None
+        hs, _h, _ids = model_policy.encode(state)
+        logits = torch.cat(
+            [model.cast_head(torch.cat([hs, model.cand_proj(
+                model_policy.tt(model_policy.feat.cand_vec(c)))]))
+             for c in cands] + [model.pass_head(hs)])
+        if reply.startswith("force\t"):
+            idx = int(reply.split("\t")[1])
+            action = next((k for k, c in enumerate(cands)
+                           if c["i"] == idx), None)
+        elif reply.startswith("veto"):
+            action = len(cands)
+        else:
+            proposed = state.get("proposed", [])
+            action = next((k for k, c in enumerate(cands)
+                           if proposed and c["card"] == proposed[0]),
+                          len(cands))
+        if action is None:
+            return None
+        chosen = cands[action]["card"] if action < len(cands) else None
+        return torch.log_softmax(logits, dim=0)[action], hs, chosen
+    if kind == "target":
+        cands = state.get("candidates", [])
+        if not cands or not hasattr(model, "tgt_head"):
+            return None
+        hs, _h, _ids = model_policy.encode(state)
+        hostv = model.cand_proj(model_policy.tt(
+            model_policy.feat.cand_vec({"card": state.get("host", "")})))
+        logits = torch.cat([model.tgt_head(torch.cat(
+            [hs, model.tgt_proj(model_policy.tt(
+                model_policy.feat.tgt_vec(c))), hostv])) for c in cands])
+        if reply.startswith("target\t"):
+            idx = int(reply.split("\t")[1])
+            action = next((k for k, c in enumerate(cands)
+                           if c["i"] == idx), None)
+        else:
+            prop = state.get("proposed", [])
+            action = next((k for k, c in enumerate(cands)
+                           if prop and c["i"] == prop[0]), None)
+        if action is None:
+            return None
+        return torch.log_softmax(logits, dim=0)[action], hs, None
+    if kind == "mulligan":
+        if not hasattr(model, "mull_head") or reply not in ("keep", "mull"):
+            return None
+        hs, _h, _ids = model_policy.encode(state)
+        dv = model_policy.feat.deck_emb(state.get("player", ""))
+        if dv is None:
+            dv = _np.zeros(model_policy.feat.dim, _np.float32)
+        dk = model.deck_proj(model_policy.tt(dv))
+        ex = torch.cat([
+            torch.tensor([state.get("cards_to_return", 0) / 7.0]),
+            model_policy.tt(model_policy.feat.hand_feats(state))])
+        lg = model.mull_head(torch.cat([hs, dk, ex]))[0]
+        logp = -torch.nn.functional.binary_cross_entropy_with_logits(
+            lg, torch.tensor(1.0 if reply == "keep" else 0.0))
+        return logp, hs, None
+    if kind == "attackers" and reply.startswith("attack\t"):
+        hs, h, ids = model_policy.encode(state)
+        want = {int(x) for x in reply[7:].split(",") if x}
+        logps = []
+        for k, x in enumerate(ids):
+            if x is None:
+                continue
+            side, cid, c = x
+            if side != "my" or not c.get("cr") or c.get("tapped"):
+                continue
+            lg = model.atk_head(torch.cat([hs, h[k]]))[0]
+            logps.append(-torch.nn.functional
+                         .binary_cross_entropy_with_logits(
+                             lg, torch.tensor(
+                                 1.0 if cid in want else 0.0)))
+        if not logps:
+            return None
+        return torch.stack(logps).sum(), hs, None
+    if kind == "blockers" and reply.startswith("block\t"):
+        attackers = state.get("attackers", [])
+        if not attackers:
+            return None
+        hs, h, ids = model_policy.encode(state)
+        a_ids = [a["id"] for a in attackers]
+        a_tok = {x[1]: k for k, x in enumerate(ids)
+                 if x is not None and x[1] in set(a_ids)}
+        if len(a_tok) != len(a_ids):
+            return None
+        chosen = {}
+        for pair in reply[6:].split(","):
+            if ":" in pair:
+                b, a = pair.split(":")
+                chosen[int(b)] = int(a)
+        logps = []
+        for k, x in enumerate(ids):
+            if x is None:
+                continue
+            side, cid, c = x
+            if side != "my" or not c.get("cr") or c.get("tapped"):
+                continue
+            scores = torch.cat(
+                [model.blk_head(torch.cat([hs, h[k], h[a_tok[a]]]))
+                 for a in a_ids]
+                + [model.noblk_head(torch.cat([hs, h[k]]))])
+            action = (a_ids.index(chosen[cid])
+                      if cid in chosen else len(a_ids))
+            logps.append(torch.log_softmax(scores, dim=0)[action])
+        if not logps:
+            return None
+        return torch.stack(logps).sum(), hs, None
+    return None
+
+
+def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
+               lock_credit=None, val_coef=0.5, max_decisions=None):
+    """PPO-style: value-head baseline (advantage = R - V(s)) + clipped
+    multi-epoch replay of the same batch. batch: [(decisions, R)].
+    Returns (policy_loss, value_loss, mean_V)."""
+    import numpy as np
+    model = model_policy.model
+    # flatten to (state, reply, R), optionally subsample for cost
+    flat = [(s, r, R) for dec, R in batch for s, r in dec]
+    if max_decisions and len(flat) > max_decisions:
+        idx = np.random.default_rng(0).choice(
+            len(flat), max_decisions, replace=False)
+        flat = [flat[i] for i in sorted(idx)]
+    # epoch 0 pass: old log-probs under the collection policy (frozen)
+    model.eval()
+    old = []
+    with torch.no_grad():
+        for s, r, R in flat:
+            out = decision_logp(model_policy, torch, s, r)
+            old.append(float(out[0]) if out is not None else None)
+    ptot = vtot = vsum = vn = 0.0
+    for ep in range(epochs):
+        model.train()
+        opt.zero_grad()
+        nterms = 0
+        for k, (s, r, R) in enumerate(flat):
+            if old[k] is None:
+                continue
+            try:
+                out = decision_logp(model_policy, torch, s, r)
+                if out is None:
+                    continue
+                logp, hs, chosen = out
+                v = model.val_head(hs)[0]
+                adv = R - float(v.detach())
+                if lock_credit and chosen is not None \
+                        and chosen in lock_credit["locks"]:
+                    t = s.get("turn", 16)
+                    adv += lock_credit["w"] * max(
+                        0.0, min(1.0, (16 - t) / 12.0))
+                ratio = torch.exp(logp - old[k])
+                pl = -torch.min(
+                    ratio * adv,
+                    torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
+                vl = (v - R) ** 2
+                (pl + val_coef * vl).backward()
+                ptot += float(pl.detach())
+                vtot += float(vl.detach())
+                vsum += float(v.detach())
+                vn += 1
+                nterms += 1
+                if nterms % 64 == 0:
+                    torch.nn.utils.clip_grad_norm_(
+                        model.parameters(), 1.0)
+                    opt.step()
+                    opt.zero_grad()
+            except Exception:
+                continue
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        opt.step()
+    model.eval()
+    n = max(1.0, vn)
+    return ptot / n, vtot / n, vsum / n
 
 
 def reinforce_update(model_policy, torch, batch, baseline, lr_opt,
