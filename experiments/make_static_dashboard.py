@@ -131,7 +131,8 @@ deployed)</span><span><i class="dot" style="background:#8b93a1"></i>eps</span></
 <div class="panel"><h2>Confirmation arms — corrected deck, 288 games each,
 greedy vs builtin gauntlet</h2><div id="confirm"></div></div>
 <div class="panel"><h2>Random Encounter — first cast turn &amp; cast rate
-(recent iterations)</h2>
+(recent iterations) <span id="re-stat" style="color:#e0b050;font-weight:400">
+</span></h2>
 <div style="display:flex;gap:20px;flex-wrap:wrap">
 <div style="flex:1;min-width:280px"><div class="legend"><span>
 <i class="dot" style="background:#e0b050"></i>avg first-cast turn</span></div>
@@ -198,11 +199,12 @@ function card(k, v, d) {
          (d ? `<div class="d">${d}</div>` : "") + `</div>`;
 }
 const t = S.train, last = t[t.length - 1] || {};
+const roundNo = (S.round.match(/\\d+/) || ["?"])[0];
 document.getElementById("sub").textContent =
-  `${S.round} · ${t.length} iterations · as of ${S.stamp}`;
+  `Round ${roundNo} · ${t.length} iterations · as of ${S.stamp}`;
 let cards = "";
+cards += card("round", roundNo, `${t.length} iterations`);
 cards += card("total games", S.alltime.toLocaleString(), "all runs");
-cards += card("iterations", t.length, S.round.replace(/\\D+/g, "round "));
 cards += card("last winrate", last.winrate != null ?
               (100 * last.winrate).toFixed(0) + "%" : "–", "self-play");
 cards += card("lock_frac", last.lock_frac != null ?
@@ -225,16 +227,21 @@ for (const arm of Object.keys(S.confirm)) {
   if (!a || !a.games) continue;
   const p = a.wins / a.games;
   const ci = 1.96 * Math.sqrt(p * (1 - p) / a.games);
+  const done = Math.min(100, 100 * a.games / 288);
   ch += `<div style="margin:6px 0">
     <span style="display:inline-block;width:64px">${arm}</span>
     <span style="font-variant-numeric:tabular-nums">${a.wins}/${a.games} =
       ${(100*p).toFixed(0)}% &plusmn;${(100*ci).toFixed(0)}%</span>
     <div style="background:#14161a;border-radius:4px;height:8px;margin-top:3px">
       <div style="background:${armColor[arm] || "#8b93a1"};height:8px;
-        border-radius:4px;width:${100*p}%"></div></div></div>`;
+        border-radius:4px;width:${done}%"></div></div></div>`;
 }
 document.getElementById("confirm").innerHTML =
   ch || "<span style='color:#8b93a1'>no arms yet</span>";
+if (S.stats.lock_first_turn != null)
+  document.getElementById("re-stat").textContent =
+    ` — avg first cast: turn ${S.stats.lock_first_turn}, cast in ` +
+    `${(100 * S.stats.lock_cast_rate).toFixed(0)}% of games`;
 const ls = S.stats.lock_series || [];
 if (ls.length > 1) {
   draw(document.getElementById("c-lock"),
