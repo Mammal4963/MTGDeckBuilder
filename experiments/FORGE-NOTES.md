@@ -652,3 +652,12 @@ pilot2_rl8.pt remains the champion checkpoint (47% +-4% at 600 games,
 same training - it is the evolver rerun with this pilot, or a new
 algorithmic idea (value-derived shaping, curiosity exploration).
 
+
+Round 10 (big-batch/low-eps/low-lr refinement from rl8): confirmation
+112/288 = 39% +-6% - REGRESSED below rl8. Third data point confirms
+rl8 is the peak of this architecture+recipe (rl8 47, rl9 45, rl10 39).
+Training chapter closed: pilot2_rl8.pt is the champion. Going higher
+needs a different class of change (bigger trunk, value-derived
+shaping, curiosity) - or spend the pilot where it already wins: the
+evolver rerun.
+

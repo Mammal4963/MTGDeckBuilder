@@ -371,7 +371,122 @@
    "t": 1787595505,
    "vloss": 0.9566,
    "meanV": 0.231
+  },
+  {
+   "iter": 31,
+   "winrate": 0.531,
+   "lock_frac": 0.531,
+   "eps": 0.04,
+   "loss": -0.0223,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787595659,
+   "vloss": 0.9041,
+   "meanV": 0.285
+  },
+  {
+   "iter": 32,
+   "winrate": 0.508,
+   "lock_frac": 0.516,
+   "eps": 0.04,
+   "loss": -0.0073,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787595791,
+   "vloss": 0.9037,
+   "meanV": 0.334
+  },
+  {
+   "iter": 33,
+   "winrate": 0.484,
+   "lock_frac": 0.422,
+   "eps": 0.04,
+   "loss": 0.0615,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787595920,
+   "vloss": 0.8797,
+   "meanV": 0.259
+  },
+  {
+   "iter": 34,
+   "winrate": 0.43,
+   "lock_frac": 0.477,
+   "eps": 0.03,
+   "loss": -0.004,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787596052,
+   "vloss": 0.9449,
+   "meanV": 0.191
+  },
+  {
+   "iter": 35,
+   "winrate": 0.508,
+   "lock_frac": 0.5,
+   "eps": 0.03,
+   "loss": -0.0079,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787596188,
+   "vloss": 0.9989,
+   "meanV": 0.204
+  },
+  {
+   "iter": 36,
+   "winrate": 0.461,
+   "lock_frac": 0.453,
+   "eps": 0.02,
+   "loss": -0.0071,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787596324,
+   "vloss": 0.9776,
+   "meanV": 0.246
+  },
+  {
+   "iter": 37,
+   "winrate": 0.469,
+   "lock_frac": 0.531,
+   "eps": 0.02,
+   "loss": -0.0079,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787596546,
+   "vloss": 0.8964,
+   "meanV": 0.226
+  },
+  {
+   "iter": 38,
+   "winrate": 0.445,
+   "lock_frac": 0.414,
+   "eps": 0.02,
+   "loss": 0.0179,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787596694,
+   "vloss": 0.8459,
+   "meanV": 0.224
+  },
+  {
+   "iter": 39,
+   "winrate": 0.453,
+   "lock_frac": 0.398,
+   "eps": 0.02,
+   "loss": -0.0045,
+   "games": 128,
+   "trajs": 256,
+   "t": 1787596838,
+   "vloss": 0.8586,
+   "meanV": 0.167
   }
  ],
- "validation": {}
+ "validation": {
+  "rl10": {
+   "wins": 39,
+   "games": 96,
+   "winrate": 0.406,
+   "ci": 0.098
+  }
+ }
 }
