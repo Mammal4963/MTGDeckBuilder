@@ -1,0 +1,29 @@
+name: Deploy site
+
+# Redeploys the mtgdeckbuilder Cloudflare Worker whenever the static
+# bundle in experiments/site changes on the research branch.
+# Requires a CLOUDFLARE_API_TOKEN repository secret (Workers Scripts
+# edit permission on the account below).
+
+on:
+  push:
+    branches: [claude/embeddings-research]
+    paths: ["experiments/site/**"]
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy assets-only worker
+        run: >
+          npx wrangler@4 deploy --assets experiments/site
+          --name mtgdeckbuilder --compatibility-date 2026-08-12
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 60d8eaec923c8b4bda3549d48c8a0016
