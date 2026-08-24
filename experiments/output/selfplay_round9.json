@@ -491,7 +491,242 @@
    "t": 1787587178,
    "vloss": 0.8624,
    "meanV": 0.226
+  },
+  {
+   "iter": 41,
+   "winrate": 0.547,
+   "lock_frac": 0.406,
+   "eps": 0.13,
+   "loss": 0.0007,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587255,
+   "vloss": 0.9366,
+   "meanV": 0.252
+  },
+  {
+   "iter": 42,
+   "winrate": 0.391,
+   "lock_frac": 0.359,
+   "eps": 0.12,
+   "loss": 0.0188,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587328,
+   "vloss": 0.8395,
+   "meanV": 0.214
+  },
+  {
+   "iter": 43,
+   "winrate": 0.438,
+   "lock_frac": 0.344,
+   "eps": 0.11,
+   "loss": 0.0208,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587403,
+   "vloss": 0.8484,
+   "meanV": 0.17
+  },
+  {
+   "iter": 44,
+   "winrate": 0.453,
+   "lock_frac": 0.406,
+   "eps": 0.11,
+   "loss": -0.0751,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587474,
+   "vloss": 0.8649,
+   "meanV": 0.216
+  },
+  {
+   "iter": 45,
+   "winrate": 0.562,
+   "lock_frac": 0.438,
+   "eps": 0.1,
+   "loss": 0.0533,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587551,
+   "vloss": 0.9721,
+   "meanV": 0.23
+  },
+  {
+   "iter": 46,
+   "winrate": 0.484,
+   "lock_frac": 0.484,
+   "eps": 0.1,
+   "loss": 0.0189,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587626,
+   "vloss": 1.0516,
+   "meanV": 0.231
+  },
+  {
+   "iter": 47,
+   "winrate": 0.516,
+   "lock_frac": 0.438,
+   "eps": 0.1,
+   "loss": -0.0217,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587695,
+   "vloss": 0.917,
+   "meanV": 0.292
+  },
+  {
+   "iter": 48,
+   "winrate": 0.5,
+   "lock_frac": 0.453,
+   "eps": 0.1,
+   "loss": 0.0347,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587768,
+   "vloss": 0.8715,
+   "meanV": 0.282
+  },
+  {
+   "iter": 49,
+   "winrate": 0.438,
+   "lock_frac": 0.359,
+   "eps": 0.1,
+   "loss": -0.0011,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787587839,
+   "vloss": 0.8936,
+   "meanV": 0.245
+  },
+  {
+   "iter": 50,
+   "winrate": 0.516,
+   "lock_frac": 0.484,
+   "eps": 0.1,
+   "loss": -0.0132,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588002,
+   "vloss": 0.9315,
+   "meanV": 0.253
+  },
+  {
+   "iter": 51,
+   "winrate": 0.453,
+   "lock_frac": 0.484,
+   "eps": 0.1,
+   "loss": 0.0418,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588083,
+   "vloss": 0.9778,
+   "meanV": 0.274
+  },
+  {
+   "iter": 52,
+   "winrate": 0.453,
+   "lock_frac": 0.375,
+   "eps": 0.1,
+   "loss": 0.0411,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588158,
+   "vloss": 0.9251,
+   "meanV": 0.23
+  },
+  {
+   "iter": 53,
+   "winrate": 0.469,
+   "lock_frac": 0.375,
+   "eps": 0.1,
+   "loss": -0.0058,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588231,
+   "vloss": 0.8417,
+   "meanV": 0.245
+  },
+  {
+   "iter": 54,
+   "winrate": 0.5,
+   "lock_frac": 0.453,
+   "eps": 0.1,
+   "loss": 0.0091,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588302,
+   "vloss": 0.8381,
+   "meanV": 0.238
+  },
+  {
+   "iter": 55,
+   "winrate": 0.422,
+   "lock_frac": 0.516,
+   "eps": 0.1,
+   "loss": -0.0062,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588375,
+   "vloss": 0.8394,
+   "meanV": 0.217
+  },
+  {
+   "iter": 56,
+   "winrate": 0.562,
+   "lock_frac": 0.531,
+   "eps": 0.1,
+   "loss": 0.0011,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588445,
+   "vloss": 0.862,
+   "meanV": 0.26
+  },
+  {
+   "iter": 57,
+   "winrate": 0.484,
+   "lock_frac": 0.438,
+   "eps": 0.1,
+   "loss": 0.0352,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588519,
+   "vloss": 0.9018,
+   "meanV": 0.306
+  },
+  {
+   "iter": 58,
+   "winrate": 0.547,
+   "lock_frac": 0.375,
+   "eps": 0.1,
+   "loss": 0.0404,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588591,
+   "vloss": 0.9824,
+   "meanV": 0.264
+  },
+  {
+   "iter": 59,
+   "winrate": 0.438,
+   "lock_frac": 0.406,
+   "eps": 0.1,
+   "loss": -0.0087,
+   "games": 64,
+   "trajs": 128,
+   "t": 1787588664,
+   "vloss": 0.9084,
+   "meanV": 0.181
   }
  ],
- "validation": {}
+ "validation": {
+  "rl9": {
+   "wins": 42,
+   "games": 96,
+   "winrate": 0.438,
+   "ci": 0.099
+  }
+ }
 }

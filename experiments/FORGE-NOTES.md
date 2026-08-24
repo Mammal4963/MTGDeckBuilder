@@ -644,3 +644,11 @@ Stone-Seeder Hierophant + Copy Land (land-untap mana), Magnanimous
 Magistrate + Shimatsu the Bloodcloaked (sac/reanimate loop). These are
 mechanically coherent hypotheses, unverified as wins - Forge sim or
 manual review is the verification lane.
+
+Round 9 (same PPO recipe from rl8): confirmation 129/288 = 45% +-6% -
+statistically identical to rl8. The recipe has CONVERGED at ~45-47%.
+pilot2_rl8.pt remains the champion checkpoint (47% +-4% at 600 games,
++11 pts over builtin, CI-separated). Next lever is not more of the
+same training - it is the evolver rerun with this pilot, or a new
+algorithmic idea (value-derived shaping, curiosity exploration).
+
