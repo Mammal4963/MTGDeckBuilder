@@ -1,8 +1,8 @@
 {
  "builtin": {
-  "wins": 103,
-  "games": 288,
-  "jobs": 36
+  "wins": 219,
+  "games": 600,
+  "jobs": 75
  },
  "rl5": {
   "wins": 90,
@@ -23,5 +23,10 @@
   "wins": 112,
   "games": 288,
   "jobs": 36
+ },
+ "rl8": {
+  "wins": 282,
+  "games": 600,
+  "jobs": 75
  }
 }

@@ -584,6 +584,31 @@ targeting, mulligans) lands mechanically and clones cleanly, but no
 training recipe has yet produced a CONFIRMED winrate gain over the
 builtin teacher at 288-game scale.
 
+## CONFIRMED GAIN: PPO pilot beats builtin (2026-08-24)
+
+Rounds 7-8 (PPO: value-head baseline, advantage = R - V(s), 3-epoch
+clipped replay; same shaping/heads as round 6) broke the plateau:
+
+    rl8:     282/600 = 47% +-4%
+    builtin: 219/600 = 36% +-4%    -> CI-SEPARATED, p < 0.001
+
+Trajectory at 288-game scale: rl6 31 -> rl7 39 -> rl8 45; extended to
+600/arm for the verdict. The greedy pilot now argmax-casts Random
+Encounter in ~half of castable states (0% for the first six rounds),
+mulligans with its own heads (91% acc / 100% mull-recall BC on
+new-deck data), and owns targets/combat/casts. What made the
+difference, in order: (1) value head turning per-game +-1 into
+per-decision advantages - the credit-assignment fix; (2) 3x replay
+per batch; (3) per-decision lock credit; (4) the corrected decklist.
+Also for the record: PPO source was briefly lost to a botched
+stash/rebase during a concurrent-push untangle and recovered from the
+dangling stash commit via git fsck (e6b68cec) - stash pops during
+active runs writing to tracked files are a trap.
+
+Handoff step 4 is UNLOCKED: rerun the Roaming Encounters evolver with
+pilot2_rl8.pt in the loop (evolve_core policy=), so deck mutations are
+judged by a pilot that actually plays the deck's plan.
+
 ## Combo verification in Forge (2026-08-16, verify_combo.py)
 
 Method evolved across two iterations, both worth remembering:
