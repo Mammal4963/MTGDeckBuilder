@@ -1,4 +1,4 @@
-"""Generate a self-contained static dashboard.html for the public site.
+﻿"""Generate a self-contained static dashboard.html for the public site.
 
 Bakes in: current round's training journal, deck stats (ramp + lock
 series via watch_train.compute_stats), new-deck confirmation arms, and
@@ -549,7 +549,7 @@ async function openGame(f) {
     if (s.turn !== lastTurn) {
       lastTurn = s.turn;
       html += `<div style="color:#8b93a1;font-size:11px;margin-top:8px;
-        text-transform:uppercase;letter-spacing:.05em">turn ${s.turn}
+        text-transform:uppercase;letter-spacing:.05em">turn ${Math.ceil(s.turn/2)}${s.turn % 2 ? "a" : "b"}
         &mdash; life ${s.my_life} vs ${s.opp_life}</div>`;
     }
     const cls = s._eps_forced ? "forced" : sm.combat ? "combat"

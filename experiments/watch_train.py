@@ -93,8 +93,8 @@ def compute_stats(limit=600):
             if g.get("deck") and g["deck"] not in state.get("player",
                                                             g["deck"]):
                 continue          # our seat only
-            t = state.get("turn", 0)
-            bf = state.get("my_battlefield", [])
+            t = (state.get("turn", 0) + 1) // 2   # player turns, not
+            bf = state.get("my_battlefield", [])   # engine half-turns
             nl = nu = 0
             for c in bf:
                 name = c["n"] if isinstance(c, dict) else c
@@ -106,7 +106,7 @@ def compute_stats(limit=600):
             if cast_turn is None and chosen_card(state, reply) in LOCKS:
                 cast_turn = t
         for t, (nl, nu) in per_turn.items():
-            if 1 <= t <= 12:
+            if 1 <= t <= 8:
                 a = ramp.setdefault(t, [0, 0, 0])
                 a[0] += nl
                 a[1] += nu
@@ -722,8 +722,8 @@ function renderBoard(i) {
   const sl = document.getElementById("b-slider");
   sl.value = i;
   document.getElementById("b-pos").textContent = end
-    ? `turn ${s.turn} · end`
-    : `turn ${s.turn} · ${i + 1}/${G.decisions.length}`;
+    ? `turn ${Math.ceil(s.turn/2)} · end`
+    : `turn ${Math.ceil(s.turn/2)} · ${i + 1}/${G.decisions.length}`;
   document.querySelectorAll(".dec.sel").forEach(el =>
     el.classList.remove("sel"));
   const row = document.querySelector(`.dec[data-i="${i}"]`);
@@ -782,7 +782,7 @@ async function openGame(f) {
     if (s.turn !== lastTurn) {
       lastTurn = s.turn;
       html += `<div style="color:#8b93a1;font-size:11px;margin-top:8px;
-        text-transform:uppercase;letter-spacing:.05em">turn ${s.turn}
+        text-transform:uppercase;letter-spacing:.05em">turn ${Math.ceil(s.turn/2)}${s.turn % 2 ? "a" : "b"}
         &mdash; life ${s.my_life} vs ${s.opp_life}</div>`;
     }
     const cls = s._eps_forced ? "forced" : sm.combat ? "combat"
