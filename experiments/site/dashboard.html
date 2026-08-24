@@ -26,6 +26,49 @@
   .dot { display:inline-block; width:8px; height:8px; border-radius:4px;
          margin-right:4px; vertical-align:1px; }
   .win { color:#7ce38b; } .loss { color:#e6785a; }
+  table { width:100%; border-collapse:collapse; font-size:13px;
+          font-variant-numeric:tabular-nums; }
+  th { text-align:left; color:#8b93a1; font-size:11px;
+       text-transform:uppercase; letter-spacing:.05em; padding:4px 8px;
+       border-bottom:1px solid #2a2e36; position:sticky; top:0;
+       background:#1d2026; }
+  td { padding:4px 8px; border-bottom:1px solid #23262d; }
+  tr.g:hover td { background:#23262d; cursor:pointer; }
+  .scroll { max-height:280px; overflow-y:auto; }
+  #board { background:#14161a; border:1px solid #2a2e36; border-radius:8px;
+           padding:10px 14px; margin:10px 0; }
+  .brow { display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+          padding:5px 0; min-height:30px; }
+  .brow .side { color:#8b93a1; font-size:11px; text-transform:uppercase;
+                letter-spacing:.05em; width:74px; flex-shrink:0; }
+  .life { font-size:16px; font-weight:700; width:34px; flex-shrink:0;
+          font-variant-numeric:tabular-nums; }
+  .chip { background:#1d2026; border:1px solid #2a2e36; border-radius:6px;
+          padding:2px 8px; font-size:12px; white-space:nowrap; }
+  .chip.cr { border-color:#4a5160; }
+  .chip.tapped { opacity:.45; transform:rotate(6deg); }
+  .chip.lock { border-color:#e0b050; color:#e0b050; }
+  .chip .pt { color:#8b93a1; margin-left:4px; font-size:11px; }
+  .chip .dmg { color:#e6785a; margin-left:3px; font-size:11px; }
+  .chip.gy { opacity:.6; font-size:11px; padding:1px 6px; }
+  #b-events { border-left:2px solid #2a2e36; margin:2px 0 2px 74px;
+              padding:2px 10px; font-size:12px; color:#aab2bf;
+              min-height:16px; }
+  #b-events .ev-opp { color:#e6785a; } #b-events .ev-my { color:#7ce38b; }
+  #b-nav { display:flex; align-items:center; gap:10px; margin-top:6px; }
+  #b-nav input[type=range] { flex:1; accent-color:#5aa9e6; }
+  #b-pos { color:#8b93a1; font-size:12px; min-width:90px;
+           text-align:right; font-variant-numeric:tabular-nums; }
+  .dec { border-left:3px solid #2a2e36; padding:2px 10px; margin:2px 0; }
+  .dec.acted { border-left-color:#5aa9e6; }
+  .dec.forced { border-left-color:#c792ea; }
+  .dec.combat { border-left-color:#e0b050; }
+  .dec.sel { background:#23262d; outline:1px solid #3a4150; }
+  .dec .meta { color:#8b93a1; font-size:11px; margin-right:8px; }
+  .dec .eps { color:#c792ea; font-size:11px; margin-left:6px; }
+  #insp-body { max-height:280px; overflow-y:auto; }
+  button { background:#2a2e36; color:#d7dae0; border:0; border-radius:6px;
+           padding:4px 12px; font-size:12px; cursor:pointer; }
 </style></head><body><div class="wrap">
 <h1>Neural Pilot Training — Roaming Encounters</h1>
 <div class="sub" id="sub"></div>
@@ -53,11 +96,40 @@ greedy vs builtin gauntlet</h2><div id="confirm"></div></div>
 in play</span><span><i class="dot" style="background:#7ce38b"></i>untapped at
 decision points</span></div>
 <canvas id="c-ramp" style="height:150px"></canvas></div>
+<div class="panel"><h2>Recent games <span id="gcount"
+style="color:#8b93a1;font-weight:400"></span></h2>
+<div class="scroll"><table id="games"></table></div></div>
+<div class="panel" id="inspector" style="display:none">
+<div id="insp-head" style="display:flex;gap:14px;flex-wrap:wrap;
+align-items:baseline;margin-bottom:8px;font-size:13px"></div>
+<button id="insp-close">close</button>
+<div id="board">
+  <div class="brow"><span class="side">opponent</span>
+    <span class="life" id="b-opp-life"></span>
+    <span id="b-opp-bf" style="display:contents"></span></div>
+  <div id="b-events"></div>
+  <div class="brow"><span class="side">pilot</span>
+    <span class="life" id="b-my-life"></span>
+    <span id="b-my-bf" style="display:contents"></span></div>
+  <div class="brow"><span class="side">hand</span>
+    <span id="b-hand" style="display:contents"></span></div>
+  <div class="brow"><span class="side">graveyard</span>
+    <span id="b-gy" style="display:contents"></span></div>
+  <div id="b-nav">
+    <button id="b-prev">&larr;</button>
+    <button id="b-play">&#9654;</button>
+    <button id="b-next">&rarr;</button>
+    <input type="range" id="b-slider" min="0" max="0" value="0">
+    <span id="b-pos"></span>
+  </div>
+</div>
+<div id="insp-body"></div>
+</div>
 <div class="sub">Static snapshot — regenerated at training milestones.
 <a href="index.html">&larr; card map</a></div>
 </div>
 <script>
-const S = {"round": "selfplay_round8.json", "train": [{"iter": 0, "winrate": 0.594, "lock_frac": 0.5, "eps": 0.4, "loss": 0.006, "games": 64, "trajs": 128, "t": 1787575802, "vloss": 0.8849, "meanV": 0.231}, {"iter": 1, "winrate": 0.531, "lock_frac": 0.484, "eps": 0.39, "loss": 0.0378, "games": 64, "trajs": 128, "t": 1787575890, "vloss": 0.8919, "meanV": 0.204}, {"iter": 2, "winrate": 0.531, "lock_frac": 0.516, "eps": 0.39, "loss": -0.0027, "games": 64, "trajs": 128, "t": 1787575976, "vloss": 0.936, "meanV": 0.251}, {"iter": 3, "winrate": 0.469, "lock_frac": 0.391, "eps": 0.38, "loss": 0.015, "games": 64, "trajs": 128, "t": 1787576054, "vloss": 1.0722, "meanV": 0.224}, {"iter": 4, "winrate": 0.672, "lock_frac": 0.516, "eps": 0.37, "loss": -0.0246, "games": 64, "trajs": 128, "t": 1787576124, "vloss": 0.9652, "meanV": 0.26}, {"iter": 5, "winrate": 0.547, "lock_frac": 0.547, "eps": 0.37, "loss": 0.016, "games": 64, "trajs": 128, "t": 1787576201, "vloss": 0.8753, "meanV": 0.255}, {"iter": 6, "winrate": 0.547, "lock_frac": 0.438, "eps": 0.36, "loss": 0.0058, "games": 64, "trajs": 128, "t": 1787576274, "vloss": 0.9807, "meanV": 0.266}, {"iter": 7, "winrate": 0.641, "lock_frac": 0.547, "eps": 0.35, "loss": -0.006, "games": 64, "trajs": 128, "t": 1787576361, "vloss": 0.9246, "meanV": 0.194}, {"iter": 8, "winrate": 0.594, "lock_frac": 0.453, "eps": 0.35, "loss": -0.0045, "games": 64, "trajs": 128, "t": 1787576438, "vloss": 0.9582, "meanV": 0.215}, {"iter": 9, "winrate": 0.5, "lock_frac": 0.438, "eps": 0.34, "loss": 0.0258, "games": 64, "trajs": 128, "t": 1787576511, "vloss": 0.9366, "meanV": 0.221}, {"iter": 10, "winrate": 0.344, "lock_frac": 0.391, "eps": 0.33, "loss": 0.0266, "games": 64, "trajs": 128, "t": 1787576584, "vloss": 0.8333, "meanV": 0.166}, {"iter": 11, "winrate": 0.406, "lock_frac": 0.281, "eps": 0.33, "loss": -0.0115, "games": 64, "trajs": 128, "t": 1787576656, "vloss": 0.8405, "meanV": 0.2}, {"iter": 12, "winrate": 0.438, "lock_frac": 0.422, "eps": 0.32, "loss": 0.0159, "games": 64, "trajs": 128, "t": 1787576739, "vloss": 0.9002, "meanV": 0.198}], "validation": {}, "confirm": {"builtin": {"wins": 103, "games": 288, "jobs": 36}, "rl5": {"wins": 90, "games": 288, "jobs": 36}, "rl2": {"wins": 82, "games": 288, "jobs": 36}, "rl6": {"wins": 89, "games": 288, "jobs": 36}, "rl7": {"wins": 112, "games": 288, "jobs": 36}}, "stats": {"lock_series": [{"iter": "r8-4", "avg_turn": 11.2, "rate": 0.417, "n": 24}, {"iter": "r8-5", "avg_turn": 11.77, "rate": 0.547, "n": 64}, {"iter": "r8-6", "avg_turn": 11.82, "rate": 0.438, "n": 64}, {"iter": "r8-7", "avg_turn": 11.37, "rate": 0.547, "n": 64}, {"iter": "r8-8", "avg_turn": 11.1, "rate": 0.453, "n": 64}, {"iter": "r8-9", "avg_turn": 11.75, "rate": 0.438, "n": 64}, {"iter": "r8-10", "avg_turn": 10.96, "rate": 0.391, "n": 64}, {"iter": "r8-11", "avg_turn": 11.78, "rate": 0.281, "n": 64}, {"iter": "r8-12", "avg_turn": 11.48, "rate": 0.422, "n": 64}, {"iter": "r8-13", "avg_turn": 11.43, "rate": 0.438, "n": 64}], "games": 600, "ramp": {"1": {"lands": 0.47, "untapped": 0.43, "n": 600}, "2": {"lands": 0.99, "untapped": 0.93, "n": 600}, "3": {"lands": 1.43, "untapped": 1.12, "n": 600}, "4": {"lands": 1.93, "untapped": 1.27, "n": 600}, "5": {"lands": 2.44, "untapped": 1.16, "n": 600}, "6": {"lands": 3.09, "untapped": 1.05, "n": 600}, "7": {"lands": 3.54, "untapped": 1.08, "n": 600}, "8": {"lands": 4.07, "untapped": 1.02, "n": 598}, "9": {"lands": 4.53, "untapped": 0.92, "n": 597}, "10": {"lands": 5.03, "untapped": 0.88, "n": 582}, "11": {"lands": 5.39, "untapped": 0.89, "n": 554}, "12": {"lands": 5.86, "untapped": 0.86, "n": 451}}, "lock_cast_rate": 0.438, "lock_first_turn": 11.5, "lock_casts": 263}, "alltime": 34431, "stamp": "Aug 24, 08:06 AM"};
+const S = {"round": "selfplay_round8.json", "train": [{"iter": 0, "winrate": 0.594, "lock_frac": 0.5, "eps": 0.4, "loss": 0.006, "games": 64, "trajs": 128, "t": 1787575802, "vloss": 0.8849, "meanV": 0.231}, {"iter": 1, "winrate": 0.531, "lock_frac": 0.484, "eps": 0.39, "loss": 0.0378, "games": 64, "trajs": 128, "t": 1787575890, "vloss": 0.8919, "meanV": 0.204}, {"iter": 2, "winrate": 0.531, "lock_frac": 0.516, "eps": 0.39, "loss": -0.0027, "games": 64, "trajs": 128, "t": 1787575976, "vloss": 0.936, "meanV": 0.251}, {"iter": 3, "winrate": 0.469, "lock_frac": 0.391, "eps": 0.38, "loss": 0.015, "games": 64, "trajs": 128, "t": 1787576054, "vloss": 1.0722, "meanV": 0.224}, {"iter": 4, "winrate": 0.672, "lock_frac": 0.516, "eps": 0.37, "loss": -0.0246, "games": 64, "trajs": 128, "t": 1787576124, "vloss": 0.9652, "meanV": 0.26}, {"iter": 5, "winrate": 0.547, "lock_frac": 0.547, "eps": 0.37, "loss": 0.016, "games": 64, "trajs": 128, "t": 1787576201, "vloss": 0.8753, "meanV": 0.255}, {"iter": 6, "winrate": 0.547, "lock_frac": 0.438, "eps": 0.36, "loss": 0.0058, "games": 64, "trajs": 128, "t": 1787576274, "vloss": 0.9807, "meanV": 0.266}, {"iter": 7, "winrate": 0.641, "lock_frac": 0.547, "eps": 0.35, "loss": -0.006, "games": 64, "trajs": 128, "t": 1787576361, "vloss": 0.9246, "meanV": 0.194}, {"iter": 8, "winrate": 0.594, "lock_frac": 0.453, "eps": 0.35, "loss": -0.0045, "games": 64, "trajs": 128, "t": 1787576438, "vloss": 0.9582, "meanV": 0.215}, {"iter": 9, "winrate": 0.5, "lock_frac": 0.438, "eps": 0.34, "loss": 0.0258, "games": 64, "trajs": 128, "t": 1787576511, "vloss": 0.9366, "meanV": 0.221}, {"iter": 10, "winrate": 0.344, "lock_frac": 0.391, "eps": 0.33, "loss": 0.0266, "games": 64, "trajs": 128, "t": 1787576584, "vloss": 0.8333, "meanV": 0.166}, {"iter": 11, "winrate": 0.406, "lock_frac": 0.281, "eps": 0.33, "loss": -0.0115, "games": 64, "trajs": 128, "t": 1787576656, "vloss": 0.8405, "meanV": 0.2}, {"iter": 12, "winrate": 0.438, "lock_frac": 0.422, "eps": 0.32, "loss": 0.0159, "games": 64, "trajs": 128, "t": 1787576739, "vloss": 0.9002, "meanV": 0.198}, {"iter": 13, "winrate": 0.469, "lock_frac": 0.438, "eps": 0.31, "loss": 0.0284, "games": 64, "trajs": 128, "t": 1787576808, "vloss": 0.9181, "meanV": 0.222}, {"iter": 14, "winrate": 0.578, "lock_frac": 0.516, "eps": 0.31, "loss": -0.027, "games": 64, "trajs": 128, "t": 1787576884, "vloss": 0.9323, "meanV": 0.133}, {"iter": 15, "winrate": 0.5, "lock_frac": 0.594, "eps": 0.3, "loss": -0.0278, "games": 64, "trajs": 128, "t": 1787576965, "vloss": 0.8939, "meanV": 0.185}, {"iter": 16, "winrate": 0.516, "lock_frac": 0.422, "eps": 0.29, "loss": -0.0243, "games": 64, "trajs": 128, "t": 1787577039, "vloss": 0.8479, "meanV": 0.202}], "validation": {}, "confirm": {"builtin": {"wins": 103, "games": 288, "jobs": 36}, "rl5": {"wins": 90, "games": 288, "jobs": 36}, "rl2": {"wins": 82, "games": 288, "jobs": 36}, "rl6": {"wins": 89, "games": 288, "jobs": 36}, "rl7": {"wins": 112, "games": 288, "jobs": 36}}, "stats": {"lock_series": [{"iter": "r6-118", "avg_turn": 12.45, "rate": 0.355, "n": 31}, {"iter": "r6-119", "avg_turn": 11.22, "rate": 0.281, "n": 64}, {"iter": "r8-14", "avg_turn": 11.67, "rate": 0.48, "n": 25}, {"iter": "r8-15", "avg_turn": 11.79, "rate": 0.594, "n": 64}, {"iter": "r8-16", "avg_turn": 10.78, "rate": 0.422, "n": 64}, {"iter": "r8-17", "avg_turn": 10.9, "rate": 0.453, "n": 64}], "games": 600, "ramp": {"1": {"lands": 0.57, "untapped": 0.55, "n": 600}, "2": {"lands": 0.99, "untapped": 0.97, "n": 600}, "3": {"lands": 1.53, "untapped": 1.15, "n": 600}, "4": {"lands": 1.95, "untapped": 1.31, "n": 600}, "5": {"lands": 2.62, "untapped": 1.21, "n": 600}, "6": {"lands": 3.17, "untapped": 1.03, "n": 600}, "7": {"lands": 3.69, "untapped": 0.97, "n": 600}, "8": {"lands": 4.13, "untapped": 0.94, "n": 600}, "9": {"lands": 4.64, "untapped": 0.86, "n": 600}, "10": {"lands": 5.02, "untapped": 0.84, "n": 584}, "11": {"lands": 5.48, "untapped": 0.95, "n": 560}, "12": {"lands": 5.79, "untapped": 1.04, "n": 471}}, "lock_cast_rate": 0.225, "lock_first_turn": 11.4, "lock_casts": 135}, "games": [{"iter": "r8-17", "worker": 2, "opp": "fac_g2", "won": true, "lock_frac": 0.0, "dur_s": 1.2, "n_dec": 224, "t": 1787577077, "file": "r8it017_w2_07.json.gz"}, {"iter": "r8-17", "worker": 2, "opp": "fac_g0", "won": true, "lock_frac": 1.0, "dur_s": 0.7, "n_dec": 109, "t": 1787577074, "file": "r8it017_w2_06.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g1", "won": true, "lock_frac": 1.0, "dur_s": 1.7, "n_dec": 148, "t": 1787577074, "file": "r8it017_w6_07.json.gz"}, {"iter": "r8-17", "worker": 2, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 2.8, "n_dec": 163, "t": 1787577072, "file": "r8it017_w2_05.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g1", "won": false, "lock_frac": 1.0, "dur_s": 2.7, "n_dec": 135, "t": 1787577071, "file": "r8it017_w0_07.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g0", "won": true, "lock_frac": 1.0, "dur_s": 2.5, "n_dec": 162, "t": 1787577070, "file": "r8it017_w6_06.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g1", "won": false, "lock_frac": 0.0, "dur_s": 0.5, "n_dec": 95, "t": 1787577070, "file": "r8it017_w4_07.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g1", "won": false, "lock_frac": 0.0, "dur_s": 0.7, "n_dec": 103, "t": 1787577069, "file": "r8it017_w1_07.json.gz"}, {"iter": "r8-17", "worker": 2, "opp": "fac_g2", "won": true, "lock_frac": 0.0, "dur_s": 4.7, "n_dec": 249, "t": 1787577069, "file": "r8it017_w2_04.json.gz"}, {"iter": "r8-17", "worker": 5, "opp": "fac_g1", "won": false, "lock_frac": 0.0, "dur_s": 1.8, "n_dec": 135, "t": 1787577068, "file": "r8it017_w5_07.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g2", "won": true, "lock_frac": 1.0, "dur_s": 3.2, "n_dec": 189, "t": 1787577068, "file": "r8it017_w4_06.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g1", "won": false, "lock_frac": 0.0, "dur_s": 2.6, "n_dec": 143, "t": 1787577067, "file": "r8it017_w6_05.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 1.3, "n_dec": 153, "t": 1787577067, "file": "r8it017_w1_06.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g1", "won": true, "lock_frac": 1.0, "dur_s": 1.0, "n_dec": 127, "t": 1787577066, "file": "r8it017_w0_06.json.gz"}, {"iter": "r8-17", "worker": 5, "opp": "fac_g0", "won": true, "lock_frac": 1.0, "dur_s": 2.0, "n_dec": 158, "t": 1787577065, "file": "r8it017_w5_06.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g0", "won": false, "lock_frac": 1.0, "dur_s": 3.0, "n_dec": 128, "t": 1787577064, "file": "r8it017_w0_05.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 2.0, "n_dec": 135, "t": 1787577064, "file": "r8it017_w1_05.json.gz"}, {"iter": "r8-17", "worker": 7, "opp": "fac_g1", "won": true, "lock_frac": 1.0, "dur_s": 2.2, "n_dec": 133, "t": 1787577064, "file": "r8it017_w7_07.json.gz"}, {"iter": "r8-17", "worker": 3, "opp": "fac_g0", "won": true, "lock_frac": 1.0, "dur_s": 1.6, "n_dec": 126, "t": 1787577063, "file": "r8it017_w3_07.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g1", "won": false, "lock_frac": 1.0, "dur_s": 2.7, "n_dec": 211, "t": 1787577063, "file": "r8it017_w4_05.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g2", "won": true, "lock_frac": 1.0, "dur_s": 3.1, "n_dec": 179, "t": 1787577062, "file": "r8it017_w6_04.json.gz"}, {"iter": "r8-17", "worker": 5, "opp": "fac_g2", "won": false, "lock_frac": 0.0, "dur_s": 1.5, "n_dec": 129, "t": 1787577061, "file": "r8it017_w5_05.json.gz"}, {"iter": "r8-17", "worker": 3, "opp": "fac_g1", "won": false, "lock_frac": 1.0, "dur_s": 1.9, "n_dec": 118, "t": 1787577060, "file": "r8it017_w3_06.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g1", "won": false, "lock_frac": 1.0, "dur_s": 3.1, "n_dec": 132, "t": 1787577060, "file": "r8it017_w1_04.json.gz"}, {"iter": "r8-17", "worker": 7, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 1.1, "n_dec": 124, "t": 1787577060, "file": "r8it017_w7_06.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g2", "won": false, "lock_frac": 0.0, "dur_s": 1.3, "n_dec": 143, "t": 1787577060, "file": "r8it017_w0_04.json.gz"}, {"iter": "r8-17", "worker": 2, "opp": "fac_g2", "won": true, "lock_frac": 0.0, "dur_s": 3.9, "n_dec": 193, "t": 1787577059, "file": "r8it017_w2_03.json.gz"}, {"iter": "r8-17", "worker": 3, "opp": "fac_g2", "won": false, "lock_frac": 0.0, "dur_s": 0.8, "n_dec": 138, "t": 1787577058, "file": "r8it017_w3_05.json.gz"}, {"iter": "r8-17", "worker": 7, "opp": "fac_g2", "won": false, "lock_frac": 0.0, "dur_s": 1.3, "n_dec": 154, "t": 1787577058, "file": "r8it017_w7_05.json.gz"}, {"iter": "r8-17", "worker": 5, "opp": "fac_g1", "won": false, "lock_frac": 0.0, "dur_s": 2.2, "n_dec": 138, "t": 1787577057, "file": "r8it017_w5_04.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g0", "won": true, "lock_frac": 1.0, "dur_s": 1.5, "n_dec": 154, "t": 1787577057, "file": "r8it017_w4_04.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g2", "won": true, "lock_frac": 0.0, "dur_s": 2.7, "n_dec": 149, "t": 1787577057, "file": "r8it017_w0_03.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g2", "won": false, "lock_frac": 1.0, "dur_s": 1.7, "n_dec": 143, "t": 1787577056, "file": "r8it017_w6_03.json.gz"}, {"iter": "r8-17", "worker": 3, "opp": "fac_g0", "won": true, "lock_frac": 0.0, "dur_s": 1.5, "n_dec": 160, "t": 1787577055, "file": "r8it017_w3_04.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g2", "won": true, "lock_frac": 0.0, "dur_s": 1.5, "n_dec": 150, "t": 1787577055, "file": "r8it017_w1_03.json.gz"}, {"iter": "r8-17", "worker": 7, "opp": "fac_g2", "won": true, "lock_frac": 1.0, "dur_s": 2.1, "n_dec": 138, "t": 1787577054, "file": "r8it017_w7_04.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g1", "won": true, "lock_frac": 1.0, "dur_s": 2.4, "n_dec": 150, "t": 1787577053, "file": "r8it017_w4_03.json.gz"}, {"iter": "r8-17", "worker": 5, "opp": "fac_g1", "won": false, "lock_frac": 0.0, "dur_s": 1.7, "n_dec": 142, "t": 1787577053, "file": "r8it017_w5_03.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g2", "won": false, "lock_frac": 0.0, "dur_s": 1.7, "n_dec": 165, "t": 1787577053, "file": "r8it017_w6_02.json.gz"}, {"iter": "r8-17", "worker": 2, "opp": "fac_g2", "won": false, "lock_frac": 0.0, "dur_s": 1.1, "n_dec": 130, "t": 1787577052, "file": "r8it017_w2_02.json.gz"}, {"iter": "r8-17", "worker": 3, "opp": "fac_g2", "won": true, "lock_frac": 1.0, "dur_s": 2.6, "n_dec": 136, "t": 1787577052, "file": "r8it017_w3_03.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g2", "won": false, "lock_frac": 1.0, "dur_s": 1.8, "n_dec": 137, "t": 1787577051, "file": "r8it017_w0_02.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g1", "won": false, "lock_frac": 1.0, "dur_s": 2.2, "n_dec": 153, "t": 1787577051, "file": "r8it017_w1_02.json.gz"}, {"iter": "r8-17", "worker": 7, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 0.9, "n_dec": 113, "t": 1787577050, "file": "r8it017_w7_03.json.gz"}, {"iter": "r8-17", "worker": 5, "opp": "fac_g2", "won": true, "lock_frac": 0.0, "dur_s": 2.3, "n_dec": 171, "t": 1787577049, "file": "r8it017_w5_02.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g2", "won": true, "lock_frac": 1.0, "dur_s": 1.3, "n_dec": 118, "t": 1787577049, "file": "r8it017_w4_02.json.gz"}, {"iter": "r8-17", "worker": 2, "opp": "fac_g0", "won": true, "lock_frac": 0.0, "dur_s": 3.8, "n_dec": 166, "t": 1787577049, "file": "r8it017_w2_01.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 2.1, "n_dec": 148, "t": 1787577048, "file": "r8it017_w6_01.json.gz"}, {"iter": "r8-17", "worker": 7, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 1.1, "n_dec": 128, "t": 1787577048, "file": "r8it017_w7_02.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g2", "won": true, "lock_frac": 1.0, "dur_s": 2.2, "n_dec": 142, "t": 1787577048, "file": "r8it017_w0_01.json.gz"}, {"iter": "r8-17", "worker": 3, "opp": "fac_g2", "won": false, "lock_frac": 1.0, "dur_s": 1.1, "n_dec": 113, "t": 1787577047, "file": "r8it017_w3_02.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g0", "won": true, "lock_frac": 1.0, "dur_s": 2.7, "n_dec": 166, "t": 1787577047, "file": "r8it017_w1_01.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g2", "won": false, "lock_frac": 0.0, "dur_s": 1.3, "n_dec": 157, "t": 1787577046, "file": "r8it017_w4_01.json.gz"}, {"iter": "r8-17", "worker": 7, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 2.7, "n_dec": 146, "t": 1787577045, "file": "r8it017_w7_01.json.gz"}, {"iter": "r8-17", "worker": 3, "opp": "fac_g0", "won": true, "lock_frac": 1.0, "dur_s": 2.6, "n_dec": 116, "t": 1787577045, "file": "r8it017_w3_01.json.gz"}, {"iter": "r8-17", "worker": 5, "opp": "fac_g1", "won": false, "lock_frac": 0.0, "dur_s": 1.3, "n_dec": 125, "t": 1787577044, "file": "r8it017_w5_01.json.gz"}, {"iter": "r8-17", "worker": 6, "opp": "fac_g0", "won": false, "lock_frac": 1.0, "dur_s": 2.1, "n_dec": 159, "t": 1787577043, "file": "r8it017_w6_00.json.gz"}, {"iter": "r8-17", "worker": 0, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 3.1, "n_dec": 140, "t": 1787577043, "file": "r8it017_w0_00.json.gz"}, {"iter": "r8-17", "worker": 1, "opp": "fac_g0", "won": false, "lock_frac": 0.0, "dur_s": 2.1, "n_dec": 136, "t": 1787577042, "file": "r8it017_w1_00.json.gz"}, {"iter": "r8-17", "worker": 4, "opp": "fac_g2", "won": true, "lock_frac": 1.0, "dur_s": 1.7, "n_dec": 146, "t": 1787577042, "file": "r8it017_w4_00.json.gz"}], "alltime": 34687, "stamp": "Aug 24, 08:11 AM"};
 function draw(cv, series, ymin, ymax, xopts) {
   const x0 = (xopts && xopts.x0) || 0;
   const ctx = cv.getContext("2d");
@@ -168,4 +240,217 @@ if (turns.length)
      {color: "#7ce38b", data: turns.map(t2 => ramp[t2].untapped)}],
     0, Math.max(6, ...turns.map(t2 => ramp[t2].lands)),
     {x0: turns[0], label: "turn"});
+
+// ---------- game feed + inspector ----------
+const LOCKS = ["Random Encounter"];
+let G = null, POS = 0, TIMER = null;
+document.getElementById("gcount").textContent =
+  `— last ${S.games.length} archived training/validation games`;
+document.getElementById("games").innerHTML =
+  "<tr><th>game</th><th>iter</th><th>opp</th><th>result</th>" +
+  "<th>lock</th><th>dur</th></tr>" +
+  S.games.map(g => `<tr class="g" data-f="${g.file}">` +
+    `<td>${g.file.replace(".json.gz", "")}</td><td>${g.iter}</td>` +
+    `<td>${g.opp}</td>` +
+    `<td class="${g.won ? "win" : "loss"}">${g.won ? "WIN" : "loss"}</td>` +
+    `<td>${g.lock_frac ? g.lock_frac.toFixed(1) : "–"}</td>` +
+    `<td>${g.dur_s != null ? g.dur_s + "s" : "–"}</td></tr>`).join("");
+document.querySelectorAll("tr.g").forEach(el =>
+  el.addEventListener("click", () => openGame(el.dataset.f)));
+
+function chipHTML(c, zone) {
+  const obj = typeof c === "object";
+  const name = obj ? c.n : c;
+  let cls = "chip";
+  if (obj && c.cr) cls += " cr";
+  if (obj && c.tapped) cls += " tapped";
+  if (LOCKS.includes(name)) cls += " lock";
+  if (zone === "gy") cls += " gy";
+  let extra = "";
+  if (obj && c.cr) extra += `<span class="pt">${c.p}/${c.t}</span>`;
+  if (obj && c.dmg > 0) extra += `<span class="dmg">-${c.dmg}</span>`;
+  return `<span class="${cls}">${name}${extra}</span>`;
+}
+function bfNames(list) {
+  const m = new Map();
+  (list || []).forEach(c =>
+    m.set(typeof c === "object" ? c.id : c, typeof c === "object" ? c.n : c));
+  return m;
+}
+function summarize(state, reply) {
+  const k = state.kind;
+  if (k === "game_end")
+    return {a: false, txt: `game over — final life ${state.my_life} vs ` +
+            `${state.opp_life}`};
+  if (k === "mulligan")
+    return {a: true, txt: `mulligan decision: <b>${reply}</b> ` +
+      `(hand of ${(state.my_hand || []).length})`};
+  if (k === "target") {
+    const cand = state.candidates || [];
+    const nm = j => { const c = cand.find(c2 => c2.i === j);
+      return c ? (c.kind === "player" ? (c.mine ? "OUR FACE" :
+        "opponent face") : c.n) : "?"; };
+    if (reply.startsWith("target"))
+      return {a: true, txt: `${state.host}: retarget &rarr; ` +
+        `<b>${reply.slice(7).split(",").map(x => nm(+x)).join(", ")}</b>`};
+    return {a: false, txt: `${state.host} targets ` +
+      `<b>${(state.proposed || []).map(nm).join(", ") || "?"}</b>`};
+  }
+  if (k === "cast") {
+    const prop = state.proposed || [];
+    if (reply === "ok")
+      return prop.length ? {a: true, txt: `cast <b>${prop[0]}</b>`}
+                         : {a: false, txt: "pass"};
+    if (reply.startsWith("veto"))
+      return {a: true, txt: `veto <b>${prop.join(", ") || "?"}</b> → pass`};
+    if (reply.startsWith("force")) {
+      const idx = +reply.split("\t")[1];
+      const c = (state.candidates || []).find(c2 => c2.i === idx) || {};
+      return {a: true, txt: `force <b>${c.card || "?"}</b>` +
+              (c.zone === "graveyard" ? " (from graveyard!)" : "")};
+    }
+  }
+  if (k === "attackers") {
+    if (!reply.startsWith("attack")) return {a: false, txt: "observe combat"};
+    const ids = reply.slice(7).split(",").filter(Boolean);
+    const by = {}; (state.my_battlefield || []).forEach(c =>
+        { if (typeof c === "object") by[c.id] = c.n; });
+    return {a: true, combat: true, txt: ids.length ?
+      `attack with <b>${ids.map(i => by[i] || i).join(", ")}</b>` :
+      "no attacks"};
+  }
+  if (k === "blockers") {
+    if (!reply.startsWith("block")) return {a: false, txt: "observe blocks"};
+    const by = {}; (state.my_battlefield || []).forEach(c =>
+        { if (typeof c === "object") by[c.id] = c.n; });
+    const ab = {}; (state.attackers || []).forEach(a => ab[a.id] = a.n || a.id);
+    const pairs = reply.slice(6).split(",").filter(s => s.includes(":"))
+      .map(s => { const [b, a] = s.split(":");
+                  return `${by[b] || b} → ${ab[a] || a}`; });
+    return {a: true, combat: true, txt: pairs.length ?
+      `block: <b>${pairs.join("; ")}</b>` : "no blocks"};
+  }
+  return {a: false, txt: reply};
+}
+function renderBoard(i) {
+  POS = i;
+  const end = i >= G.decisions.length;
+  let idx = end ? G.decisions.length - 1 : i;
+  let [s] = G.decisions[idx];
+  let oppLife = s.opp_life, myLife = s.my_life;
+  if (s.kind === "game_end") {
+    oppLife = s.opp_life; myLife = s.my_life;
+    if (idx > 0) [s] = G.decisions[idx - 1];
+  } else if (end) {
+    if (G.won) oppLife = 0; else myLife = 0;
+  }
+  document.getElementById("b-opp-life").textContent = oppLife;
+  document.getElementById("b-my-life").textContent = myLife;
+  document.getElementById("b-opp-bf").innerHTML =
+    (s.opp_battlefield || []).map(c => chipHTML(c, "bf")).join("") ||
+    "&mdash;";
+  document.getElementById("b-my-bf").innerHTML =
+    (s.my_battlefield || []).map(c => chipHTML(c, "bf")).join("") ||
+    "&mdash;";
+  document.getElementById("b-hand").innerHTML =
+    (s.my_hand || []).map(c => chipHTML(c, "hand")).join("") || "&mdash;";
+  document.getElementById("b-gy").innerHTML =
+    ((s.my_graveyard || []).map(c => chipHTML(c, "gy")).join("") ||
+     "&mdash;") +
+    `<span style="color:#8b93a1;font-size:11px;margin-left:8px">opp gy: ` +
+    `${(s.opp_graveyard || []).length}</span>`;
+  let ev = [];
+  if (!end && i > 0) {
+    const [p] = G.decisions[i - 1];
+    for (const side of ["opp", "my"]) {
+      const prev = bfNames(p[side + "_battlefield"]),
+            cur = bfNames(s[side + "_battlefield"]);
+      const who = side === "opp" ? "opponent" : "pilot";
+      const cls = side === "opp" ? "ev-opp" : "ev-my";
+      for (const [k2, n] of cur) if (!prev.has(k2))
+        ev.push(`<span class="${cls}">${who}: ${n} entered</span>`);
+      for (const [k2, n] of prev) if (!cur.has(k2))
+        ev.push(`<span class="${cls}">${who}: ${n} left</span>`);
+    }
+  }
+  if (end) ev = [G.won
+    ? '<span class="ev-my"><b>GAME OVER — pilot WINS</b></span>'
+    : '<span class="ev-opp"><b>GAME OVER — pilot LOSES</b></span>'];
+  document.getElementById("b-events").innerHTML = ev.length ?
+    (end ? "" : "since last decision: ") + ev.join(" &middot; ") : "";
+  document.getElementById("b-slider").value = i;
+  document.getElementById("b-pos").textContent = end
+    ? `turn ${s.turn} · end`
+    : `turn ${s.turn} · ${i + 1}/${G.decisions.length}`;
+  document.querySelectorAll(".dec.sel").forEach(el =>
+    el.classList.remove("sel"));
+  const row = document.querySelector(`.dec[data-i="${i}"]`);
+  if (row) {
+    row.classList.add("sel");
+    const box = document.getElementById("insp-body");
+    box.scrollTop = row.offsetTop - box.offsetTop - box.clientHeight / 2;
+  }
+}
+function step(d) {
+  renderBoard(Math.max(0, Math.min(G.decisions.length, POS + d)));
+}
+document.getElementById("b-prev").addEventListener("click", () => step(-1));
+document.getElementById("b-next").addEventListener("click", () => step(1));
+document.getElementById("b-play").addEventListener("click", function () {
+  if (TIMER) { clearInterval(TIMER); TIMER = null;
+               this.innerHTML = "&#9654;"; return; }
+  this.innerHTML = "&#9646;&#9646;";
+  TIMER = setInterval(() => {
+    if (POS >= G.decisions.length) { clearInterval(TIMER); TIMER = null;
+      document.getElementById("b-play").innerHTML = "&#9654;"; return; }
+    step(1);
+  }, 700);
+});
+document.getElementById("b-slider").addEventListener("input",
+  function () { renderBoard(+this.value); });
+document.addEventListener("keydown", e => {
+  if (!G) return;
+  if (e.key === "ArrowLeft") { step(-1); e.preventDefault(); }
+  if (e.key === "ArrowRight") { step(1); e.preventDefault(); }
+});
+async function openGame(f) {
+  const resp = await fetch("games/" + f);
+  const ds = new DecompressionStream("gzip");
+  const g = await new Response(resp.body.pipeThrough(ds)).json();
+  G = g;
+  const insp = document.getElementById("inspector");
+  insp.style.display = "block";
+  document.getElementById("insp-head").innerHTML =
+    `<b>${f.replace(".json.gz", "")}</b>` +
+    `<span>${g.deck} vs ${g.opp}</span>` +
+    `<span class="${g.won ? "win" : "loss"}">${g.won ? "WIN" : "LOSS"}</span>` +
+    `<span>lock_frac ${g.lock_frac}</span>` +
+    `<span style="color:#8b93a1">&larr;/&rarr; or slider to step ·` +
+    ` blue = model acted · purple = eps-forced · gold = combat</span>`;
+  document.getElementById("b-slider").max = g.decisions.length;
+  let html = "", lastTurn = null;
+  g.decisions.forEach(([s, reply], i) => {
+    const sm = summarize(s, reply);
+    if (s.turn !== lastTurn) {
+      lastTurn = s.turn;
+      html += `<div style="color:#8b93a1;font-size:11px;margin-top:8px;
+        text-transform:uppercase;letter-spacing:.05em">turn ${s.turn}
+        &mdash; life ${s.my_life} vs ${s.opp_life}</div>`;
+    }
+    const cls = s._eps_forced ? "forced" : sm.combat ? "combat"
+              : sm.a ? "acted" : "";
+    html += `<div class="dec ${cls}" data-i="${i}">` +
+      `<span class="meta">${s.phase || s.kind}</span>${sm.txt}` +
+      (s._eps_forced ? `<span class="eps">eps-forced</span>` : "") +
+      `</div>`;
+  });
+  document.getElementById("insp-body").innerHTML = html;
+  document.querySelectorAll(".dec").forEach(el =>
+    el.addEventListener("click", () => renderBoard(+el.dataset.i)));
+  renderBoard(0);
+  insp.scrollIntoView({behavior: "smooth"});
+}
+document.getElementById("insp-close").addEventListener("click",
+  () => { document.getElementById("inspector").style.display = "none";
+          if (TIMER) { clearInterval(TIMER); TIMER = null; } });
 </script></body></html>
