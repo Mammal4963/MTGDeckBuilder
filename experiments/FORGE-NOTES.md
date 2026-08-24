@@ -567,6 +567,18 @@ Rapid-iteration block; every hypothesis measured, most refuted:
   or insufficient adaptation to the new list. rl2-on-new-deck arm
   running to separate the two.
 
+Round-6 coda (120 iters, retrained mull/tuck heads on new-deck data,
+full decision ownership): gate 33% +-9%, confirmation 31% +-5% vs
+builtin 36% +-6% - identical to rl5's 31%. The extra 60 iterations
+bought nothing. New-deck ladder: rl2 28%, rl5 31%, rl6 31%, builtin
+36%. The corrected list is combat-centric and the builtin's
+simulation-based combat exploits it better than the pilot's learned
+combat heads (trained mostly on old-deck distributions). P(cast RE |
+castable) reached 19% (from 5%) without ever tipping greedy behavior.
+Recommended next: re-anchor by DAgger-cloning the builtin ON THE NEW
+DECK (the ladder's proven fix for distribution shift), then RL from
+that parity point - not more RL from the drifted lineage.
+
 Meta-lesson standing after ~18k games: every capability rung (combat,
 targeting, mulligans) lands mechanically and clones cleanly, but no
 training recipe has yet produced a CONFIRMED winrate gain over the

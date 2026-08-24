@@ -8,5 +8,15 @@
   "wins": 90,
   "games": 288,
   "jobs": 36
+ },
+ "rl2": {
+  "wins": 82,
+  "games": 288,
+  "jobs": 36
+ },
+ "rl6": {
+  "wins": 89,
+  "games": 288,
+  "jobs": 36
  }
 }
