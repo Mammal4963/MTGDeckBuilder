@@ -236,9 +236,14 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
     casts, others = [], []
     for dec, R in batch:
         for s, r in dec:
-            if s.get("kind") == "cast" and s.get("candidates"):
-                casts.append((s, r, R))
-            elif s.get("kind") != "game_end":
+            kind = s.get("kind")
+            if kind == "cast":
+                # candidate-less cast states are unscoreable no-ops
+                # (decision_logp returns None) - routing them to the
+                # CPU fallback wasted 2 forward passes each
+                if s.get("candidates"):
+                    casts.append((s, r, R))
+            elif kind != "game_end":
                 others.append((s, r, R))
     if max_decisions and len(casts) > max_decisions:
         idx = np.random.default_rng(0).choice(
@@ -460,7 +465,10 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                     ratio * adv,
                     torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
                 vl = (v - R) ** 2
-                (pl + val_coef * vl).backward()
+                # mean over the accumulation window, not sum: summed
+                # grads gave this path ~64x the step mass of the GPU
+                # path and let win-biased combat states drag V upward
+                ((pl + val_coef * vl) / 64.0).backward()
                 ptot += float(pl.detach())
                 vtot += float(vl.detach())
                 vsum += float(v.detach())
