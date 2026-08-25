@@ -994,7 +994,7 @@ def main():
             elif url.path == "/game":
                 f = parse_qs(url.query).get("f", [""])[0]
                 if not re.fullmatch(
-                        r"(r\d+)?(it\d+_w\d+|cf\w+_j\d+)_\d+\.json\.gz", f) \
+                        r"(r\d+)?(it\d+_w\d+|cf\w+_j\d+)_\d+b?\.json\.gz", f) \
                         or not (GAMES / f).exists():
                     self.send_error(404)
                     return

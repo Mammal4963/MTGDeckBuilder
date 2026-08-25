@@ -220,13 +220,13 @@ def main():
     games_dir.mkdir(exist_ok=True)
     index_lock = threading.Lock()
 
-    def archive(it, wk, seq, opp, dec, won):
-        name = f"r{TAG}it{it:03d}_w{wk}_{seq:02d}.json.gz"
+    def archive(it, wk, seq, opp, dec, won, deck_label=DECK, side=""):
+        name = f"r{TAG}it{it:03d}_w{wk}_{seq:02d}{side}.json.gz"
         lf = game_lock_frac(dec, set(locks))
         dur = round(sum(s.get("_dt_ms", 0) for s, _r in dec) / 1000, 1)
         rec = {"iter": f"r{TAG}-{it}", "worker": wk, "seq": seq, "opp": opp,
-               "won": won, "lock_frac": lf, "deck": DECK, "dur_s": dur,
-               "decisions": dec}
+               "won": won, "lock_frac": lf, "deck": deck_label,
+               "dur_s": dur, "decisions": dec}
         with gzip.open(games_dir / name, "wt", encoding="utf-8") as f:
             json.dump(rec, f, separators=(",", ":"))
         with index_lock, open(OUT / "games_index.jsonl", "a",
@@ -284,11 +284,16 @@ def main():
                             args.ramp_bonus, args.lock_bonus)
                     reward = (1.0 if won else -1.0) + bonus
                     results.append((dec, reward, won, lf, ours))
-                    if ours:
-                        try:
-                            archive(it, wk, g, opp, dec, won)
-                        except OSError:
-                            pass
+                    # archive EVERY seat of EVERY game: future models
+                    # train on this corpus (the big net already did)
+                    try:
+                        own = re.sub(r"^Ai\(\d\)-", "", name)
+                        other = opp if own == deck_a else deck_a
+                        archive(it, wk, g, other, dec, won,
+                                deck_label=own,
+                                side="" if own == deck_a else "b")
+                    except OSError:
+                        pass
             return results
 
         try:
