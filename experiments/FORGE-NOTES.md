@@ -669,3 +669,10 @@ for winrate. Real finding though: lock_frac held ~0.45 the whole round
 with ZERO lock bonus - the Random Encounter habit is now intrinsic.
 rl8 remains champion. Next per roadmap: bigger trunk (option 2).
 
+
+Option 2 (big trunk, D=256 x4 layers, 3.8M params): distilled from
+champion archives at 78.7% cast-agreement, then PPO. rl12 35% +-6
+(post-distill round), rl13 42% +-6 (continuation) - climbing at the
+same slope the small net showed, one round behind rl8's 47%.
+Continuing.
+

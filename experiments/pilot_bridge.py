@@ -104,8 +104,13 @@ class ModelPolicy:
         self.feat = tp.Featurizer(deck_ctx=deck_ctx)
         # rebuild the architecture exactly as trained
         import torch.nn as nn
+        import os as _os
         feat = self.feat
-        D = tp.D
+        # architecture is env-configurable (option-2 scale-up):
+        # PILOT_D=256 PILOT_LAYERS=4 -> the big trunk; default = classic
+        D = int(_os.environ.get("PILOT_D", tp.D))
+        n_layers = int(_os.environ.get("PILOT_LAYERS", 2))
+        n_head = 8 if D >= 256 else 4
         sdim = feat.scalars({}).shape[0]
         cdim = feat.dim + 3
 
@@ -115,9 +120,9 @@ class ModelPolicy:
                 self.proj = nn.Linear(feat.tok_dim, D)
                 self.state_tok = nn.Parameter(torch.randn(1, D) * 0.02)
                 layer = nn.TransformerEncoderLayer(
-                    d_model=D, nhead=4, dim_feedforward=256,
+                    d_model=D, nhead=n_head, dim_feedforward=2 * D,
                     batch_first=True, dropout=0.1)
-                self.enc = nn.TransformerEncoder(layer, num_layers=2)
+                self.enc = nn.TransformerEncoder(layer, num_layers=n_layers)
                 self.state_mlp = nn.Sequential(nn.Linear(D + sdim, D), nn.ReLU())
                 self.cand_proj = nn.Sequential(nn.Linear(cdim, D), nn.ReLU())
                 self.cast_head = nn.Sequential(nn.Linear(2 * D, D), nn.ReLU(),
