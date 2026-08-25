@@ -694,3 +694,11 @@ backward), full both-seats archiving of every game (training corpus
 for future models), all-games iteration progress, player-turn
 reporting fix (Forge counts half-turns).
 
+
+Round 16 (75/25 curriculum): confirmation 119/288 = 41% +-6%.
+Big-net lineage now: 35, 42, 41, 38, 41 across five rounds - never
+above rl8's 47 +-4. Verdict on option 2: capacity + diversity built a
+BROADER pilot (54 decks, vloss 0.44 record, lock_frac 0.55-0.68
+unforced) but not a STRONGER specialist. pilot2_rl8.pt remains the
+Roaming Encounters champion; pilot2_rl16.pt is the best generalist.
+
