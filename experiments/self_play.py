@@ -219,6 +219,164 @@ def decision_logp(model_policy, torch, state, reply):
     return None
 
 
+def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
+                   lock_credit=None, val_coef=0.5, max_decisions=None,
+                   device="cuda"):
+    """Batched PPO on the GPU for CAST decisions (~90% of the batch):
+    featurize once, pad into big tensors, few large forward passes per
+    epoch. Non-cast kinds (combat/target/mulligan) fall back to the
+    per-decision CPU path afterward with a single extra epoch.
+    Returns (policy_loss, value_loss, mean_V)."""
+    import numpy as np
+    model = model_policy.model
+    feat = model_policy.feat
+    dev = torch.device(device if torch.cuda.is_available() else "cpu")
+
+    # ---- gather + featurize once (model-independent) ----------------
+    casts, others = [], []
+    for dec, R in batch:
+        for s, r in dec:
+            if s.get("kind") == "cast" and s.get("candidates"):
+                casts.append((s, r, R))
+            elif s.get("kind") != "game_end":
+                others.append((s, r, R))
+    if max_decisions and len(casts) > max_decisions:
+        idx = np.random.default_rng(0).choice(
+            len(casts), max_decisions, replace=False)
+        casts = [casts[i] for i in sorted(idx)]
+
+    N = len(casts)
+    if N == 0:
+        return ppo_update(model_policy, torch, batch, opt, epochs=epochs,
+                          clip=clip, lock_credit=lock_credit,
+                          val_coef=val_coef, max_decisions=max_decisions)
+    tok_list, scal_list, cand_list, act_list, extra_adv, rewards = \
+        [], [], [], [], [], []
+    max_tok = 1
+    max_cand = 1
+    for s, r, R in casts:
+        toks, _ids = feat.tokens_and_ids(s)
+        tok_list.append(toks)
+        scal_list.append(feat.scalars(s))
+        cands = s["candidates"]
+        cvecs = np.stack([feat.cand_vec(c) for c in cands])
+        cand_list.append(cvecs)
+        max_tok = max(max_tok, toks.shape[0])
+        max_cand = max(max_cand, len(cands))
+        if r.startswith("force\t"):
+            i = int(r.split("\t")[1])
+            a = next((k for k, c in enumerate(cands) if c["i"] == i),
+                     len(cands))
+        elif r.startswith("veto"):
+            a = len(cands)
+        else:
+            prop = s.get("proposed", [])
+            a = next((k for k, c in enumerate(cands)
+                      if prop and c["card"] == prop[0]), len(cands))
+        act_list.append(a)
+        ex = 0.0
+        if lock_credit and a < len(cands) \
+                and cands[a]["card"] in lock_credit["locks"]:
+            t = s.get("turn", 16)
+            ex = lock_credit["w"] * max(0.0, min(1.0, (16 - t) / 12.0))
+        extra_adv.append(ex)
+        rewards.append(R)
+
+    tdim = tok_list[0].shape[1]
+    cdim = cand_list[0].shape[1]
+    toks = np.zeros((N, max_tok, tdim), np.float32)
+    tmask = np.ones((N, max_tok), bool)          # True = PAD
+    cands_t = np.zeros((N, max_cand, cdim), np.float32)
+    cmask = np.zeros((N, max_cand + 1), bool)    # True = real option
+    for k in range(N):
+        nt = tok_list[k].shape[0]
+        toks[k, :nt] = tok_list[k]
+        tmask[k, :nt] = False
+        nc = cand_list[k].shape[0]
+        cands_t[k, :nc] = cand_list[k]
+        cmask[k, :nc] = True
+        cmask[k, max_cand] = True                # pass option, always last
+    acts = np.array([a if a < cand_list[k].shape[0] else max_cand
+                     for k, a in enumerate(act_list)], np.int64)
+
+    def _opt_to(o, d):
+        for st in o.state.values():
+            for k2, v2 in st.items():
+                if torch.is_tensor(v2):
+                    st[k2] = v2.to(d)
+
+    model.to(dev)
+    _opt_to(opt, dev)
+    toks = torch.from_numpy(toks).to(dev)
+    tmask = torch.from_numpy(tmask).to(dev)
+    scals = torch.from_numpy(np.stack(scal_list)).to(dev)
+    cands_t = torch.from_numpy(cands_t).to(dev)
+    cmask = torch.from_numpy(cmask).to(dev)
+    acts_t = torch.from_numpy(acts).to(dev)
+    R_t = torch.tensor(rewards, dtype=torch.float32, device=dev)
+    ex_t = torch.tensor(extra_adv, dtype=torch.float32, device=dev)
+    D = model.state_tok.shape[1]
+
+    def forward(bs=512):
+        """-> (logp_taken [N], V [N]) in minibatches."""
+        lps, vs = [], []
+        for o in range(0, N, bs):
+            sl = slice(o, o + bs)
+            x = model.proj(toks[sl])
+            st = model.state_tok.expand(x.shape[0], 1, D)
+            x = torch.cat([st, x], dim=1)
+            pad = torch.cat([torch.zeros(x.shape[0], 1, dtype=torch.bool,
+                                         device=dev), tmask[sl]], dim=1)
+            h = model.enc(x, src_key_padding_mask=pad)
+            hs = model.state_mlp(torch.cat([h[:, 0], scals[sl]], dim=1))
+            cp = model.cand_proj(cands_t[sl])
+            hse = hs.unsqueeze(1).expand(-1, cp.shape[1], -1)
+            logits_c = model.cast_head(
+                torch.cat([hse, cp], dim=2)).squeeze(-1)
+            logit_p = model.pass_head(hs)
+            logits = torch.cat([logits_c, logit_p], dim=1)
+            logits = logits.masked_fill(~cmask[sl], -1e9)
+            lp = torch.log_softmax(logits, dim=1)
+            lps.append(lp.gather(1, acts_t[sl].unsqueeze(1)).squeeze(1))
+            vs.append(model.val_head(hs).squeeze(-1))
+        return torch.cat(lps), torch.cat(vs)
+
+    model.eval()
+    with torch.no_grad():
+        old_lp, _v0 = forward()
+        old_lp = old_lp.detach()
+    ptot = vtot = vsum = 0.0
+    for ep in range(epochs):
+        model.train()
+        opt.zero_grad()
+        lp, v = forward()
+        adv = (R_t - v.detach()) + ex_t
+        ratio = torch.exp(lp - old_lp)
+        pl = -torch.min(ratio * adv,
+                        torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
+        vl = (v - R_t) ** 2
+        loss = pl.mean() + val_coef * vl.mean()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        opt.step()
+        ptot += float(pl.mean().detach())
+        vtot += float(vl.mean().detach())
+        vsum += float(v.mean().detach())
+    model.to("cpu")
+    _opt_to(opt, "cpu")
+    if dev.type == "cuda":
+        torch.cuda.empty_cache()
+    # non-cast kinds: one pass of the per-decision CPU path
+    if others:
+        rebatch = {}
+        for s, r, R in others:
+            rebatch.setdefault(R, []).append((s, r))
+        small = [(dec, R) for R, dec in rebatch.items()]
+        ppo_update(model_policy, torch, small, opt, epochs=1, clip=clip,
+                   lock_credit=None, val_coef=val_coef)
+    return ptot / epochs, vtot / epochs, vsum / epochs
+
+
 def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                lock_credit=None, val_coef=0.5, max_decisions=None,
                potential=0.0):

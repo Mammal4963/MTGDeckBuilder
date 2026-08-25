@@ -676,3 +676,10 @@ champion archives at 78.7% cast-agreement, then PPO. rl12 35% +-6
 same slope the small net showed, one round behind rl8's 47%.
 Continuing.
 
+
+Big-trunk arc: rl12 35, rl13 42, rl14 41 (+-6 each) - stalled below
+the small net's 47. Hypothesis: 4 decklists under-feed 3.8M params.
+Round 15 = generalist curriculum (50-deck verified pool, mixed
+matchups, both-seats; shaping/validation unchanged) from rl14, GPU
+updates. Pool grows in future rounds if the gate approves.
+
