@@ -36,7 +36,9 @@ def alltime_games():
             continue
         try:
             j = json.loads(jf.read_text())
-            total += sum(e.get("games", 96) for e in j.get("train", []))
+            total += sum(round(e["trajs"] / 2) if e.get("trajs")
+                         else e.get("games", 96)
+                         for e in j.get("train", []))
             for v in j.get("validation", {}).values():
                 if isinstance(v, dict):
                     total += v.get("games", 0)

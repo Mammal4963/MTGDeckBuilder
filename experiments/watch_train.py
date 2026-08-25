@@ -388,14 +388,18 @@ async function tick() {
     const v = (d.validation && d.validation.rl) || null;
     const p = (d.validation && d.validation._rl_partial) || null;
     const age = Math.round(d.now - d.mtime);
-    const trainGames = t.reduce((a, e) => a + (e.games || 96), 0);
+    // per-iter games: trajs/2 (both seats trained) when present -
+    // the "games" field only counts our-deck perspectives
+    const iterGames = e => e.trajs ? Math.round(e.trajs / 2)
+                                   : (e.games || 96);
+    const trainGames = t.reduce((a, e) => a + iterGames(e), 0);
     const valGames = v ? v.games : (p ? p.games : 0);
     // games/hour from journal timestamps (last 5 stamped iters)
     const st = t.filter(e => e.t).slice(-6);
     let rate = "";
     if (st.length >= 2) {
       const dt = st[st.length-1].t - st[0].t;
-      const g = st.slice(1).reduce((a, e) => a + (e.games || 96), 0);
+      const g = st.slice(1).reduce((a, e) => a + iterGames(e), 0);
       if (dt > 0) rate = Math.round(3600 * g / dt) + "/h · " +
         (60 * g / dt).toFixed(1) + "/min";
     }
@@ -936,7 +940,9 @@ def main():
                         continue
                     try:
                         j = json.loads(jf.read_text())
-                        total += sum(e.get("games", 96)
+                        total += sum(round(e["trajs"] / 2)
+                                     if e.get("trajs")
+                                     else e.get("games", 96)
                                      for e in j.get("train", []))
                         for v in j.get("validation", {}).values():
                             if isinstance(v, dict):
