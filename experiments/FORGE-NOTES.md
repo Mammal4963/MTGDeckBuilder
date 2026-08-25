@@ -683,3 +683,14 @@ Round 15 = generalist curriculum (50-deck verified pool, mixed
 matchups, both-seats; shaping/validation unchanged) from rl14, GPU
 updates. Pool grows in future rounds if the gate approves.
 
+
+Round 15 (generalist, 50-deck pool, 50/50 mix): confirmation 110/288 =
+38% +-6% - roughly held rl14's level (41 +-6) while gaining general
+skill: sharpest value head yet (vloss 0.52) and record unforced
+lock_frac (0.55-0.68 at eps floor). Mild specialist dilution as
+predicted. Round 16: rebalanced 75/25 curriculum. Also shipped:
+GPU-batched PPO (7.9x update speedup; OOM fixed via per-minibatch
+backward), full both-seats archiving of every game (training corpus
+for future models), all-games iteration progress, player-turn
+reporting fix (Forge counts half-turns).
+

@@ -170,6 +170,8 @@ def main():
     ap.add_argument("--gpu", action="store_true",
                     help="batched PPO update on CUDA (casts batched; "
                     "other kinds per-decision)")
+    ap.add_argument("--pool-frac", type=float, default=0.5,
+                    help="fraction of games that are pool-vs-pool")
     ap.add_argument("--deck-pool", default=None,
                     help="dir of verified pool .dck files: mixed "
                     "curriculum (50%% our-deck games vs gauntlet+pool, "
@@ -248,7 +250,7 @@ def main():
             log(f"[pool] {len(deck_pool)} decks in mixed curriculum")
 
         def pick_matchup(rng):
-            if deck_pool and float(rng.random()) < 0.5:
+            if deck_pool and float(rng.random()) < args.pool_frac:
                 i, j = rng.choice(len(deck_pool), 2, replace=False)
                 return deck_pool[int(i)], deck_pool[int(j)]
             opps = GAUNTLET + deck_pool
