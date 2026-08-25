@@ -396,7 +396,8 @@ async function tick() {
     if (st.length >= 2) {
       const dt = st[st.length-1].t - st[0].t;
       const g = st.slice(1).reduce((a, e) => a + (e.games || 96), 0);
-      if (dt > 0) rate = Math.round(3600 * g / dt) + "/h";
+      if (dt > 0) rate = Math.round(3600 * g / dt) + "/h · " +
+        (60 * g / dt).toFixed(1) + "/min";
     }
     let cards = "";
     cards += card("iterations", t.length);
