@@ -396,7 +396,8 @@ def run_bridged(deck_a: str, deck_b: str, games: int, timeout_s: int,
         if port is not None:
             extra = {"FORGE_EXT_POLICY": str(port),
                      "FORGE_EXT_PLAYER": (deck_a if player_filter is None else player_filter)}
-        key = f"bridge-{port}-{player_filter or deck_a}-w{worker}"
+        flt = player_filter if player_filter is not None else deck_a
+        key = f"bridge-{port}-{flt or 'all'}-w{worker}"
         return sim_server.shared_client(key, extra).run(
             deck_a, deck_b, games, quiet=quiet, timeout_s=timeout_s)
     from improve_deck import java_prefix
