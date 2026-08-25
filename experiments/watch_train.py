@@ -542,61 +542,59 @@ function renderProgress(d, t) {
       <div style="background:#5aa9e6;height:10px;border-radius:5px;width:${pct}%"></div>
     </div>` + iterBar;
 }
+
+function confirmRowsV2(c, mountId) {
+  const SC = 0.60;
+  const bi = c.builtin;
+  const pB = bi && bi.games ? bi.wins / bi.games : null;
+  const ciB = pB != null ? 1.96 * Math.sqrt(pB * (1 - pB) / bi.games) : 0;
+  const arms = Object.keys(c)
+    .filter(k => k !== "_mtime" && k !== "builtin" && c[k] && c[k].games)
+    .map(k => {
+      const a = c[k], p = a.wins / a.games;
+      const ci = 1.96 * Math.sqrt(p * (1 - p) / a.games);
+      const m = k.match(/^rl(\d+)(b?)$/);
+      return {k, a, p, ci, n: m ? +m[1] : -1, alt: m ? m[2] : ""};
+    })
+    .sort((x, y) => (y.n - x.n) || x.alt.localeCompare(y.alt));
+  const best = arms.reduce((b, x) => (!b || x.p > b.p) ? x : b, null);
+  function row(label, p, ci, wins, games, color, tag) {
+    const fill = 100 * Math.min(1, p / SC);
+    const lo = 100 * Math.max(0, (p - ci) / SC);
+    const hi = 100 * Math.min(1, (p + ci) / SC);
+    const mark = pB != null ? `<div style="position:absolute;top:-2px;bottom:-2px;left:${100 * pB / SC}%;border-left:2px dashed #e6785a;opacity:.8"></div>` : "";
+    return `<div style="display:flex;align-items:center;gap:10px;margin:5px 0">
+      <span style="width:52px;font-size:12px">${label}</span>
+      <div style="flex:1;position:relative;background:#14161a;border:1px solid #2a2e36;border-radius:4px;height:12px">
+        <div style="position:absolute;top:2px;bottom:2px;left:${lo}%;width:${hi - lo}%;background:${color};opacity:.25;border-radius:3px"></div>
+        <div style="position:absolute;top:2px;bottom:2px;left:0;width:${fill}%;background:${color};border-radius:3px"></div>
+        ${mark}</div>
+      <span style="width:160px;font-size:12px;font-variant-numeric:tabular-nums">${wins}/${games} = ${(100 * p).toFixed(0)}% &plusmn;${(100 * ci).toFixed(0)}% ${tag || ""}</span></div>`;
+  }
+  let html = `<div style="font-size:11px;color:#8b93a1;margin-bottom:4px">bar = winrate, 0&ndash;60% scale &middot; band = 95% CI &middot; dashed line = builtin</div>`;
+  if (pB != null)
+    html += row("builtin", pB, ciB, bi.wins, bi.games, "#e6785a", "");
+  for (const x of arms) {
+    const isBest = best && x.k === best.k;
+    const isLatest = x === arms[0];
+    const color = isBest ? "#7ce38b" : isLatest ? "#5aa9e6" : "#4a5160";
+    html += row(x.k, x.p, x.ci, x.a.wins, x.a.games, color,
+                isBest ? "&#9733; best" : "");
+  }
+  if (best && pB != null) {
+    const sep = (best.p - best.ci) > (pB + ciB);
+    html += `<div style="margin-top:8px;font-size:12px;font-weight:600;color:${sep ? "#7ce38b" : "#e0b050"}">${best.k} ${sep ? "is CI-SEPARATED above builtin" : "leads builtin (CIs overlap)"} &mdash; <span style="font-weight:400;color:#8b93a1">${(100 * best.p).toFixed(0)}% vs ${(100 * pB).toFixed(0)}%</span></div>`;
+  }
+  document.getElementById(mountId).innerHTML = html;
+}
+
 function renderConfirm(c, journalName) {
   const panel = document.getElementById("confirm-panel");
   if (!c) { panel.style.display = "none"; return; }
   panel.style.display = "block";
   panel.querySelector("h2").textContent =
-    "Confirmation runs — 288 games/arm, greedy pilots vs builtin";
-  const TARGET = 288;
-  let html = "";
-  const armColor = {rl8: "#7ce38b", rl7: "#5aa9e6", builtin: "#e6785a"};
-  const arms = Object.keys(c).filter(k => k !== "_mtime")
-    .sort((a, b) => (b === "builtin" ? -1 : a === "builtin" ? 1 : b.localeCompare(a)));
-  for (const arm of arms) {
-    const a = c[arm];
-    if (!a) continue;
-    const p = a.games ? a.wins / a.games : 0;
-    const ci = a.games ? 1.96 * Math.sqrt(p * (1 - p) / a.games) : 0;
-    const done = Math.min(100, 100 * a.games / TARGET);
-    const col = armColor[arm] || "#8b93a1";
-    html += `<div style="margin:6px 0">
-      <span style="display:inline-block;width:60px">${arm}</span>
-      <span style="font-variant-numeric:tabular-nums">${a.wins}/${a.games}
-        = ${(100*p).toFixed(0)}% &plusmn;${(100*ci).toFixed(0)}%</span>
-      <div style="background:#14161a;border-radius:4px;height:8px;margin-top:3px">
-        <div style="background:${col};height:8px;border-radius:4px;width:${done}%"></div>
-      </div></div>`;
-  }
-  const best = c.rl2 || c.rl;
-  if (best && c.builtin && best.games >= TARGET
-      && c.builtin.games >= TARGET) {
-    const pr = best.wins / best.games, pb = c.builtin.wins / c.builtin.games;
-    const hr = 1.96 * Math.sqrt(pr * (1-pr) / best.games);
-    const hb = 1.96 * Math.sqrt(pb * (1-pb) / c.builtin.games);
-    const sep = (pr - hr) > (pb + hb);
-    html += `<div style="margin-top:8px;font-weight:600;color:${sep ?
-      "#7ce38b" : "#e0b050"}">${sep ? "CONFIRMED GAIN" :
-      "verdict: no detectable change (CIs overlap)"} — ` +
-      `<span style="font-weight:400;color:#8b93a1">every pilot arm sits ` +
-      `1–3 pts above builtin; resolving a gap that small needs ` +
-      `~2,000 games/arm</span></div>`;
-  }
-  document.getElementById("confirm-body").innerHTML = html;
-}
-async function loadGames() {
-  try {
-    const r = await fetch("/games"); const d = await r.json();
-    IDX = d.rows;
-    document.getElementById("gcount").textContent =
-      `— ${d.total} archived, newest first`;
-    const opps = [...new Set(IDX.map(g => g.opp))].sort();
-    const sel = document.getElementById("f-opp");
-    const cur = sel.value;
-    sel.innerHTML = '<option value="">all opponents</option>' +
-      opps.map(o => `<option${o === cur ? " selected" : ""}>${o}</option>`).join("");
-    renderGames();
-  } catch (e) {}
+    "Confirmation arms — greedy pilot vs builtin gauntlet";
+  confirmRowsV2(c, "confirm-body");
 }
 function renderGames() {
   const fr = document.getElementById("f-res").value;
