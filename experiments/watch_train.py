@@ -914,14 +914,13 @@ def main():
                         rows = [json.loads(ln) for ln in
                                 gidx.read_text(encoding="utf-8")
                                 .splitlines()[-300:]]
-                        r2 = [r for r in rows if str(r.get("iter", ""))
-                              .startswith("r2-")]
+                        r2 = [r for r in rows if iter_num(r.get("iter")) is not None]
                         if r2:
-                            cur = max(int(r["iter"][3:]) for r in r2)
+                            cur = max(iter_num(r["iter"]) for r in r2)
                             mine = [r for r in r2
-                                    if r["iter"] == f"r2-{cur}"]
+                                    if iter_num(r["iter"]) == cur]
                             body["live"] = {
-                                "iter": cur, "games": len(mine),
+                                "iter": cur[1], "games": len(mine),
                                 "wins": sum(1 for r in mine if r["won"]),
                                 "lock": sum(1 for r in mine
                                             if r.get("lock_frac", 0) > 0)}
