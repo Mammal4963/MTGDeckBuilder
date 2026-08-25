@@ -65,7 +65,47 @@ def archive_chunk(arm, ji, opp, buffer):
         seg, k = [], k + 1
 
 
-def run_arm(name, journal, jpath, games_per_deck, nwk, ckpt=None):
+class CompositePolicy:
+    """Two pilots in one game: our seat -> `mine` (recorded), opponent
+    seats -> `opp` (the frozen benchmark). Dispatch by seat name."""
+
+    def __init__(self, mine, opp):
+        self.mine = mine          # RecordingPolicy
+        self.opp = opp            # plain ModelPolicy
+
+    @property
+    def buffer(self):
+        return self.mine.buffer
+
+    @buffer.setter
+    def buffer(self, v):
+        self.mine.buffer = v
+
+    def __call__(self, state):
+        if DECK in state.get("player", DECK):
+            return self.mine(state)
+        return self.opp(state)
+
+
+def make_policy(ckpt, arch=None):
+    import os
+    if not arch:
+        return ModelPolicy(ckpt=ckpt)
+    d, layers = arch.split(",")
+    old = (os.environ.get("PILOT_D"), os.environ.get("PILOT_LAYERS"))
+    os.environ["PILOT_D"], os.environ["PILOT_LAYERS"] = d, layers
+    try:
+        return ModelPolicy(ckpt=ckpt)
+    finally:
+        for k, v in zip(("PILOT_D", "PILOT_LAYERS"), old):
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+
+
+def run_arm(name, journal, jpath, games_per_deck, nwk, ckpt=None,
+            opp_ckpt=None, opp_arch=None):
     arm = journal.setdefault(name, {"wins": 0, "games": 0, "jobs": 0})
     chunks_per_deck = games_per_deck // PER_CHUNK
     jobs = [g for g in GAUNTLET for _ in range(chunks_per_deck)]
@@ -76,9 +116,13 @@ def run_arm(name, journal, jpath, games_per_deck, nwk, ckpt=None):
     workers, servers, ports = [], [], []
     if bridged:
         inner = ModelPolicy(ckpt=ckpt)
-        workers = [RecordingPolicy(inner) for _ in range(nwk)]
+        opp = (make_policy(opp_ckpt, opp_arch) if opp_ckpt else None)
+        for _ in range(nwk):
+            rec = RecordingPolicy(inner)
+            workers.append(CompositePolicy(rec, opp) if opp else rec)
         servers = [start_server(0, policy=w) for w in workers]
         ports = [s.server_address[1] for s in servers]
+    pfilter = "" if (bridged and opp_ckpt) else (DECK if bridged else None)
 
     def one(job):
         ji, g = job
@@ -87,7 +131,7 @@ def run_arm(name, journal, jpath, games_per_deck, nwk, ckpt=None):
             workers[wk].buffer = []
         out = run_bridged(DECK, g, PER_CHUNK, 90 + 40 * PER_CHUNK,
                           ports[wk] if bridged else None,
-                          player_filter=DECK if bridged else None,
+                          player_filter=pfilter,
                           quiet=True, worker=wk)
         if bridged:
             try:
@@ -126,6 +170,12 @@ def main():
                     help="journal key for the pilot arm (e.g. rl2)")
     ap.add_argument("--journal", default="confirm_round.json",
                     help="journal filename (new deck = new journal)")
+    ap.add_argument("--opp-ckpt", default=None,
+                    help="checkpoint piloting the OPPONENT seats (the "
+                    "frozen benchmark); default: builtin AI opponents")
+    ap.add_argument("--opp-arch", default=None,
+                    help="D,layers for the opponent net if it differs "
+                    "from PILOT_D/PILOT_LAYERS (e.g. '256,4')")
     ap.add_argument("--skip-pilot", action="store_true",
                     help="builtin arm only")
     args = ap.parse_args()
@@ -137,7 +187,8 @@ def main():
     rl = None
     if not args.skip_pilot:
         rl = run_arm(args.arm, journal, jpath, args.games_per_deck,
-                     args.parallel, ckpt=Path(args.ckpt))
+                     args.parallel, ckpt=Path(args.ckpt),
+                     opp_ckpt=args.opp_ckpt, opp_arch=args.opp_arch)
     import sim_server
     with sim_server._SHARED_LOCK:
         for c in sim_server._SHARED.values():
