@@ -68,5 +68,15 @@
   "wins": 119,
   "games": 288,
   "jobs": 36
+ },
+ "rl8b": {
+  "wins": 126,
+  "games": 288,
+  "jobs": 36
+ },
+ "rl17": {
+  "wins": 101,
+  "games": 288,
+  "jobs": 36
  }
 }

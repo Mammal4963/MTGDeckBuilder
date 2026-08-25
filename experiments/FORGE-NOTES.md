@@ -702,3 +702,17 @@ BROADER pilot (54 decks, vloss 0.44 record, lock_frac 0.55-0.68
 unforced) but not a STRONGER specialist. pilot2_rl8.pt remains the
 Roaming Encounters champion; pilot2_rl16.pt is the best generalist.
 
+
+## Round 17 verdict + round 18 launch (2026-08-25)
+
+Round 17 (150-deck pool @ pool-frac 0.5, big net D=256/L4 from rl16, shaped):
+trained 60 iters clean (final winrate 0.91, vloss 0.37). Gate 34%+-10.
+288-game confirmation: **rl17 35%+-6 vs builtin 36%+-4 -> no detectable
+change.** Fifth big-net round in the 35-41 band; none touch rl8 (44-47).
+rl8 stays champion for fac_roaming. Specialist era closed.
+
+Round 18 launched: uniform 154-deck pool (pool-frac 1.0, RE = 1 of 154),
+ZERO shaping (pure +-1), --mull, 60x128 games, PPO 3 epochs GPU, from
+rl17. Purpose: balanced both-seats corpus for foundation HPO + first
+purely-generalist net. Gauntlet check after (user wants the yardstick
+run between every round).
