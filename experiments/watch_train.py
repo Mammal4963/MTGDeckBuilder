@@ -497,12 +497,22 @@ function renderProgress(d, t) {
   const done = t.reduce((a, e) => a + (e.games || perIter), 0) +
                (d.live ? d.live.games : 0);
   const pct = Math.min(100, 100 * done / total);
+  let iterBar = "";
+  if (d.live) {
+    const ipct = Math.min(100, 100 * d.live.games / perIter);
+    iterBar = `<div style="font-size:12px;color:#8b93a1;margin:6px 0 3px">
+        iteration ${d.live.iter}: ${d.live.games} / ${perIter} games
+        (${ipct.toFixed(0)}%)</div>
+      <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:7px">
+        <div style="background:#7ce38b;height:7px;border-radius:5px;width:${ipct}%"></div>
+      </div>`;
+  }
   el.innerHTML = `<div style="font-size:12px;color:#8b93a1;margin-bottom:3px">
       run progress: ${done.toLocaleString()} / ${total.toLocaleString()} games
       (${pct.toFixed(0)}%)</div>
     <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:10px">
       <div style="background:#5aa9e6;height:10px;border-radius:5px;width:${pct}%"></div>
-    </div>`;
+    </div>` + iterBar;
 }
 function renderConfirm(c, journalName) {
   const panel = document.getElementById("confirm-panel");
