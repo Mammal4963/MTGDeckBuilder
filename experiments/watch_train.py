@@ -418,7 +418,7 @@ async function tick() {
       cards += card("in flight",
         `iter ${d.live.iter}`,
         `${d.live.wins}/${d.live.ours} our-deck won · ` +
-        `${d.live.lock} cast RE · ${d.live.games} games total`);
+        `${d.live.lock} cast RE · ${d.live.games}/${(d.iterprog && d.iterprog.total) || 128} games`);
     else if (d.stage && d.stage.target_events != null)
       cards += card("round 2 stage",
         d.journal.includes("round2") ? "training" :
