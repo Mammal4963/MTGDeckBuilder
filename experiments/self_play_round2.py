@@ -254,6 +254,17 @@ def main():
             opps = GAUNTLET + deck_pool
             return DECK, opps[int(rng.integers(len(opps)))]
 
+        prog = {"n": 0}
+
+        def bump_progress(it, total):
+            with index_lock:
+                prog["n"] += 1
+                try:
+                    (OUT / "iter_progress.json").write_text(json.dumps(
+                        {"iter": it, "done": prog["n"], "total": total}))
+                except OSError:
+                    pass
+
         def worker_games(it, wk, n):
             p, results = workers[wk], []
             for g in range(n):
@@ -261,6 +272,7 @@ def main():
                 deck_a, opp = pick_matchup(p.rng)
                 run_bridged(deck_a, opp, 1, 240, ports[wk],
                             player_filter="", quiet=True, worker=wk)
+                bump_progress(it, args.games)
                 seats = split_seats(list(p.buffer))
                 for name, (dec, won) in seats.items():
                     ours = DECK in name
@@ -288,6 +300,7 @@ def main():
                           args.eps0 * (1 - it / args.iters))
                 for w in workers:
                     w.eps = eps
+                prog["n"] = 0
                 with ThreadPoolExecutor(max_workers=nwk) as pool:
                     futs = [pool.submit(worker_games, it, wk, counts[wk])
                             for wk in range(nwk)]

@@ -517,7 +517,16 @@ function renderProgress(d, t) {
                (d.live ? d.live.games : 0);
   const pct = Math.min(100, 100 * done / total);
   let iterBar = "";
-  if (d.live) {
+  const ip = d.iterprog;
+  if (ip) {
+    const ipct = Math.min(100, 100 * ip.done / ip.total);
+    iterBar = `<div style="font-size:12px;color:#8b93a1;margin:6px 0 3px">
+        iteration ${ip.iter}: ${ip.done} / ${ip.total} games, all matchups
+        (${ipct.toFixed(0)}%)</div>
+      <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:7px">
+        <div style="background:#7ce38b;height:7px;border-radius:5px;width:${ipct}%"></div>
+      </div>`;
+  } else if (d.live) {
     const ipct = Math.min(100, 100 * d.live.games / perIter);
     iterBar = `<div style="font-size:12px;color:#8b93a1;margin:6px 0 3px">
         iteration ${d.live.iter}: ${d.live.games} / ${perIter} games
@@ -897,6 +906,13 @@ def main():
                         pass
                 stage["v4_ckpt"] = (OUT / "pilot2_v4.pt").exists()
                 body["stage"] = stage
+                # exact all-games iteration progress from the driver
+                ipf = OUT / "iter_progress.json"
+                if ipf.exists() and time.time() - ipf.stat().st_mtime < 600:
+                    try:
+                        body["iterprog"] = json.loads(ipf.read_text())
+                    except (OSError, json.JSONDecodeError):
+                        pass
                 # all-time games simulated on this box, from every journal
                 total = 0
                 for jf in OUT.glob("selfplay_round*.json"):
