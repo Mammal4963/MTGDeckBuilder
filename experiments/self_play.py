@@ -353,6 +353,7 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
             olds.append(lp)
     old_lp = torch.cat(olds).detach()
     ptot = vtot = vsum = 0.0
+    gnorms = []
     for ep in range(epochs):
         model.train()
         opt.zero_grad()
@@ -371,7 +372,8 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
             ep_p += float(pl.mean().detach()) * w
             ep_v += float(vl.mean().detach()) * w
             ep_m += float(v.mean().detach()) * w
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        gnorms.append(float(torch.nn.utils.clip_grad_norm_(
+            model.parameters(), 1.0)))
         opt.step()
         ptot += ep_p
         vtot += ep_v
@@ -386,9 +388,11 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
         for s, r, R in others:
             rebatch.setdefault(R, []).append((s, r))
         small = [(dec, R) for R, dec in rebatch.items()]
-        ppo_update(model_policy, torch, small, opt, epochs=1, clip=clip,
-                   lock_credit=None, val_coef=val_coef)
-    return ptot / epochs, vtot / epochs, vsum / epochs
+        _p, _v, _m, ognorms = ppo_update(
+            model_policy, torch, small, opt, epochs=1, clip=clip,
+            lock_credit=None, val_coef=val_coef)
+        gnorms.extend(ognorms)
+    return ptot / epochs, vtot / epochs, vsum / epochs, gnorms
 
 
 def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
@@ -441,6 +445,7 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
             else:
                 shaping[k] = potential * (R - vold[k])
     ptot = vtot = vsum = vn = 0.0
+    gnorms = []
     for ep in range(epochs):
         model.train()
         opt.zero_grad()
@@ -475,17 +480,18 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                 vn += 1
                 nterms += 1
                 if nterms % 64 == 0:
-                    torch.nn.utils.clip_grad_norm_(
-                        model.parameters(), 1.0)
+                    gnorms.append(float(torch.nn.utils.clip_grad_norm_(
+                        model.parameters(), 1.0)))
                     opt.step()
                     opt.zero_grad()
             except Exception:
                 continue
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        gnorms.append(float(torch.nn.utils.clip_grad_norm_(
+            model.parameters(), 1.0)))
         opt.step()
     model.eval()
     n = max(1.0, vn)
-    return ptot / n, vtot / n, vsum / n
+    return ptot / n, vtot / n, vsum / n, gnorms
 
 
 def reinforce_update(model_policy, torch, batch, baseline, lr_opt,

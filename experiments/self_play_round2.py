@@ -331,12 +331,12 @@ def main():
                 lc = ({"locks": set(locks), "w": args.lock_credit}
                       if args.lock_credit else None)
                 if args.ppo_epochs > 0 and args.gpu:
-                    loss, vloss, meanv = ppo_update_gpu(
+                    loss, vloss, meanv, gnorms = ppo_update_gpu(
                         inner, torch, batch, opt,
                         epochs=args.ppo_epochs, lock_credit=lc,
                         max_decisions=args.max_decisions)
                 elif args.ppo_epochs > 0:
-                    loss, vloss, meanv = ppo_update(
+                    loss, vloss, meanv, gnorms = ppo_update(
                         inner, torch, batch, opt,
                         epochs=args.ppo_epochs, lock_credit=lc,
                         max_decisions=args.max_decisions,
@@ -345,6 +345,7 @@ def main():
                     loss = reinforce_update(inner, torch, batch,
                                             baseline, opt, lock_credit=lc)
                     vloss = meanv = None
+                    gnorms = []
                 rewards = [r for _d, r in batch]
                 baseline = 0.7 * baseline + 0.3 * float(np.mean(rewards))
                 ours = [x for x in flown if x[4]]
@@ -358,6 +359,15 @@ def main():
                 if vloss is not None:
                     entry["vloss"] = round(vloss, 4)
                     entry["meanV"] = round(meanv, 3)
+                if gnorms:
+                    # pre-clip gradient norms: sustained clipf near 1.0
+                    # means every step is being truncated - the signal
+                    # that caught the summed-gradient bug too late
+                    entry["gnorm"] = round(
+                        sum(gnorms) / len(gnorms), 3)
+                    entry["clipf"] = round(
+                        sum(1 for g in gnorms if g > 1.0)
+                        / len(gnorms), 2)
                 journal["train"].append(entry)
                 log(f"[train] {json.dumps(entry)}")
                 torch.save(inner.model.state_dict(), rl_ckpt)

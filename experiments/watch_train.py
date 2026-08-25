@@ -251,7 +251,11 @@ style="background:#e0b050"></i>vloss (MSE toward outcome; lower = sharper)</span
 <canvas id="c-vloss" style="height:150px"></canvas></div>
 <div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
 style="background:#5aa9e6"></i>mean V (expected outcome of sampled play)</span></div>
-<canvas id="c-meanv" style="height:150px"></canvas></div></div></div>
+<canvas id="c-meanv" style="height:150px"></canvas></div>
+<div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
+style="background:#e06060"></i>clip fraction (share of steps hitting the
+gradient clip; sustained ~1.0 = oversized updates)</span></div>
+<canvas id="c-clipf" style="height:150px"></canvas></div></div></div>
 
 <div class="panel">
 <h2>Deck stats <span id="stats-n" style="color:#8b93a1;font-weight:400"></span></h2>
@@ -466,6 +470,11 @@ async function tick() {
         [{color: "#5aa9e6", data: t.map(e => e.meanV)}],
         Math.min(-0.2, ...mvs), Math.max(0.5, ...mvs),
         {label: "iteration"});
+      const cfs = t.map(e => e.clipf).filter(x => x != null);
+      if (cfs.length > 1)
+        draw(document.getElementById("c-clipf"),
+          [{color: "#e06060", data: t.map(e => e.clipf)}],
+          0, 1, {label: "iteration"});
     }
     renderConfirm(d.confirm, d.journal);
     renderProgress(d, t);
