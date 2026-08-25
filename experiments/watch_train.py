@@ -84,6 +84,8 @@ def compute_stats(limit=600):
                 g = json.load(f)
         except OSError:
             continue
+        if g.get("deck") and g["deck"] != "fac_roaming":
+            continue          # deck stats are about OUR deck only
         n_games += 1
         per_turn = {}   # turn -> (lands, untapped) at last seen decision
         cast_turn = None
@@ -595,6 +597,21 @@ function renderConfirm(c, journalName) {
   panel.querySelector("h2").textContent =
     "Confirmation arms — greedy pilot vs builtin gauntlet";
   confirmRowsV2(c, "confirm-body");
+}
+async function loadGames() {
+  try {
+    const r = await fetch("/games"); const d = await r.json();
+    IDX = d.rows;
+    document.getElementById("gcount").textContent =
+      `— ${d.total} archived, newest first`;
+    const opps = [...new Set(IDX.map(g => g.opp))].sort();
+    const sel = document.getElementById("f-opp");
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">all opponents</option>' +
+      opps.map(o => `<option${o === cur ? " selected" : ""}>${o}</option>`)
+          .join("");
+    renderGames();
+  } catch (e) {}
 }
 function renderGames() {
   const fr = document.getElementById("f-res").value;
