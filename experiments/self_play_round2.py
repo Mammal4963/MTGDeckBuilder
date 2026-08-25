@@ -241,17 +241,17 @@ def main():
         servers = [start_server(0, policy=w) for w in workers]
         ports = [s.server_address[1] for s in servers]
 
-        pool = []
+        deck_pool = []
         if args.deck_pool:
-            pool = sorted(pp.stem for pp in
-                          Path(args.deck_pool).glob("*.dck"))
-            log(f"[pool] {len(pool)} decks in mixed curriculum")
+            deck_pool = sorted(pp.stem for pp in
+                               Path(args.deck_pool).glob("*.dck"))
+            log(f"[pool] {len(deck_pool)} decks in mixed curriculum")
 
         def pick_matchup(rng):
-            if pool and float(rng.random()) < 0.5:
-                i, j = rng.choice(len(pool), 2, replace=False)
-                return pool[int(i)], pool[int(j)]
-            opps = GAUNTLET + pool
+            if deck_pool and float(rng.random()) < 0.5:
+                i, j = rng.choice(len(deck_pool), 2, replace=False)
+                return deck_pool[int(i)], deck_pool[int(j)]
+            opps = GAUNTLET + deck_pool
             return DECK, opps[int(rng.integers(len(opps)))]
 
         def worker_games(it, wk, n):
