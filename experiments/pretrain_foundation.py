@@ -54,13 +54,26 @@ def iter_games(limit=None, skip_eps_forced=True):
         yield r, g
 
 
-def build_dataset(max_games, max_per_game=40, seed=43):
-    """-> list of (state, reply, R); split by GAME for holdout."""
+def build_dataset(max_games, max_per_game=40, seed=43,
+                  roaming_cap=0.3):
+    """-> list of (state, reply, R); split by GAME for holdout.
+
+    roaming_cap bounds the fac_roaming share: the pre-round-15 corpus
+    is overwhelmingly our-deck perspectives, and a foundation base
+    should not inherit that bias."""
     import torch  # noqa: F401  (ensures torch import before featurizer)
     rng = np.random.default_rng(seed)
     train, hold = [], []
     n = 0
-    for r, g in iter_games(limit=max_games):
+    n_roaming = 0
+    for r, g in iter_games(limit=max_games * 3):
+        if n >= max_games:
+            break
+        deck = g.get("deck", "fac_roaming")
+        if deck == "fac_roaming":
+            if n_roaming > roaming_cap * max(20, n):
+                continue
+            n_roaming += 1
         R = 1.0 if g.get("won") else -1.0
         dec = [(s, rep) for s, rep in g["decisions"]
                if s.get("kind") == "cast" and s.get("candidates")
