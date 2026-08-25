@@ -317,51 +317,60 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
     ex_t = torch.tensor(extra_adv, dtype=torch.float32, device=dev)
     D = model.state_tok.shape[1]
 
-    def forward(bs=512):
-        """-> (logp_taken [N], V [N]) in minibatches."""
-        lps, vs = [], []
-        for o in range(0, N, bs):
-            sl = slice(o, o + bs)
-            x = model.proj(toks[sl])
-            st = model.state_tok.expand(x.shape[0], 1, D)
-            x = torch.cat([st, x], dim=1)
-            pad = torch.cat([torch.zeros(x.shape[0], 1, dtype=torch.bool,
-                                         device=dev), tmask[sl]], dim=1)
-            h = model.enc(x, src_key_padding_mask=pad)
-            hs = model.state_mlp(torch.cat([h[:, 0], scals[sl]], dim=1))
-            cp = model.cand_proj(cands_t[sl])
-            hse = hs.unsqueeze(1).expand(-1, cp.shape[1], -1)
-            logits_c = model.cast_head(
-                torch.cat([hse, cp], dim=2)).squeeze(-1)
-            logit_p = model.pass_head(hs)
-            logits = torch.cat([logits_c, logit_p], dim=1)
-            logits = logits.masked_fill(~cmask[sl], -1e9)
-            lp = torch.log_softmax(logits, dim=1)
-            lps.append(lp.gather(1, acts_t[sl].unsqueeze(1)).squeeze(1))
-            vs.append(model.val_head(hs).squeeze(-1))
-        return torch.cat(lps), torch.cat(vs)
+    BS = 256
+
+    def forward_slice(sl):
+        """-> (logp_taken, V) for one minibatch slice (grad respected
+        by caller's context)."""
+        x = model.proj(toks[sl])
+        st = model.state_tok.expand(x.shape[0], 1, D)
+        x = torch.cat([st, x], dim=1)
+        pad = torch.cat([torch.zeros(x.shape[0], 1, dtype=torch.bool,
+                                     device=dev), tmask[sl]], dim=1)
+        h = model.enc(x, src_key_padding_mask=pad)
+        hs = model.state_mlp(torch.cat([h[:, 0], scals[sl]], dim=1))
+        cp = model.cand_proj(cands_t[sl])
+        hse = hs.unsqueeze(1).expand(-1, cp.shape[1], -1)
+        logits_c = model.cast_head(
+            torch.cat([hse, cp], dim=2)).squeeze(-1)
+        logit_p = model.pass_head(hs)
+        logits = torch.cat([logits_c, logit_p], dim=1)
+        logits = logits.masked_fill(~cmask[sl], -1e9)
+        lp = torch.log_softmax(logits, dim=1)
+        return (lp.gather(1, acts_t[sl].unsqueeze(1)).squeeze(1),
+                model.val_head(hs).squeeze(-1))
 
     model.eval()
+    olds = []
     with torch.no_grad():
-        old_lp, _v0 = forward()
-        old_lp = old_lp.detach()
+        for o in range(0, N, BS):
+            lp, _v = forward_slice(slice(o, o + BS))
+            olds.append(lp)
+    old_lp = torch.cat(olds).detach()
     ptot = vtot = vsum = 0.0
     for ep in range(epochs):
         model.train()
         opt.zero_grad()
-        lp, v = forward()
-        adv = (R_t - v.detach()) + ex_t
-        ratio = torch.exp(lp - old_lp)
-        pl = -torch.min(ratio * adv,
-                        torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
-        vl = (v - R_t) ** 2
-        loss = pl.mean() + val_coef * vl.mean()
-        loss.backward()
+        ep_p = ep_v = ep_m = 0.0
+        # backward PER MINIBATCH: one slice's graph in memory at a time
+        for o in range(0, N, BS):
+            sl = slice(o, o + BS)
+            lp, v = forward_slice(sl)
+            adv = (R_t[sl] - v.detach()) + ex_t[sl]
+            ratio = torch.exp(lp - old_lp[sl])
+            pl = -torch.min(ratio * adv,
+                            torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
+            vl = (v - R_t[sl]) ** 2
+            w = lp.shape[0] / N
+            ((pl.mean() + val_coef * vl.mean()) * w).backward()
+            ep_p += float(pl.mean().detach()) * w
+            ep_v += float(vl.mean().detach()) * w
+            ep_m += float(v.mean().detach()) * w
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
-        ptot += float(pl.mean().detach())
-        vtot += float(vl.mean().detach())
-        vsum += float(v.mean().detach())
+        ptot += ep_p
+        vtot += ep_v
+        vsum += ep_m
     model.to("cpu")
     _opt_to(opt, "cpu")
     if dev.type == "cuda":
