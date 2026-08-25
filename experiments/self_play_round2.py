@@ -42,7 +42,7 @@ import pilot_bridge  # noqa: E402
 from pilot_bridge import ModelPolicy, start_server, run_bridged  # noqa: E402
 from improve_deck import ci95  # noqa: E402
 from self_play import (RecordingPolicy, reinforce_update,  # noqa: E402
-                       ppo_update, game_lock_frac)
+                       ppo_update, ppo_update_gpu, game_lock_frac)
 
 OUT = Path(__file__).resolve().parent / "output"
 DECK = "fac_roaming"
@@ -167,6 +167,13 @@ def main():
     ap.add_argument("--lock-credit", type=float, default=0.0,
                     help="per-decision advantage boost for early lock "
                     "casts (surgical gradient, not trajectory-diluted)")
+    ap.add_argument("--gpu", action="store_true",
+                    help="batched PPO update on CUDA (casts batched; "
+                    "other kinds per-decision)")
+    ap.add_argument("--deck-pool", default=None,
+                    help="dir of verified pool .dck files: mixed "
+                    "curriculum (50%% our-deck games vs gauntlet+pool, "
+                    "50%% pool-vs-pool for general skill)")
     ap.add_argument("--potential", type=float, default=0.0,
                     help="value-derived shaping weight: adv += "
                     "beta*(V(s') - V(s)) from the frozen value head")
@@ -234,12 +241,25 @@ def main():
         servers = [start_server(0, policy=w) for w in workers]
         ports = [s.server_address[1] for s in servers]
 
+        pool = []
+        if args.deck_pool:
+            pool = sorted(pp.stem for pp in
+                          Path(args.deck_pool).glob("*.dck"))
+            log(f"[pool] {len(pool)} decks in mixed curriculum")
+
+        def pick_matchup(rng):
+            if pool and float(rng.random()) < 0.5:
+                i, j = rng.choice(len(pool), 2, replace=False)
+                return pool[int(i)], pool[int(j)]
+            opps = GAUNTLET + pool
+            return DECK, opps[int(rng.integers(len(opps)))]
+
         def worker_games(it, wk, n):
             p, results = workers[wk], []
             for g in range(n):
                 p.buffer = []
-                opp = GAUNTLET[int(p.rng.integers(len(GAUNTLET)))]
-                run_bridged(DECK, opp, 1, 240, ports[wk],
+                deck_a, opp = pick_matchup(p.rng)
+                run_bridged(deck_a, opp, 1, 240, ports[wk],
                             player_filter="", quiet=True, worker=wk)
                 seats = split_seats(list(p.buffer))
                 for name, (dec, won) in seats.items():
@@ -275,7 +295,12 @@ def main():
                 batch = [(dec, r) for dec, r, _w, _lf, _o in flown]
                 lc = ({"locks": set(locks), "w": args.lock_credit}
                       if args.lock_credit else None)
-                if args.ppo_epochs > 0:
+                if args.ppo_epochs > 0 and args.gpu:
+                    loss, vloss, meanv = ppo_update_gpu(
+                        inner, torch, batch, opt,
+                        epochs=args.ppo_epochs, lock_credit=lc,
+                        max_decisions=args.max_decisions)
+                elif args.ppo_epochs > 0:
                     loss, vloss, meanv = ppo_update(
                         inner, torch, batch, opt,
                         epochs=args.ppo_epochs, lock_credit=lc,
