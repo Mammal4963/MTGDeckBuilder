@@ -234,7 +234,7 @@ def main():
         with index_lock, open(OUT / "games_index.jsonl", "a",
                               encoding="utf-8") as f:
             f.write(json.dumps({"iter": f"r{TAG}-{it}", "worker": wk,
-                                "opp": opp, "won": won, "lock_frac": lf,
+                                "deck": deck_label, "opp": opp, "won": won, "lock_frac": lf,
                                 "dur_s": dur, "n_dec": len(dec),
                                 "t": int(time.time()), "file": name})
                     + "\n")

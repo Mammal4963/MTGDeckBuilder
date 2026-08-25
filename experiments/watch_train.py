@@ -417,8 +417,8 @@ async function tick() {
     if (d.live)
       cards += card("in flight",
         `iter ${d.live.iter}`,
-        `${d.live.wins}/${d.live.games} won · ` +
-        `${d.live.lock} cast Random Encounter`);
+        `${d.live.wins}/${d.live.ours} our-deck won · ` +
+        `${d.live.lock} cast RE · ${d.live.games} games total`);
     else if (d.stage && d.stage.target_events != null)
       cards += card("round 2 stage",
         d.journal.includes("round2") ? "training" :
@@ -970,10 +970,16 @@ def main():
                             cur = max(iter_num(r["iter"]) for r in r2)
                             mine = [r for r in r2
                                     if iter_num(r["iter"]) == cur]
+                            prim = [r for r in mine
+                                    if not r["file"].endswith("b.json.gz")]
+                            ours = [r for r in mine
+                                    if r.get("deck", "fac_roaming")
+                                    == "fac_roaming"]
                             body["live"] = {
-                                "iter": cur[1], "games": len(mine),
-                                "wins": sum(1 for r in mine if r["won"]),
-                                "lock": sum(1 for r in mine
+                                "iter": cur[1], "games": len(prim),
+                                "wins": sum(1 for r in ours if r["won"]),
+                                "ours": len(ours),
+                                "lock": sum(1 for r in ours
                                             if r.get("lock_frac", 0) > 0)}
                     except (OSError, json.JSONDecodeError, ValueError):
                         pass
