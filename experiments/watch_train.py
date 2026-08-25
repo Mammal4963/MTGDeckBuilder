@@ -242,6 +242,14 @@ PAGE = """<!DOCTYPE html>
 <canvas id="c1"></canvas></div>
 <div class="chartbox"><h2>REINFORCE loss</h2>
 <canvas id="c2"></canvas></div>
+<div class="chartbox"><h2>Value head &mdash; prediction error &amp; mean value</h2>
+<div style="display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
+style="background:#e0b050"></i>vloss (MSE toward outcome; lower = sharper)</span></div>
+<canvas id="c-vloss" style="height:150px"></canvas></div>
+<div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
+style="background:#5aa9e6"></i>mean V (expected outcome of sampled play)</span></div>
+<canvas id="c-meanv" style="height:150px"></canvas></div></div></div>
 
 <div class="panel">
 <h2>Deck stats <span id="stats-n" style="color:#8b93a1;font-weight:400"></span></h2>
@@ -441,6 +449,17 @@ async function tick() {
     draw(document.getElementById("c2"),
       [{color: "#e6785a", data: t.map(e => e.loss)}], lo, hi,
       {label: "iteration"});
+    const vls = t.map(e => e.vloss).filter(x => x != null);
+    if (vls.length > 1) {
+      draw(document.getElementById("c-vloss"),
+        [{color: "#e0b050", data: t.map(e => e.vloss)}],
+        0, Math.max(1.2, ...vls), {label: "iteration"});
+      const mvs = t.map(e => e.meanV).filter(x => x != null);
+      draw(document.getElementById("c-meanv"),
+        [{color: "#5aa9e6", data: t.map(e => e.meanV)}],
+        Math.min(-0.2, ...mvs), Math.max(0.5, ...mvs),
+        {label: "iteration"});
+    }
     renderConfirm(d.confirm, d.journal);
     renderProgress(d, t);
   } catch (e) {

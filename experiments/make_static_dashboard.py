@@ -194,6 +194,14 @@ TEMPLATE = """<!DOCTYPE html>
 <span><i class="dot" style="background:#7ce38b"></i>lock_frac (Random Encounter
 deployed)</span><span><i class="dot" style="background:#8b93a1"></i>eps</span></div>
 <canvas id="c1"></canvas></div>
+<div class="panel"><h2>Value head &mdash; prediction error &amp; mean value</h2>
+<div style="display:flex;gap:20px;flex-wrap:wrap">
+<div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
+style="background:#e0b050"></i>vloss (lower = sharper predictions)</span></div>
+<canvas id="c-vloss" style="height:140px"></canvas></div>
+<div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
+style="background:#5aa9e6"></i>mean V</span></div>
+<canvas id="c-meanv" style="height:140px"></canvas></div></div></div>
 <div class="panel"><h2>Confirmation arms — corrected deck, 288 games each,
 greedy vs builtin gauntlet</h2><div id="confirm"></div></div>
 <div class="panel"><h2>Random Encounter — first cast turn &amp; cast rate
@@ -314,6 +322,16 @@ draw(document.getElementById("c1"),
    {color: "#7ce38b", data: t.map(e => e.lock_frac)},
    {color: "#8b93a1", data: t.map(e => e.eps)}], 0, 1,
   {label: "iteration"});
+const vls = t.map(e => e.vloss).filter(x => x != null);
+if (vls.length > 1) {
+  draw(document.getElementById("c-vloss"),
+    [{color: "#e0b050", data: t.map(e => e.vloss)}],
+    0, Math.max(1.2, ...vls), {label: "iteration"});
+  const mvs = t.map(e => e.meanV).filter(x => x != null);
+  draw(document.getElementById("c-meanv"),
+    [{color: "#5aa9e6", data: t.map(e => e.meanV)}],
+    Math.min(-0.2, ...mvs), Math.max(0.5, ...mvs), {label: "iteration"});
+}
 let ch = "";
 const armColor = {rl7: "#7ce38b", rl6: "#5aa9e6", rl5: "#5aa9e6",
                   rl2: "#8b93a1", builtin: "#e6785a"};
