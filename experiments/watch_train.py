@@ -256,7 +256,7 @@ PAGE = """<!DOCTYPE html>
 <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:10px">
   <div style="flex:1;min-width:260px">
     <div class="legend"><span><i class="dot" style="background:#e0b050"></i>avg first
-    Random Encounter cast turn (gaps = no casts that iteration)</span></div>
+    cast turn, cast games only (gaps = no casts that iteration)</span></div>
     <canvas id="c-lock" style="height:130px"></canvas>
   </div>
   <div style="flex:1;min-width:260px">
@@ -477,7 +477,7 @@ async function loadStats() {
       <div style="font-size:20px;font-weight:600">${(100*s.lock_cast_rate).toFixed(0)}%
         <span style="font-size:12px;color:#8b93a1">of games cast</span></div>
       <div>${s.lock_first_turn != null ?
-        `avg first cast: turn <b>${s.lock_first_turn}</b> (${s.lock_casts} games)` :
+        `avg first cast (cast games only): turn <b>${s.lock_first_turn}</b> (${s.lock_casts} games)` :
         "not cast in this sample"}</div>
       <div style="color:#8b93a1;font-size:11px;margin-top:4px">
         ramp x-axis = turn 1..${turns[turns.length-1] || 0}</div>`;

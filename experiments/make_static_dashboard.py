@@ -307,7 +307,7 @@ cards += card("lock_frac", last.lock_frac != null ?
 if (S.stats.lock_cast_rate != null)
   cards += card("RE cast rate", (100 * S.stats.lock_cast_rate).toFixed(0) + "%",
                 S.stats.lock_first_turn != null ?
-                `avg first cast turn ${S.stats.lock_first_turn}` : "");
+                `avg first-cast turn (cast games only) ${S.stats.lock_first_turn}` : "");
 document.getElementById("cards").innerHTML = cards;
 draw(document.getElementById("c1"),
   [{color: "#5aa9e6", data: t.map(e => e.winrate)},
@@ -335,7 +335,7 @@ document.getElementById("confirm").innerHTML =
   ch || "<span style='color:#8b93a1'>no arms yet</span>";
 if (S.stats.lock_first_turn != null)
   document.getElementById("re-stat").textContent =
-    ` — avg first cast: turn ${S.stats.lock_first_turn}, cast in ` +
+    ` — avg first cast (cast games only): turn ${S.stats.lock_first_turn}, cast in ` +
     `${(100 * S.stats.lock_cast_rate).toFixed(0)}% of games`;
 const ls = S.stats.lock_series || [];
 if (ls.length > 1) {
