@@ -277,6 +277,14 @@ def main():
                 bump_progress(it, args.games)
                 seats = split_seats(list(p.buffer))
                 for name, (dec, won) in seats.items():
+                    # the warm JVM can flush trailing events from the
+                    # previous game after the buffer reset; drop any
+                    # seat that isn't part of THIS matchup (and thin
+                    # ghosts of a same-named seat) or its phantom +1
+                    # poisons training
+                    own = re.sub(r"^Ai\(\d\)-", "", name)
+                    if own not in (deck_a, opp) or len(dec) < 4:
+                        continue
                     ours = DECK in name
                     lf = game_lock_frac(dec, set(locks)) if ours else 0.0
                     bonus = 0.0
@@ -289,11 +297,14 @@ def main():
                     # archive EVERY seat of EVERY game: future models
                     # train on this corpus (the big net already did)
                     try:
-                        own = re.sub(r"^Ai\(\d\)-", "", name)
-                        other = opp if own == deck_a else deck_a
+                        # side keyed on seat number, not deck name:
+                        # mirror matchups (same deck both seats) must
+                        # not collide on one filename
+                        seat1 = name.startswith("Ai(1)")
+                        other = opp if seat1 else deck_a
                         archive(it, wk, g, other, dec, won,
                                 deck_label=own,
-                                side="" if own == deck_a else "b")
+                                side="" if seat1 else "b")
                     except OSError:
                         pass
             return results
