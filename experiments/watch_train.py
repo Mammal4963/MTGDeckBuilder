@@ -247,12 +247,7 @@ PAGE = """<!DOCTYPE html>
 <h1>Self-play RL &mdash; fac_roaming</h1>
 <div class="sub" id="status">loading&hellip;</div>
 <div class="cards" id="cards"></div>
-<div class="chartbox"><h2>Winrate &amp; exploration per iteration</h2>
-<div class="legend"><span><i class="dot" style="background:#5aa9e6"></i>winrate</span>
-<span><i class="dot" style="background:#7ce38b"></i>lock_frac</span>
-<span><i class="dot" style="background:#8b93a1"></i>eps</span></div>
-<canvas id="c1"></canvas></div>
-<div class="chartbox"><h2>REINFORCE loss</h2>
+<div class="chartbox"><h2>Policy loss (PPO)</h2>
 <canvas id="c2"></canvas></div>
 <div class="chartbox"><h2>Value head &mdash; prediction error &amp; mean value</h2>
 <div style="display:flex;gap:20px;flex-wrap:wrap">
@@ -431,10 +426,6 @@ async function tick() {
     cards += card("iterations", t.length);
     cards += card("games flown", trainGames + valGames,
                   (valGames ? valGames + " validation · " : "") + rate);
-    cards += card("last winrate", last.winrate != null ?
-                  (100 * last.winrate).toFixed(0) + "%" : "&ndash;");
-    cards += card("last lock_frac", last.lock_frac != null ?
-                  last.lock_frac.toFixed(2) : "&ndash;");
     cards += card("eps", last.eps != null ? last.eps : "&ndash;");
     if (v) cards += card("validation", `${v.wins}/${v.games} = ` +
         `${(100 * v.winrate).toFixed(0)}% &plusmn;${(100 * v.ci).toFixed(0)}%`);
@@ -470,11 +461,6 @@ async function tick() {
     document.getElementById("status").textContent =
       `${d.journal} — updated ` +
       `${new Date(d.mtime * 1000).toLocaleTimeString()}${stg}`;
-    draw(document.getElementById("c1"),
-      [{color: "#5aa9e6", data: t.map(e => e.winrate)},
-       {color: "#7ce38b", data: t.map(e => e.lock_frac)},
-       {color: "#8b93a1", data: t.map(e => e.eps)}], 0, 1,
-      {label: "iteration"});
     const losses = t.map(e => e.loss).filter(x => x != null);
     const lo = Math.min(0, ...losses), hi = Math.max(0.1, ...losses);
     draw(document.getElementById("c2"),
