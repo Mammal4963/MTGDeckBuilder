@@ -93,49 +93,65 @@ def build_dataset(max_games, max_per_game=40, seed=43,
 
 
 def featurize(samples, feat):
-    """Pad into tensors once (model-independent)."""
-    N = len(samples)
-    max_tok = max_cand = 1
-    toks_l, cands_l = [], []
+    """Ragged per-sample features; padding happens per MINIBATCH in
+    run_config. Padding the whole corpus to the global max board size
+    needs tens of GB of host RAM on big-board pool games."""
+    toks_l, cands_l, scals_l, acts, Rs = [], [], [], [], []
     for s, rep, R in samples:
         t, _ = feat.tokens_and_ids(s)
         c = np.stack([feat.cand_vec(x) for x in s["candidates"]])
-        toks_l.append(t)
-        cands_l.append(c)
-        max_tok = max(max_tok, t.shape[0])
-        max_cand = max(max_cand, c.shape[0])
-    tdim, cdim = toks_l[0].shape[1], cands_l[0].shape[1]
-    toks = np.zeros((N, max_tok, tdim), np.float32)
-    tmask = np.ones((N, max_tok), bool)
-    cands = np.zeros((N, max_cand, cdim), np.float32)
-    cmask = np.zeros((N, max_cand + 1), bool)
-    acts = np.zeros(N, np.int64)
-    scals = np.zeros((N, feat.scalars({}).shape[0]), np.float32)
-    Rs = np.zeros(N, np.float32)
-    for k, (s, rep, R) in enumerate(samples):
-        t = toks_l[k]
-        toks[k, :t.shape[0]] = t
-        tmask[k, :t.shape[0]] = False
-        c = cands_l[k]
-        cands[k, :c.shape[0]] = c
-        cmask[k, :c.shape[0]] = True
-        cmask[k, max_cand] = True
-        scals[k] = feat.scalars(s)
-        Rs[k] = R
+        toks_l.append(t.astype(np.float32))
+        cands_l.append(c.astype(np.float32))
+        scals_l.append(feat.scalars(s))
         cands_meta = s["candidates"]
+        nc = c.shape[0]
         if rep.startswith("force\t"):
             i = int(rep.split("\t")[1])
             a = next((j for j, x in enumerate(cands_meta)
-                      if x["i"] == i), max_cand)
+                      if x["i"] == i), nc)
         elif rep.startswith("veto"):
-            a = max_cand
+            a = nc
         else:
             prop = s.get("proposed", [])
             a = next((j for j, x in enumerate(cands_meta)
-                      if prop and x["card"] == prop[0]), max_cand)
-        acts[k] = a if a < c.shape[0] else max_cand
-    return dict(toks=toks, tmask=tmask, cands=cands, cmask=cmask,
-                acts=acts, scals=scals, Rs=Rs)
+                      if prop and x["card"] == prop[0]), nc)
+        acts.append(min(a, nc))       # nc = the pass slot
+        Rs.append(R)
+    return dict(toks=toks_l, cands=cands_l,
+                scals=np.stack(scals_l).astype(np.float32),
+                acts=np.array(acts, np.int64),
+                Rs=np.array(Rs, np.float32))
+
+
+def collate(F, idx, torch, dev):
+    """Pad one minibatch (local maxima only) and move to device."""
+    toks_l = [F["toks"][i] for i in idx]
+    cands_l = [F["cands"][i] for i in idx]
+    B = len(idx)
+    mt = max(t.shape[0] for t in toks_l)
+    mc = max(c.shape[0] for c in cands_l)
+    tdim, cdim = toks_l[0].shape[1], cands_l[0].shape[1]
+    toks = np.zeros((B, mt, tdim), np.float32)
+    tmask = np.ones((B, mt), bool)
+    cands = np.zeros((B, mc, cdim), np.float32)
+    cmask = np.zeros((B, mc + 1), bool)
+    acts = np.zeros(B, np.int64)
+    for k in range(B):
+        t, c = toks_l[k], cands_l[k]
+        toks[k, :t.shape[0]] = t
+        tmask[k, :t.shape[0]] = False
+        cands[k, :c.shape[0]] = c
+        cmask[k, :c.shape[0]] = True
+        cmask[k, mc] = True
+        a = F["acts"][idx[k]]
+        acts[k] = a if a < c.shape[0] else mc
+    return (torch.from_numpy(toks).to(dev),
+            torch.from_numpy(tmask).to(dev),
+            torch.from_numpy(cands).to(dev),
+            torch.from_numpy(cmask).to(dev),
+            torch.from_numpy(acts).to(dev),
+            torch.from_numpy(F["scals"][idx]).to(dev),
+            torch.from_numpy(F["Rs"][idx]).to(dev))
 
 
 def make_model(torch, feat, D, layers):
@@ -169,34 +185,34 @@ def run_config(torch, feat, data_tr, data_ho, D, layers, lr,
                epochs, dev, val_coef=1.0, log=print):
     model = make_model(torch, feat, D, layers).to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
-    T = {k: torch.from_numpy(v).to(dev) for k, v in data_tr.items()}
-    H = {k: torch.from_numpy(v).to(dev) for k, v in data_ho.items()}
-    N = T["Rs"].shape[0]
+    N = data_tr["Rs"].shape[0]
     BS = 1024
 
-    def forward(S, sl, m):
-        x = m.proj(S["toks"][sl])
+    def forward(batch, m):
+        toks, tmask, cands, cmask, acts, scals, Rs = batch
+        x = m.proj(toks)
         st = m.state_tok.expand(x.shape[0], 1, -1)
         x = torch.cat([st, x], dim=1)
         pad = torch.cat([torch.zeros(x.shape[0], 1, dtype=torch.bool,
-                                     device=dev), S["tmask"][sl]], dim=1)
+                                     device=dev), tmask], dim=1)
         h = m.enc(x, src_key_padding_mask=pad)
-        hs = m.state_mlp(torch.cat([h[:, 0], S["scals"][sl]], dim=1))
-        cp = m.cand_proj(S["cands"][sl])
+        hs = m.state_mlp(torch.cat([h[:, 0], scals], dim=1))
+        cp = m.cand_proj(cands)
         hse = hs.unsqueeze(1).expand(-1, cp.shape[1], -1)
         lc = m.cast_head(torch.cat([hse, cp], dim=2)).squeeze(-1)
         logits = torch.cat([lc, m.pass_head(hs)], dim=1)
-        logits = logits.masked_fill(~S["cmask"][sl], -1e9)
-        return logits, m.val_head(hs).squeeze(-1)
+        logits = logits.masked_fill(~cmask, -1e9)
+        return logits, m.val_head(hs).squeeze(-1), acts, Rs
 
+    rng = np.random.default_rng(7)
     for ep in range(epochs):
         model.train()
-        order = torch.randperm(N, device=dev)
+        order = rng.permutation(N)
         for o in range(0, N, BS):
-            sl = order[o:o + BS]
-            logits, v = forward(T, sl, model)
-            pl = torch.nn.functional.cross_entropy(logits, T["acts"][sl])
-            vl = ((v - T["Rs"][sl]) ** 2).mean()
+            batch = collate(data_tr, order[o:o + BS], torch, dev)
+            logits, v, acts, Rs = forward(batch, model)
+            pl = torch.nn.functional.cross_entropy(logits, acts)
+            vl = ((v - Rs) ** 2).mean()
             (pl + val_coef * vl).backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
@@ -206,14 +222,15 @@ def run_config(torch, feat, data_tr, data_ho, D, layers, lr,
     hits = tot = 0
     vs, rs = [], []
     with torch.no_grad():
-        M = H["Rs"].shape[0]
+        M = data_ho["Rs"].shape[0]
         for o in range(0, M, BS):
-            sl = slice(o, o + BS)
-            logits, v = forward(H, sl, model)
-            hits += int((logits.argmax(1) == H["acts"][sl]).sum())
+            idx = np.arange(o, min(o + BS, M))
+            batch = collate(data_ho, idx, torch, dev)
+            logits, v, acts, Rs = forward(batch, model)
+            hits += int((logits.argmax(1) == acts).sum())
             tot += logits.shape[0]
             vs.append(v)
-            rs.append(H["Rs"][sl])
+            rs.append(Rs)
     v = torch.cat(vs)
     r = torch.cat(rs)
     vloss = float(((v - r) ** 2).mean())
