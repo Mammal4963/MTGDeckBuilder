@@ -171,6 +171,13 @@ class ModelPolicy:
         self.has_tgt = not any(k.startswith("tgt_") for k in missing)
         self.has_mull = not any(k.startswith("mull_") for k in missing)
         self.has_tuck = not any(k.startswith("tuck_") for k in missing)
+        # PILOT_DEVICE=cuda serves decisions on the GPU (the CPU is
+        # saturated by the Forge JVMs during self-play)
+        want = _os.environ.get("PILOT_DEVICE", "cpu")
+        if want != "cpu" and not torch.cuda.is_available():
+            want = "cpu"
+        self.dev = torch.device(want)
+        self.model.to(self.dev)
         self.model.eval()
 
     def encode(self, state: dict):
@@ -188,7 +195,9 @@ class ModelPolicy:
     def tt(self):
         torch = self.torch
         import numpy as np
-        return lambda x: torch.from_numpy(np.ascontiguousarray(x))
+        dev = getattr(self, "dev", None) or torch.device("cpu")
+        return lambda x: torch.from_numpy(
+            np.ascontiguousarray(x)).to(dev)
 
     def _pick(self, logits):
         """argmax, or sample at self.temperature when set (self-play)."""
@@ -231,7 +240,8 @@ class ModelPolicy:
                     dv = np.zeros(self.feat.dim, np.float32)
                 dk = self.model.deck_proj(self.tt(dv))
                 ex = torch.cat([
-                    torch.tensor([state.get("cards_to_return", 0) / 7.0]),
+                    torch.tensor([state.get("cards_to_return", 0) / 7.0],
+                                 device=self.dev),
                     self.tt(self.feat.hand_feats(state))])
                 logit = self.model.mull_head(torch.cat([hs, dk, ex]))
                 t = getattr(self, "temperature", 0.0)

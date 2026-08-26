@@ -160,11 +160,13 @@ def decision_logp(model_policy, torch, state, reply):
             dv = _np.zeros(model_policy.feat.dim, _np.float32)
         dk = model.deck_proj(model_policy.tt(dv))
         ex = torch.cat([
-            torch.tensor([state.get("cards_to_return", 0) / 7.0]),
+            torch.tensor([state.get("cards_to_return", 0) / 7.0],
+                         device=hs.device),
             model_policy.tt(model_policy.feat.hand_feats(state))])
         lg = model.mull_head(torch.cat([hs, dk, ex]))[0]
         logp = -torch.nn.functional.binary_cross_entropy_with_logits(
-            lg, torch.tensor(1.0 if reply == "keep" else 0.0))
+            lg, torch.tensor(1.0 if reply == "keep" else 0.0,
+                             device=lg.device))
         return logp, hs, None
     if kind == "attackers" and reply.startswith("attack\t"):
         hs, h, ids = model_policy.encode(state)
@@ -180,7 +182,8 @@ def decision_logp(model_policy, torch, state, reply):
             logps.append(-torch.nn.functional
                          .binary_cross_entropy_with_logits(
                              lg, torch.tensor(
-                                 1.0 if cid in want else 0.0)))
+                                 1.0 if cid in want else 0.0,
+                                 device=lg.device)))
         if not logps:
             return None
         return torch.stack(logps).sum(), hs, None
@@ -378,9 +381,12 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
         ptot += ep_p
         vtot += ep_v
         vsum += ep_m
-    model.to("cpu")
-    _opt_to(opt, "cpu")
-    if dev.type == "cuda":
+    # restore the model (and optimizer state) to wherever serving runs
+    # (PILOT_DEVICE=cuda keeps everything on the GPU)
+    home = getattr(model_policy, "dev", torch.device("cpu"))
+    model.to(home)
+    _opt_to(opt, home)
+    if dev.type == "cuda" and home.type != "cuda":
         torch.cuda.empty_cache()
     # non-cast kinds: one pass of the per-decision CPU path
     if others:
@@ -561,14 +567,16 @@ def reinforce_update(model_policy, torch, batch, baseline, lr_opt,
                     dk = model.deck_proj(model_policy.tt(dv))
                     ex = torch.cat([
                         torch.tensor(
-                            [state.get("cards_to_return", 0) / 7.0]),
+                            [state.get("cards_to_return", 0) / 7.0],
+                            device=hs.device),
                         model_policy.tt(
                             model_policy.feat.hand_feats(state))])
                     lg = model.mull_head(torch.cat([hs, dk, ex]))[0]
                     logp = -torch.nn.functional \
                         .binary_cross_entropy_with_logits(
                             lg, torch.tensor(
-                                1.0 if reply == "keep" else 0.0))
+                                1.0 if reply == "keep" else 0.0,
+                                device=lg.device))
                 elif kind == "target":
                     cands = state.get("candidates", [])
                     if not cands or not hasattr(model, "tgt_head"):
@@ -608,7 +616,7 @@ def reinforce_update(model_policy, torch, batch, baseline, lr_opt,
                         logps.append(
                             -torch.nn.functional
                             .binary_cross_entropy_with_logits(
-                                lg, torch.tensor(y)))
+                                lg, torch.tensor(y, device=lg.device)))
                     if not logps:
                         continue
                     logp = torch.stack(logps).sum()
