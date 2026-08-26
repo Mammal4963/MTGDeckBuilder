@@ -17,7 +17,7 @@ from pathlib import Path
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from watch_train import compute_stats  # noqa: E402
+from watch_train import incremental_stats  # noqa: E402
 
 OUT = Path(__file__).resolve().parent / "output"
 
@@ -72,7 +72,7 @@ def main():
         confirm = json.loads((OUT / "confirm_newdeck.json").read_text())
     except (OSError, json.JSONDecodeError):
         confirm = {}
-    stats = compute_stats() or {}
+    stats = incremental_stats() or {}
     stats.pop("_", None)
 
     # bundle the newest archived games for the static inspector
