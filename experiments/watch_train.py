@@ -19,6 +19,7 @@ import argparse
 import gzip
 import json
 import math
+import threading
 import re
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -1027,18 +1028,29 @@ def main():
                 self._send(json.dumps(_finite(body)).encode(),
                            "application/json")
             elif url.path == "/stats":
-                # opening hundreds of gzipped archives takes ~30s; do
-                # it at most once a minute and serve the cached copy
+                # opening hundreds of gzipped archives takes ~30s;
+                # always serve the cached copy instantly and refresh
+                # it in the background at most once a minute
+                def _recompute():
+                    try:
+                        _STATS_CACHE["v"] = (time.time(),
+                                             compute_stats() or {})
+                    except Exception:
+                        pass
+                    finally:
+                        _STATS_CACHE.pop("busy", None)
                 now = time.time()
                 hit = _STATS_CACHE.get("v")
-                if hit and now - hit[0] < 60:
-                    data = hit[1]
-                else:
-                    try:
-                        data = compute_stats() or {}
-                    except Exception:
-                        data = {}
-                    _STATS_CACHE["v"] = (now, data)
+                if (not hit or now - hit[0] >= 60) and \
+                        not _STATS_CACHE.get("busy"):
+                    _STATS_CACHE["busy"] = True
+                    if hit:
+                        threading.Thread(target=_recompute,
+                                         daemon=True).start()
+                    else:
+                        _recompute()      # first call: nothing to serve
+                        hit = _STATS_CACHE.get("v")
+                data = hit[1] if hit else {}
                 self._send(json.dumps(data).encode(), "application/json")
             elif url.path == "/games":
                 rows, total = [], 0
