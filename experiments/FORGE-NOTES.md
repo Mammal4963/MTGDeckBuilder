@@ -716,3 +716,27 @@ ZERO shaping (pure +-1), --mull, 60x128 games, PPO 3 epochs GPU, from
 rl17. Purpose: balanced both-seats corpus for foundation HPO + first
 purely-generalist net. Gauntlet check after (user wants the yardstick
 run between every round).
+
+## Round 18: first clean generalist round (2026-08-26)
+
+Three attempts. #1: phantom-seat leak found (stale JVM events -> ~7%
+spurious +1 trajectories) + mirror filename collisions; fixed, data
+quarantined then deleted. #2: value-head oscillation traced to the CPU
+fallback taking ~24 summed-gradient steps/iter (64x step mass, combat
+decisions 69% winner-biased); fixed to one averaged step/epoch. Then a
+PPO ratio overflow at iter 40 (exp of large log-ratio) made one NaN
+gradient and clip_grad_norm_ scaled every weight by NaN - iters 41+
+played 5000-decision turn-0 mulligan loops (91/95 tensors NaN). #3 with
+full hardening (log-ratio clamp +-10, non-finite steps dropped, refuse
+to save non-finite weights, rolling _iNNN snapshots, mull fail-safe):
+60 iters, ZERO incidents. vloss 0.86 -> ~0.6 out-of-sample (dashboard
+now fits a trend line: slope -0.003/iter), meanV calibrated ~+0.05,
+clipf ~0. Other finds: dashboard /stats was recomputing 600 gzipped
+archives per 5s poll - THE mystery training slowdown (now incremental,
+1ms); GPU serving (PILOT_DEVICE=cuda) freed the CPU; 10 workers beats
+both 8 and 12 on this 10-core box.
+
+Gate: rl18 38%+-10 on fac_roaming vs builtin 26-36 band - a pure
+generalist (RE = 1 of 154 games, zero shaping) holding the builtin
+band. 288-game confirmation running. Round 19 next: the 64-games/iter
+A/B (120 iters, same pool, same budget) - first clean batch-size data.
