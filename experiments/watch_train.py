@@ -126,22 +126,17 @@ def incremental_stats():
             new = new[-600:]
             st["init"] = True
         for r in new:
-            # deck field: our-deck games only (legacy rows lack it)
-            if r.get("deck", "fac_roaming") != "fac_roaming":
-                continue
+            # generalist era: EVERY seat of every deck contributes to
+            # the mana-development picture (RE-specific stats shelved)
             try:
                 with gzip.open(OUT / "games" / r["file"], "rt",
                                encoding="utf-8") as f:
                     g = json.load(f)
             except (OSError, json.JSONDecodeError):
                 continue
-            if g.get("deck") and g["deck"] != "fac_roaming":
-                continue
             st["recent"].append(_game_record(r, g))
         recent = list(st["recent"])
     ramp = {}
-    first_cast = []
-    by_iter = {}
     for rec in recent:
         for t, (nl, nu) in rec["per_turn"].items():
             t = int(t)
@@ -150,30 +145,11 @@ def incremental_stats():
                 a[0] += nl
                 a[1] += nu
                 a[2] += 1
-        if rec["cast"] is not None:
-            first_cast.append(rec["cast"])
-        if rec["iter"] is not None:
-            a = by_iter.setdefault(tuple(rec["iter"]), [0, 0, 0])
-            a[2] += 1
-            if rec["cast"] is not None:
-                a[0] += rec["cast"]
-                a[1] += 1
-    lock_series = [
-        {"iter": f"r{it[0]}-{it[1]}" if it[0] else it[1],
-         "avg_turn": (round(a[0] / a[1], 2) if a[1] else None),
-         "rate": round(a[1] / a[2], 3), "n": a[2]}
-        for it, a in sorted(by_iter.items())]
-    n_games = len(recent)
     return {
-        "lock_series": lock_series,
-        "games": n_games,
+        "games": len(recent),
         "ramp": {t: {"lands": round(a[0] / a[2], 2),
                      "untapped": round(a[1] / a[2], 2), "n": a[2]}
                  for t, a in sorted(ramp.items())},
-        "lock_cast_rate": round(len(first_cast) / max(1, n_games), 3),
-        "lock_first_turn": (round(sum(first_cast) / len(first_cast), 1)
-                            if first_cast else None),
-        "lock_casts": len(first_cast),
     }
 
 
@@ -292,7 +268,8 @@ gradient clip; sustained ~1.0 = oversized updates)</span></div>
 <canvas id="c-clipf" style="height:150px"></canvas></div></div></div>
 
 <div class="panel">
-<h2>Deck stats <span id="stats-n" style="color:#8b93a1;font-weight:400"></span></h2>
+<h2>Mana per turn — all decks <span id="stats-n"
+  style="color:#8b93a1;font-weight:400"></span></h2>
 <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
   <div style="flex:1;min-width:260px">
     <div class="legend"><span><i class="dot" style="background:#5aa9e6"></i>lands in play</span>
@@ -300,18 +277,6 @@ gradient clip; sustained ~1.0 = oversized updates)</span></div>
     <canvas id="c-ramp" style="height:140px"></canvas>
   </div>
   <div id="lock-stats" style="min-width:200px;font-size:13px"></div>
-</div>
-<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:10px">
-  <div style="flex:1;min-width:260px">
-    <div class="legend"><span><i class="dot" style="background:#e0b050"></i>avg first
-    cast turn, cast games only (gaps = no casts that iteration)</span></div>
-    <canvas id="c-lock" style="height:130px"></canvas>
-  </div>
-  <div style="flex:1;min-width:260px">
-    <div class="legend"><span><i class="dot" style="background:#c792ea"></i>Random
-    Encounter cast rate per iteration</span></div>
-    <canvas id="c-lockrate" style="height:130px"></canvas>
-  </div>
 </div>
 </div>
 
@@ -523,33 +488,18 @@ async function loadStats() {
     const r = await fetch("/stats"); const s = await r.json();
     if (!s.ramp) return;
     document.getElementById("stats-n").textContent =
-      `— last ${s.games} archived games (our seat)`;
+      `— last ${s.games} archived seats, all decks`;
     const turns = Object.keys(s.ramp).map(Number).sort((a, b) => a - b);
     draw(document.getElementById("c-ramp"),
       [{color: "#5aa9e6", data: turns.map(t => s.ramp[t].lands)},
        {color: "#7ce38b", data: turns.map(t => s.ramp[t].untapped)}],
       0, Math.max(6, ...turns.map(t => s.ramp[t].lands)),
       {x0: turns[0], label: "turn"});
-    if (s.lock_series && s.lock_series.length > 1) {
-      const ls = s.lock_series;
-      draw(document.getElementById("c-lock"),
-        [{color: "#e0b050", data: ls.map(e => e.avg_turn)}],
-        0, Math.max(10, ...ls.map(e => e.avg_turn || 0)),
-        {x0: 0, label: "iterations in window (oldest -> newest)"});
-      draw(document.getElementById("c-lockrate"),
-        [{color: "#c792ea", data: ls.map(e => e.rate)}], 0, 1,
-        {x0: 0, label: "iterations in window (oldest -> newest)"});
-    }
-    document.getElementById("lock-stats").innerHTML =
-      `<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;
-        color:#8b93a1">Random Encounter</div>
-      <div style="font-size:20px;font-weight:600">${(100*s.lock_cast_rate).toFixed(0)}%
-        <span style="font-size:12px;color:#8b93a1">of games cast</span></div>
-      <div>${s.lock_first_turn != null ?
-        `avg first cast (cast games only): turn <b>${s.lock_first_turn}</b> (${s.lock_casts} games)` :
-        "not cast in this sample"}</div>
-      <div style="color:#8b93a1;font-size:11px;margin-top:4px">
-        ramp x-axis = turn 1..${turns[turns.length-1] || 0}</div>`;
+    const ls = document.getElementById("lock-stats");
+    if (ls) ls.innerHTML =
+      `<div style="color:#8b93a1;font-size:11px">mana development ` +
+      `averaged over every seat of every deck in the pool · ` +
+      `RE-specific stats shelved for the generalist era</div>`;
   } catch (e) {}
 }
 const RUN_ITERS = 60;   // matches the launched --iters
@@ -561,9 +511,13 @@ function renderProgress(d, t) {
     el.style.cssText = "margin:-8px 0 16px";
     document.getElementById("cards").after(el);
   }
-  const perIter = t.length ? (t[t.length-1].games || 64) : 64;
+  // real games per iteration = trajs/2 (both seats); the journal's
+  // "games" field only counts our-deck perspectives
+  const ig = e => e.trajs ? Math.round(e.trajs / 2) : (e.games || 64);
+  const perIter = (d.iterprog && d.iterprog.total) ||
+                  (t.length ? ig(t[t.length-1]) : 128);
   const total = RUN_ITERS * perIter;
-  const done = t.reduce((a, e) => a + (e.games || perIter), 0) +
+  const done = t.reduce((a, e) => a + ig(e), 0) +
                (d.live ? d.live.games : 0);
   const pct = Math.min(100, 100 * done / total);
   let iterBar = "";
