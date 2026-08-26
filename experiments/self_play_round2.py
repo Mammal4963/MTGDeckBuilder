@@ -377,11 +377,17 @@ def main():
                 if gnorms:
                     # pre-clip gradient norms: sustained clipf near 1.0
                     # means every step is being truncated - the signal
-                    # that caught the summed-gradient bug too late
-                    entry["gnorm"] = round(
-                        sum(gnorms) / len(gnorms), 3)
+                    # that caught the summed-gradient bug too late.
+                    # inf/nan norms (blown step) count as clipped but
+                    # are excluded from the mean - json Infinity breaks
+                    # the dashboard's parser
+                    import math as _math
+                    fin = [g for g in gnorms if _math.isfinite(g)]
+                    if fin:
+                        entry["gnorm"] = round(sum(fin) / len(fin), 3)
                     entry["clipf"] = round(
-                        sum(1 for g in gnorms if g > 1.0)
+                        sum(1 for g in gnorms
+                            if not _math.isfinite(g) or g > 1.0)
                         / len(gnorms), 2)
                 journal["train"].append(entry)
                 log(f"[train] {json.dumps(entry)}")

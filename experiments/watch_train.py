@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import json
+import math
 import re
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -1007,7 +1008,18 @@ def main():
                         body["confirm"]["_mtime"] = cpath.stat().st_mtime
                     except (OSError, json.JSONDecodeError):
                         pass
-                self._send(json.dumps(body).encode(), "application/json")
+                # Python json emits Infinity/NaN, which browsers refuse
+                # to parse - scrub non-finite numbers before serving
+                def _finite(o):
+                    if isinstance(o, float):
+                        return o if math.isfinite(o) else None
+                    if isinstance(o, dict):
+                        return {k: _finite(x) for k, x in o.items()}
+                    if isinstance(o, list):
+                        return [_finite(x) for x in o]
+                    return o
+                self._send(json.dumps(_finite(body)).encode(),
+                           "application/json")
             elif url.path == "/stats":
                 try:
                     data = compute_stats() or {}
