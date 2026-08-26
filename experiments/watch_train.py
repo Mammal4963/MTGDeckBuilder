@@ -257,7 +257,8 @@ PAGE = """<!DOCTYPE html>
 <div class="chartbox"><h2>Value head &mdash; prediction error &amp; mean value</h2>
 <div style="display:flex;gap:20px;flex-wrap:wrap">
 <div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
-style="background:#e0b050"></i>vloss (MSE toward outcome; lower = sharper)</span></div>
+style="background:#e0b050"></i>vloss (MSE toward outcome; lower = sharper)<span
+id="vloss-slope" style="color:#8b93a1"></span></span></div>
 <canvas id="c-vloss" style="height:150px"></canvas></div>
 <div style="flex:1;min-width:260px"><div class="legend"><span><i class="dot"
 style="background:#5aa9e6"></i>mean V (expected outcome of sampled play)</span></div>
@@ -366,12 +367,32 @@ function draw(cv, series, ymin, ymax, xopts) {
   ctx.textAlign = "left";
   for (const s of series) {
     ctx.strokeStyle = s.color; ctx.lineWidth = 2 * devicePixelRatio;
+    ctx.setLineDash(s.dash ? [6 * devicePixelRatio, 5 * devicePixelRatio]
+                           : []);
     ctx.beginPath();
+    let started = false;
     s.data.forEach((v, i) => { if (v == null) return;
       const px = x(i), py = y(v);
-      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py); });
+      started ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      started = true; });
     ctx.stroke();
   }
+  ctx.setLineDash([]);
+}
+// least-squares fit over the non-null points -> {b: slope/x, line: []}
+function linreg(data) {
+  const pts = [];
+  data.forEach((v, i) => { if (v != null) pts.push([i, v]); });
+  if (pts.length < 3) return null;
+  const n = pts.length;
+  const sx = pts.reduce((a, p) => a + p[0], 0),
+        sy = pts.reduce((a, p) => a + p[1], 0),
+        sxx = pts.reduce((a, p) => a + p[0] * p[0], 0),
+        sxy = pts.reduce((a, p) => a + p[0] * p[1], 0);
+  const den = n * sxx - sx * sx;
+  if (!den) return null;
+  const b = (n * sxy - sx * sy) / den, a = (sy - b * sx) / n;
+  return {b, line: data.map((_v, i) => a + b * i)};
 }
 function card(k, v, d, cls) {
   return `<div class="card"><div class="k">${k}</div>` +
@@ -461,8 +482,18 @@ async function tick() {
       {label: "iteration"});
     const vls = t.map(e => e.vloss).filter(x => x != null);
     if (vls.length > 1) {
-      draw(document.getElementById("c-vloss"),
-        [{color: "#e0b050", data: t.map(e => e.vloss)}],
+      const vdata = t.map(e => e.vloss);
+      const fit = linreg(vdata);
+      const vseries = [{color: "#e0b050", data: vdata}];
+      if (fit) {
+        vseries.push({color: "#8b93a1", dash: true, data: fit.line});
+        const sl = document.getElementById("vloss-slope");
+        if (sl) sl.textContent =
+          ` · slope ${fit.b >= 0 ? "+" : ""}${fit.b.toFixed(4)}/iter ` +
+          `(${fit.b < -1e-4 ? "improving" :
+              fit.b > 1e-4 ? "worsening" : "flat"})`;
+      }
+      draw(document.getElementById("c-vloss"), vseries,
         0, Math.max(1.2, ...vls), {label: "iteration"});
       const mvs = t.map(e => e.meanV).filter(x => x != null);
       draw(document.getElementById("c-meanv"),
