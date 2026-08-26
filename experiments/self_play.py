@@ -329,7 +329,8 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
     ex_t = torch.tensor(extra_adv, dtype=torch.float32, device=dev)
     D = model.state_tok.shape[1]
 
-    BS = 2048           # ~3 GB peak on pool-sized boards; 24 GB card
+    BS = 1024           # attention activations spike ~4 GB at 2048 on
+                        # pool-sized boards; WDDM refuses large asks
 
     def forward_slice(sl):
         """-> (logp_taken, V) for one minibatch slice (grad respected

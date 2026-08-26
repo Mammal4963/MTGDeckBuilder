@@ -331,10 +331,22 @@ def main():
                 lc = ({"locks": set(locks), "w": args.lock_credit}
                       if args.lock_credit else None)
                 if args.ppo_epochs > 0 and args.gpu:
-                    loss, vloss, meanv, gnorms = ppo_update_gpu(
-                        inner, torch, batch, opt,
-                        epochs=args.ppo_epochs, lock_credit=lc,
-                        max_decisions=args.max_decisions)
+                    # WDDM sporadically refuses allocations with free
+                    # VRAM; empty the cache and retry before giving up
+                    for attempt in range(3):
+                        try:
+                            loss, vloss, meanv, gnorms = ppo_update_gpu(
+                                inner, torch, batch, opt,
+                                epochs=args.ppo_epochs, lock_credit=lc,
+                                max_decisions=args.max_decisions)
+                            break
+                        except torch.cuda.OutOfMemoryError:
+                            if attempt == 2:
+                                raise
+                            log(f"[oom] update attempt {attempt} "
+                                "failed; cache-clear and retry")
+                            torch.cuda.empty_cache()
+                            time.sleep(15)
                 elif args.ppo_epochs > 0:
                     loss, vloss, meanv, gnorms = ppo_update(
                         inner, torch, batch, opt,
