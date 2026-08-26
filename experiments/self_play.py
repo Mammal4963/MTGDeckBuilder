@@ -452,6 +452,7 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                 shaping[k] = potential * (R - vold[k])
     ptot = vtot = vsum = vn = 0.0
     gnorms = []
+    n_est = max(1, sum(1 for x in old if x is not None))
     for ep in range(epochs):
         model.train()
         opt.zero_grad()
@@ -476,20 +477,16 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                     ratio * adv,
                     torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
                 vl = (v - R) ** 2
-                # mean over the accumulation window, not sum: summed
-                # grads gave this path ~64x the step mass of the GPU
-                # path and let win-biased combat states drag V upward
-                ((pl + val_coef * vl) / 64.0).backward()
+                # one averaged step per epoch (like the GPU path):
+                # stepping every 64 summed decisions gave this path
+                # ~8-64x the update mass of the GPU path and let
+                # win-biased combat states whipsaw the value head
+                ((pl + val_coef * vl) / n_est).backward()
                 ptot += float(pl.detach())
                 vtot += float(vl.detach())
                 vsum += float(v.detach())
                 vn += 1
                 nterms += 1
-                if nterms % 64 == 0:
-                    gnorms.append(float(torch.nn.utils.clip_grad_norm_(
-                        model.parameters(), 1.0)))
-                    opt.step()
-                    opt.zero_grad()
             except Exception:
                 continue
         gnorms.append(float(torch.nn.utils.clip_grad_norm_(
