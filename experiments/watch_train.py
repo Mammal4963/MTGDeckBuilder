@@ -26,6 +26,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 OUT = Path(__file__).resolve().parent / "output"
+_STATS_CACHE = {}
 GAMES = OUT / "games"
 
 LOCKS = ("Random Encounter",)
@@ -978,9 +979,14 @@ def main():
                 gidx = OUT / "games_index.jsonl"
                 if gidx.exists():
                     try:
+                        # tail-read: the index is tens of MB - parsing
+                        # it whole on every poll made /data take seconds
+                        with open(gidx, "rb") as fh:
+                            fh.seek(max(0, gidx.stat().st_size - 200_000))
+                            tail = fh.read().decode("utf-8",
+                                                    errors="replace")
                         rows = [json.loads(ln) for ln in
-                                gidx.read_text(encoding="utf-8")
-                                .splitlines()[-300:]]
+                                tail.splitlines()[1:][-300:]]
                         r2 = [r for r in rows if iter_num(r.get("iter")) is not None]
                         if r2:
                             cur = max(iter_num(r["iter"]) for r in r2)
@@ -1021,10 +1027,18 @@ def main():
                 self._send(json.dumps(_finite(body)).encode(),
                            "application/json")
             elif url.path == "/stats":
-                try:
-                    data = compute_stats() or {}
-                except Exception:
-                    data = {}
+                # opening hundreds of gzipped archives takes ~30s; do
+                # it at most once a minute and serve the cached copy
+                now = time.time()
+                hit = _STATS_CACHE.get("v")
+                if hit and now - hit[0] < 60:
+                    data = hit[1]
+                else:
+                    try:
+                        data = compute_stats() or {}
+                    except Exception:
+                        data = {}
+                    _STATS_CACHE["v"] = (now, data)
                 self._send(json.dumps(data).encode(), "application/json")
             elif url.path == "/games":
                 rows, total = [], 0
