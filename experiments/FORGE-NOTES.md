@@ -761,3 +761,14 @@ budget, same wall ~3h): dead heat on final vloss (0.623 vs 0.625) but
 no gain. VERDICT: 128 games/iter stays the default. Pool v3 building
 from Forge shipped decks (geneticai/duels/precons; decks/standard
 yielded 0 candidates - size filter) toward ~450 for round 20.
+
+## rl20: CONFIRMED GAIN - 47%+-6 vs builtin 36%+-4 (2026-08-26)
+
+First CI-separated confirmation since rl8, tying the all-time number -
+but rl8 was a shaped one-deck specialist; rl20 is a pure generalist
+(450-deck uniform pool, zero shaping, pure +-1) that happens to pilot
+fac_roaming at champion level. Generalist chain: rl18 42 -> rl19 44 ->
+rl20 47 (confirmed). Round-20 vloss best-in-lineage 0.56-0.67 on the
+hardest distribution. The breadth thesis is proven: more decks = more
+Magic. Round 21 next: pool_v4, 400 NEVER-seen decks - the pure
+generalization round - then HPO over the ~850-unique-deck corpus.
