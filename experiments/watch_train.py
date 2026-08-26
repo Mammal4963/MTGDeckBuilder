@@ -65,72 +65,106 @@ def iter_num(v):
     return (int(m.group(1)), int(m.group(2))) if m else None
 
 
-def compute_stats(limit=600):
-    """Ramp + locked-card timing over the newest `limit` archived games."""
+def _game_record(r, g):
+    """Extract the tiny per-game stat record from one archive."""
+    lands = land_names()
+    per_turn = {}   # turn -> (lands, untapped) at last seen decision
+    cast_turn = None
+    for state, reply in g["decisions"]:
+        if state.get("kind") == "game_end":
+            continue
+        if g.get("deck") and g["deck"] not in state.get("player",
+                                                        g["deck"]):
+            continue          # our seat only
+        t = (state.get("turn", 0) + 1) // 2   # player turns, not
+        bf = state.get("my_battlefield", [])   # engine half-turns
+        nl = nu = 0
+        for c in bf:
+            name = c["n"] if isinstance(c, dict) else c
+            if name in lands:
+                nl += 1
+                if not (isinstance(c, dict) and c.get("tapped")):
+                    nu += 1
+        per_turn[t] = (nl, nu)
+        if cast_turn is None and chosen_card(state, reply) in LOCKS:
+            cast_turn = t
+    return {"iter": iter_num(r.get("iter")), "cast": cast_turn,
+            "per_turn": per_turn}
+
+
+# incremental stats: consume only NEW bytes of the games index per
+# refresh, open only the new fac_roaming archives, and keep a rolling
+# window of small per-game records. Nothing here ever re-reads the
+# whole corpus after the initial build.
+from collections import deque
+_STATS_STATE = {"offset": 0, "recent": deque(maxlen=600),
+                "lock": threading.Lock(), "init": False}
+
+
+def incremental_stats():
     idx = OUT / "games_index.jsonl"
     if not idx.exists():
         return None
-    key = (idx.stat().st_mtime, limit)
-    if _STATS_CACHE["key"] == key:
-        return _STATS_CACHE["data"]
-    rows = [json.loads(ln) for ln in
-            idx.read_text(encoding="utf-8").splitlines()][-limit:]
-    lands = land_names()
-    ramp = {}          # turn -> [sum_lands, sum_untapped, n]
-    first_cast = []
-    by_iter = {}       # iter -> [sum_first_turns, n_cast, n_games]
-    n_games = 0
-    for r in rows:
-        try:
-            with gzip.open(OUT / "games" / r["file"], "rt",
-                           encoding="utf-8") as f:
-                g = json.load(f)
-        except OSError:
-            continue
-        if g.get("deck") and g["deck"] != "fac_roaming":
-            continue          # deck stats are about OUR deck only
-        n_games += 1
-        per_turn = {}   # turn -> (lands, untapped) at last seen decision
-        cast_turn = None
-        for state, reply in g["decisions"]:
-            if state.get("kind") == "game_end":
+    st = _STATS_STATE
+    with st["lock"]:
+        size = idx.stat().st_size
+        if size < st["offset"]:            # index rewritten/purged
+            st["offset"], st["init"] = 0, False
+            st["recent"].clear()
+        new = []
+        with open(idx, "rb") as f:
+            f.seek(st["offset"])
+            chunk = f.read()
+        st["offset"] = size
+        for ln in chunk.decode("utf-8", errors="replace").splitlines():
+            try:
+                new.append(json.loads(ln))
+            except json.JSONDecodeError:
+                pass
+        if not st["init"]:
+            # first build: only the newest 600 rows, like before
+            new = new[-600:]
+            st["init"] = True
+        for r in new:
+            # deck field: our-deck games only (legacy rows lack it)
+            if r.get("deck", "fac_roaming") != "fac_roaming":
                 continue
-            if g.get("deck") and g["deck"] not in state.get("player",
-                                                            g["deck"]):
-                continue          # our seat only
-            t = (state.get("turn", 0) + 1) // 2   # player turns, not
-            bf = state.get("my_battlefield", [])   # engine half-turns
-            nl = nu = 0
-            for c in bf:
-                name = c["n"] if isinstance(c, dict) else c
-                if name in lands:
-                    nl += 1
-                    if not (isinstance(c, dict) and c.get("tapped")):
-                        nu += 1
-            per_turn[t] = (nl, nu)
-            if cast_turn is None and chosen_card(state, reply) in LOCKS:
-                cast_turn = t
-        for t, (nl, nu) in per_turn.items():
+            try:
+                with gzip.open(OUT / "games" / r["file"], "rt",
+                               encoding="utf-8") as f:
+                    g = json.load(f)
+            except (OSError, json.JSONDecodeError):
+                continue
+            if g.get("deck") and g["deck"] != "fac_roaming":
+                continue
+            st["recent"].append(_game_record(r, g))
+        recent = list(st["recent"])
+    ramp = {}
+    first_cast = []
+    by_iter = {}
+    for rec in recent:
+        for t, (nl, nu) in rec["per_turn"].items():
+            t = int(t)
             if 1 <= t <= 8:
                 a = ramp.setdefault(t, [0, 0, 0])
                 a[0] += nl
                 a[1] += nu
                 a[2] += 1
-        if cast_turn is not None:
-            first_cast.append(cast_turn)
-        itn = iter_num(r.get("iter"))
-        if itn is not None:
-            a = by_iter.setdefault(itn, [0, 0, 0])
+        if rec["cast"] is not None:
+            first_cast.append(rec["cast"])
+        if rec["iter"] is not None:
+            a = by_iter.setdefault(tuple(rec["iter"]), [0, 0, 0])
             a[2] += 1
-            if cast_turn is not None:
-                a[0] += cast_turn
+            if rec["cast"] is not None:
+                a[0] += rec["cast"]
                 a[1] += 1
     lock_series = [
         {"iter": f"r{it[0]}-{it[1]}" if it[0] else it[1],
          "avg_turn": (round(a[0] / a[1], 2) if a[1] else None),
          "rate": round(a[1] / a[2], 3), "n": a[2]}
         for it, a in sorted(by_iter.items())]
-    data = {
+    n_games = len(recent)
+    return {
         "lock_series": lock_series,
         "games": n_games,
         "ramp": {t: {"lands": round(a[0] / a[2], 2),
@@ -141,9 +175,6 @@ def compute_stats(limit=600):
                             if first_cast else None),
         "lock_casts": len(first_cast),
     }
-    _STATS_CACHE["key"] = key
-    _STATS_CACHE["data"] = data
-    return data
 
 
 PAGE = """<!DOCTYPE html>
@@ -1034,22 +1065,20 @@ def main():
                 def _recompute():
                     try:
                         _STATS_CACHE["v"] = (time.time(),
-                                             compute_stats() or {})
+                                             incremental_stats() or {})
                     except Exception:
                         pass
                     finally:
                         _STATS_CACHE.pop("busy", None)
                 now = time.time()
                 hit = _STATS_CACHE.get("v")
-                if (not hit or now - hit[0] >= 60) and \
+                if (not hit or now - hit[0] >= 15) and \
                         not _STATS_CACHE.get("busy"):
                     _STATS_CACHE["busy"] = True
-                    if hit:
-                        threading.Thread(target=_recompute,
-                                         daemon=True).start()
-                    else:
-                        _recompute()      # first call: nothing to serve
-                        hit = _STATS_CACHE.get("v")
+                    # NEVER block a request: even the first build runs
+                    # in the background and fills in on the next poll
+                    threading.Thread(target=_recompute,
+                                     daemon=True).start()
                 data = hit[1] if hit else {}
                 self._send(json.dumps(data).encode(), "application/json")
             elif url.path == "/games":
