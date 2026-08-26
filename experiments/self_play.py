@@ -315,11 +315,15 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
 
     model.to(dev)
     _opt_to(opt, dev)
-    toks = torch.from_numpy(toks).to(dev)
-    tmask = torch.from_numpy(tmask).to(dev)
-    scals = torch.from_numpy(np.stack(scal_list)).to(dev)
-    cands_t = torch.from_numpy(cands_t).to(dev)
-    cmask = torch.from_numpy(cmask).to(dev)
+    # big tensors stay on the CPU; each minibatch slice streams to the
+    # GPU inside forward_slice (a single whole-batch upload can be
+    # multiple GB and sporadically OOMs under Windows/WDDM even with
+    # free VRAM)
+    toks = torch.from_numpy(toks)
+    tmask = torch.from_numpy(tmask)
+    scals = torch.from_numpy(np.stack(scal_list))
+    cands_t = torch.from_numpy(cands_t)
+    cmask = torch.from_numpy(cmask)
     acts_t = torch.from_numpy(acts).to(dev)
     R_t = torch.tensor(rewards, dtype=torch.float32, device=dev)
     ex_t = torch.tensor(extra_adv, dtype=torch.float32, device=dev)
@@ -330,20 +334,22 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
     def forward_slice(sl):
         """-> (logp_taken, V) for one minibatch slice (grad respected
         by caller's context)."""
-        x = model.proj(toks[sl])
+        x = model.proj(toks[sl].to(dev))
         st = model.state_tok.expand(x.shape[0], 1, D)
         x = torch.cat([st, x], dim=1)
         pad = torch.cat([torch.zeros(x.shape[0], 1, dtype=torch.bool,
-                                     device=dev), tmask[sl]], dim=1)
+                                     device=dev),
+                         tmask[sl].to(dev)], dim=1)
         h = model.enc(x, src_key_padding_mask=pad)
-        hs = model.state_mlp(torch.cat([h[:, 0], scals[sl]], dim=1))
-        cp = model.cand_proj(cands_t[sl])
+        hs = model.state_mlp(torch.cat([h[:, 0], scals[sl].to(dev)],
+                                       dim=1))
+        cp = model.cand_proj(cands_t[sl].to(dev))
         hse = hs.unsqueeze(1).expand(-1, cp.shape[1], -1)
         logits_c = model.cast_head(
             torch.cat([hse, cp], dim=2)).squeeze(-1)
         logit_p = model.pass_head(hs)
         logits = torch.cat([logits_c, logit_p], dim=1)
-        logits = logits.masked_fill(~cmask[sl], -1e9)
+        logits = logits.masked_fill(~cmask[sl].to(dev), -1e9)
         lp = torch.log_softmax(logits, dim=1)
         return (lp.gather(1, acts_t[sl].unsqueeze(1)).squeeze(1),
                 model.val_head(hs).squeeze(-1))
