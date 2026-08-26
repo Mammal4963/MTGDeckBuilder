@@ -40,6 +40,9 @@ def iter_games(limit=None, skip_eps_forced=True):
     rows = [json.loads(ln) for ln in
             (OUT / "games_index.jsonl").read_text(encoding="utf-8")
             .splitlines()]
+    # crash-replays append duplicate rows for overwritten files; keep
+    # only the newest row per archive so no game is double-counted
+    rows = list({r["file"]: r for r in rows}.values())
     if limit:
         rng = np.random.default_rng(41)
         rng.shuffle(rows)
