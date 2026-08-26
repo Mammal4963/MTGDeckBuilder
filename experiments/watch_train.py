@@ -542,15 +542,18 @@ function renderProgress(d, t) {
     el.style.cssText = "margin:-8px 0 16px";
     document.getElementById("cards").after(el);
   }
-  // real games per iteration = trajs/2 (both seats); the journal's
-  // "games" field only counts our-deck perspectives
-  const ig = e => e.trajs ? Math.round(e.trajs / 2) : (e.games || 64);
-  const perIter = (d.iterprog && d.iterprog.total) ||
-                  (t.length ? ig(t[t.length-1]) : 128);
-  const total = RUN_ITERS * perIter;
-  const done = t.reduce((a, e) => a + ig(e), 0) +
-               (d.live ? d.live.games : 0);
-  const pct = Math.min(100, 100 * done / total);
+  // round length: journal "iters" (new), else inferred from the eps
+  // schedule eps = eps0*(1 - it/iters), else the old default
+  let iters = d.iters;
+  if (!iters) {
+    const e = [...t].reverse().find(e => e.eps > 0.12 && e.iter > 5);
+    iters = e ? Math.round(e.iter / (1 - e.eps / 0.4) / 10) * 10
+              : RUN_ITERS;
+  }
+  const curFrac = (d.iterprog && d.iterprog.total)
+    ? Math.min(1, d.iterprog.done / d.iterprog.total) : 0;
+  const done = t.length + curFrac;
+  const pct = Math.min(100, 100 * done / iters);
   let iterBar = "";
   const ip = d.iterprog;
   if (ip) {
@@ -571,7 +574,8 @@ function renderProgress(d, t) {
       </div>`;
   }
   el.innerHTML = `<div style="font-size:12px;color:#8b93a1;margin-bottom:3px">
-      run progress: ${done.toLocaleString()} / ${total.toLocaleString()} games
+      round progress: iteration ${t.length}${curFrac ?
+        "." + Math.round(10 * curFrac) : ""} / ${iters}
       (${pct.toFixed(0)}%)</div>
     <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:10px">
       <div style="background:#5aa9e6;height:10px;border-radius:5px;width:${pct}%"></div>

@@ -195,6 +195,7 @@ def main():
     jpath = OUT / f"selfplay_round{args.tag}.json"
     journal = (json.loads(jpath.read_text()) if jpath.exists()
                else {"train": [], "validation": {}})
+    journal["iters"] = args.iters      # dashboard: round length
     if not jpath.exists():
         # write the skeleton immediately so the dashboard follows this
         # round from game 1, not from the end of iteration 0
