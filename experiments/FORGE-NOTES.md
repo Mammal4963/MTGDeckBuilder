@@ -782,3 +782,15 @@ rl20 stays champion. Corpus now ~106k archived seats across ~850
 unique decks, all both-seats, labels verified. HPO random search
 launching over D/layers/lr on the balanced corpus (roaming_cap 0.3,
 game-held-out split, dedup by file).
+
+## HPO verdict: deep-and-narrow wins (2026-08-26)
+
+20-config random search (D 128-512, L 2-6, lr 1e-4/3e-4/1e-3) on a
+balanced 4000-game sample, game-held-out, ranked by value AUC + cast
+agreement; top quartile extended 3 epochs. WINNER: D=192 L=6 lr 1e-3 -
+AUC 0.786, acc 0.743, vloss 0.777. The 192 family swept (192/4 second);
+every 512-wide model lost to it despite 5x params; the production
+256/4 shape missed the finalist cut entirely. lr 1e-3 destroys value
+AUC at D>=384 but is optimal at D<=192. Search infra note: features
+must stay ragged with per-minibatch padding (global padding = 25GB).
+Full foundation pretrain launching: --train 192,6 on 20k games.

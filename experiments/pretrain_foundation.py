@@ -253,6 +253,7 @@ def main():
     ap.add_argument("--search-games", type=int, default=3000)
     ap.add_argument("--train", default=None, help="D,LAYERS")
     ap.add_argument("--train-games", type=int, default=20000)
+    ap.add_argument("--train-lr", type=float, default=3e-4)
     ap.add_argument("--epochs", type=int, default=3)
     args = ap.parse_args()
 
@@ -311,7 +312,8 @@ def main():
               flush=True)
         Ftr = featurize(tr, feat)
         Fho = featurize(ho, feat)
-        model, met = run_config(torch, feat, Ftr, Fho, D, L, 3e-4,
+        model, met = run_config(torch, feat, Ftr, Fho, D, L,
+                                args.train_lr,
                                 epochs=args.epochs, dev=dev)
         print("metrics:", json.dumps(met), flush=True)
         out = OUT / f"foundation_D{D}L{L}.pt"
