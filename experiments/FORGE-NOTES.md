@@ -772,3 +772,13 @@ rl20 47 (confirmed). Round-20 vloss best-in-lineage 0.56-0.67 on the
 hardest distribution. The breadth thesis is proven: more decks = more
 Magic. Round 21 next: pool_v4, 400 NEVER-seen decks - the pure
 generalization round - then HPO over the ~850-unique-deck corpus.
+
+## rl21 42%+-6; data era closed, HPO begins (2026-08-26)
+
+Round 21 (400 never-seen decks): vloss held 0.56-0.60 all round -
+the generalization result. Gauntlet 42%+-6 (dip from rl20 47: a round
+of zero fac_roaming/old-pool exposure trades a little specialist edge).
+rl20 stays champion. Corpus now ~106k archived seats across ~850
+unique decks, all both-seats, labels verified. HPO random search
+launching over D/layers/lr on the balanced corpus (roaming_cap 0.3,
+game-held-out split, dedup by file).
