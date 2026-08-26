@@ -740,3 +740,13 @@ Gate: rl18 38%+-10 on fac_roaming vs builtin 26-36 band - a pure
 generalist (RE = 1 of 154 games, zero shaping) holding the builtin
 band. 288-game confirmation running. Round 19 next: the 64-games/iter
 A/B (120 iters, same pool, same budget) - first clean batch-size data.
+
+## rl18 confirmed 42%+-6 vs builtin 36%+-4 (2026-08-26)
+
+No CI separation (strict rule holds: only rl8 at 47%+-4 is a confirmed
+gain), but 42% is the best generalist point estimate yet - 6 over
+builtin, brushing the specialist band, from a net that saw fac_roaming
+once per 154 games with zero shaping. Round 19 launched from rl18:
+the batch-size A/B - 120 iters x 64 games (same total budget as round
+18's 60x128, twice the update frequency). Judged on vloss slope,
+gnorm/clipf noise, and the gauntlet.
