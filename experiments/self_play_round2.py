@@ -385,6 +385,11 @@ def main():
                         / len(gnorms), 2)
                 journal["train"].append(entry)
                 log(f"[train] {json.dumps(entry)}")
+                # host RSS creeps ~250MB/iter without an explicit trim
+                # (large per-iteration batches + allocator retention)
+                del batch, flown, ours
+                import gc
+                gc.collect()
                 torch.save(inner.model.state_dict(), rl_ckpt)
                 torch.save({"model": inner.model.state_dict(),
                             "opt": opt.state_dict(), "iter": it + 1,
