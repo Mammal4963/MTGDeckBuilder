@@ -373,7 +373,9 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
             sl = slice(o, o + BS)
             lp, v = forward_slice(sl)
             adv = (R_t[sl] - v.detach()) + ex_t[sl]
-            ratio = torch.exp(lp - old_lp[sl])
+            # clamp the log-ratio: exp() overflow on a drifted action
+            # makes the loss inf and one NaN step lobotomizes the net
+            ratio = torch.exp(torch.clamp(lp - old_lp[sl], -10.0, 10.0))
             pl = -torch.min(ratio * adv,
                             torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
             vl = (v - R_t[sl]) ** 2
@@ -382,9 +384,15 @@ def ppo_update_gpu(model_policy, torch, batch, opt, epochs=3, clip=0.2,
             ep_p += float(pl.mean().detach()) * w
             ep_v += float(vl.mean().detach()) * w
             ep_m += float(v.mean().detach()) * w
-        gnorms.append(float(torch.nn.utils.clip_grad_norm_(
-            model.parameters(), 1.0)))
-        opt.step()
+        gn = float(torch.nn.utils.clip_grad_norm_(
+            model.parameters(), 1.0))
+        gnorms.append(gn)
+        if not np.isfinite(gn):
+            # a non-finite gradient would write NaN into every weight
+            # on step(); drop this step entirely
+            opt.zero_grad()
+        else:
+            opt.step()
         ptot += ep_p
         vtot += ep_v
         vsum += ep_m
@@ -479,7 +487,8 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                     t = s.get("turn", 16)
                     adv += lock_credit["w"] * max(
                         0.0, min(1.0, (16 - t) / 12.0))
-                ratio = torch.exp(logp - old[k])
+                ratio = torch.exp(torch.clamp(logp - old[k],
+                                              -10.0, 10.0))
                 pl = -torch.min(
                     ratio * adv,
                     torch.clamp(ratio, 1 - clip, 1 + clip) * adv)
@@ -496,9 +505,13 @@ def ppo_update(model_policy, torch, batch, opt, epochs=3, clip=0.2,
                 nterms += 1
             except Exception:
                 continue
-        gnorms.append(float(torch.nn.utils.clip_grad_norm_(
-            model.parameters(), 1.0)))
-        opt.step()
+        gn = float(torch.nn.utils.clip_grad_norm_(
+            model.parameters(), 1.0))
+        gnorms.append(gn)
+        if not np.isfinite(gn):
+            opt.zero_grad()
+        else:
+            opt.step()
     model.eval()
     n = max(1.0, vn)
     return ptot / n, vtot / n, vsum / n, gnorms

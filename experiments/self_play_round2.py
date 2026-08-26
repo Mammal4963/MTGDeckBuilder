@@ -396,10 +396,20 @@ def main():
                 del batch, flown, ours
                 import gc
                 gc.collect()
+                # never bank NaN weights: one poisoned save costs the
+                # whole round (learned in round 18)
+                if any(not torch.isfinite(p).all()
+                       for p in inner.model.parameters()):
+                    raise RuntimeError(
+                        f"non-finite weights after iter {it}; "
+                        "refusing to save - restore a _i snapshot")
                 torch.save(inner.model.state_dict(), rl_ckpt)
                 torch.save({"model": inner.model.state_dict(),
                             "opt": opt.state_dict(), "iter": it + 1,
                             "baseline": baseline}, rl_state)
+                if it % 10 == 0:
+                    torch.save(inner.model.state_dict(),
+                               OUT / f"pilot2_rl{args.tag}_i{it:03d}.pt")
                 save()
         finally:
             for s in servers:

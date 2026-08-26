@@ -246,6 +246,11 @@ class ModelPolicy:
                 logit = self.model.mull_head(torch.cat([hs, dk, ex]))
                 t = getattr(self, "temperature", 0.0)
                 p = float(torch.sigmoid(logit / t if t else logit))
+                # fail-safe: a NaN model or a hand already mulled to
+                # the bone must never mull again (round 18's NaN net
+                # produced 5000-decision turn-0 mulligan loops)
+                if not (p == p) or state.get("cards_to_return", 0) >= 6:
+                    return "keep"
                 keep = (torch.rand(1).item() < p) if t else (p > 0.5)
                 return "keep" if keep else "mull"
 
