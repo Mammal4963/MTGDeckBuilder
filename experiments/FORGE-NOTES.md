@@ -750,3 +750,14 @@ once per 154 games with zero shaping. Round 19 launched from rl18:
 the batch-size A/B - 120 iters x 64 games (same total budget as round
 18's 60x128, twice the update frequency). Judged on vloss slope,
 gnorm/clipf noise, and the gauntlet.
+
+## Round 19 verdict + batch-size A/B result (2026-08-26)
+
+rl19 confirmed 44%+-6 vs builtin 36%+-4 - two points from CI
+separation, best generalist yet (chain: rl18 42 -> rl19 44; rl8
+specialist band is 44-47). Batch-size A/B (128x60 vs 64x120, same
+budget, same wall ~3h): dead heat on final vloss (0.623 vs 0.625) but
+64 runs ~50% hotter (mean gnorm 0.96 vs 0.62, clipf 0.25 vs 0.09) with
+no gain. VERDICT: 128 games/iter stays the default. Pool v3 building
+from Forge shipped decks (geneticai/duels/precons; decks/standard
+yielded 0 candidates - size filter) toward ~450 for round 20.
