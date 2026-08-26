@@ -340,11 +340,14 @@ def main():
                                 epochs=args.ppo_epochs, lock_credit=lc,
                                 max_decisions=args.max_decisions)
                             break
-                        except torch.cuda.OutOfMemoryError:
+                        except (torch.cuda.OutOfMemoryError,
+                                MemoryError):
                             if attempt == 2:
                                 raise
                             log(f"[oom] update attempt {attempt} "
                                 "failed; cache-clear and retry")
+                            import gc
+                            gc.collect()
                             torch.cuda.empty_cache()
                             time.sleep(15)
                 elif args.ppo_epochs > 0:
