@@ -38,10 +38,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from pilot_bridge import ModelPolicy, start_server, run_bridged  # noqa: E402
 from improve_deck import ci95  # noqa: E402
+from self_play import RecordingPolicy  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "output"
 PER_CHUNK = 4      # small chunks so orientations interleave tightly
+_io_lock = __import__("threading").Lock()
 
 
 def make_policy(ckpt, arch):
@@ -60,14 +62,52 @@ def make_policy(ckpt, arch):
 
 
 class SeatPolicy:
-    """A drives Ai(1), B drives Ai(2). Same object may serve both."""
+    """A drives Ai(1) (recorded), B drives Ai(2)."""
 
     def __init__(self, a, b):
         self.a, self.b = a, b
 
+    @property
+    def buffer(self):
+        return self.a.buffer
+
+    @buffer.setter
+    def buffer(self, v):
+        self.a.buffer = v
+
     def __call__(self, state):
         p = state.get("player", "Ai(1)")
         return self.a(state) if p.startswith("Ai(1)") else self.b(state)
+
+
+def archive_games(run_id, ji, deck_a, opp, buffer):
+    """Split the seat-A decision stream on game_end and archive each
+    game so the dashboard inspector can replay benchmark games."""
+    import gzip
+    games_dir = OUT / "games"
+    games_dir.mkdir(exist_ok=True)
+    seg, k = [], 0
+    for state, reply in buffer:
+        seg.append((state, reply))
+        if state.get("kind") != "game_end":
+            continue
+        won = bool(state.get("opp_lost")) and not state.get("i_lost")
+        name = f"cf{run_id}_j{ji:02d}_{k:02d}.json.gz"
+        dur = round(sum(s.get("_dt_ms", 0) for s, _r in seg) / 1000, 1)
+        rec = {"iter": f"cf-{run_id}", "worker": ji, "seq": k,
+               "opp": opp, "won": won, "lock_frac": 0.0,
+               "deck": deck_a, "dur_s": dur, "decisions": seg}
+        with gzip.open(games_dir / name, "wt", encoding="utf-8") as f:
+            json.dump(rec, f, separators=(",", ":"))
+        with _io_lock, open(OUT / "games_index.jsonl", "a",
+                            encoding="utf-8") as f:
+            f.write(json.dumps({"iter": f"cf-{run_id}", "worker": ji,
+                                "deck": deck_a, "opp": opp, "won": won,
+                                "lock_frac": 0.0, "dur_s": dur,
+                                "n_dec": len(seg),
+                                "t": int(time.time()), "file": name})
+                    + "\n")
+        seg, k = [], k + 1
 
 
 def main():
@@ -120,10 +160,11 @@ def main():
     same = (Path(args.a_ckpt).resolve() == Path(args.b_ckpt).resolve()
             and args.a_arch == args.b_arch)
     pol_b = pol_a if same else make_policy(args.b_ckpt, args.b_arch)
-    seat = SeatPolicy(pol_a, pol_b)
-    servers = [start_server(0, policy=seat)
+    workers = [SeatPolicy(RecordingPolicy(pol_a), pol_b)
                for _ in range(args.parallel)]
+    servers = [start_server(0, policy=w) for w in workers]
     ports = [s.server_address[1] for s in servers]
+    run_id = f"bench{int(time.time()) % 100000:05d}"
 
     # job list: (deck_for_A, deck_for_B), interleaving orientations
     pairings = []
@@ -145,11 +186,20 @@ def main():
 
     results = {}
 
+    total_planned = sum(j[2] for j in jobs)
+
     def one(job):
         ji, (da, db, chunk) = job
+        wk = ji % args.parallel
+        workers[wk].buffer = []
         out = run_bridged(da, db, chunk, 90 + 40 * chunk,
-                          ports[ji % len(ports)], player_filter="",
-                          quiet=True, worker=ji % args.parallel)
+                          ports[wk], player_filter="",
+                          quiet=True, worker=wk)
+        try:
+            archive_games(run_id, ji, da, db,
+                          list(workers[wk].buffer))
+        except OSError:
+            pass
         wins = len(re.findall(
             rf"Game Result.*Ai\(1\)-{re.escape(da)} has won", out))
         games = len(re.findall(r"Game Result", out))
@@ -168,6 +218,16 @@ def main():
             p, half = ci95(done_w, done_g)
             print(f"[{args.label}] {done_w}/{done_g} = "
                   f"{p:.0%} ±{half:.0%}", flush=True)
+            try:
+                with _io_lock:
+                    (OUT / "bench_progress.json").write_text(
+                        json.dumps({"label": args.label,
+                                    "a_ckpt": Path(args.a_ckpt).name,
+                                    "wins": done_w, "games": done_g,
+                                    "total": total_planned,
+                                    "t": int(time.time())}))
+            except OSError:
+                pass
     for s in servers:
         s.shutdown()
         s.server_close()
@@ -183,6 +243,7 @@ def main():
                      for k, v in results.items()}}
     with open(OUT / "benchmarks.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(rec) + "\n")
+    (OUT / "bench_progress.json").unlink(missing_ok=True)
     print(f"[{args.label}] FINAL {done_w}/{done_g} = {p:.0%} "
           f"±{half:.0%} ({rec['dur_s']}s) -> benchmarks.jsonl",
           flush=True)

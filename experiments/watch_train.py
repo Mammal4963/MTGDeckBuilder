@@ -289,10 +289,8 @@ league: product vs product</div>
 </div>
 </div>
 
-<div class="panel" id="confirm-panel" style="display:none">
-<h2>Confirmation run &mdash; 288 games/arm, greedy pilot vs builtin</h2>
-<div id="confirm-body"></div>
-</div>
+<!-- legacy builtin-gauntlet confirmation panel retired for the
+     benchmark era; history lives in confirm_newdeck.json -->>
 
 <div class="panel">
 <h2>Training games <span id="gcount" style="color:#8b93a1;font-weight:400"></span></h2>
@@ -505,7 +503,7 @@ async function tick() {
           [{color: "#e06060", data: t.map(e => e.clipf)}],
           0, 1, {label: "iteration"});
     }
-    renderConfirm(d.confirm, d.journal);
+    renderBenchProgress(d.benchprog);
     renderProgress(d, t);
   } catch (e) {
     document.getElementById("status").textContent = "journal not readable: " + e;
@@ -513,6 +511,25 @@ async function tick() {
   loadGames();
   loadStats();
   loadBench();
+}
+function renderBenchProgress(bp) {
+  let el = document.getElementById("bench-progress");
+  if (!bp) { if (el) el.remove(); return; }
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "bench-progress";
+    el.style.cssText = "margin:-8px 0 16px";
+    document.getElementById("cards").after(el);
+  }
+  const pct = Math.min(100, 100 * bp.games / bp.total);
+  const wr = bp.games ? (100 * bp.wins / bp.games).toFixed(0) : "–";
+  el.innerHTML = `<div style="font-size:12px;color:#8b93a1;margin-bottom:3px">
+      benchmark in flight — ${bp.label}: ${bp.a_ckpt} ·
+      ${bp.wins}/${bp.games} won (${wr}%) · ${bp.games}/${bp.total} games
+      (${pct.toFixed(0)}%)</div>
+    <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:8px">
+      <div style="background:#c792ea;height:8px;border-radius:5px;width:${pct}%"></div>
+    </div>`;
 }
 let BENCH = [];
 async function loadBench() {
@@ -991,6 +1008,14 @@ def main():
                         pass
                 stage["v4_ckpt"] = (OUT / "pilot2_v4.pt").exists()
                 body["stage"] = stage
+                # live benchmark-run progress from gauntlet.py
+                bpf = OUT / "bench_progress.json"
+                if bpf.exists() and \
+                        time.time() - bpf.stat().st_mtime < 600:
+                    try:
+                        body["benchprog"] = json.loads(bpf.read_text())
+                    except (OSError, json.JSONDecodeError):
+                        pass
                 # exact all-games iteration progress from the driver
                 ipf = OUT / "iter_progress.json"
                 if ipf.exists() and time.time() - ipf.stat().st_mtime < 600:
