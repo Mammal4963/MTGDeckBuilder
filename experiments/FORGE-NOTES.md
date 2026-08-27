@@ -830,3 +830,19 @@ net had never seen. Foundation chain: fbase -> rl22 47 -> rl23 49.
 Benchmark era: unified gauntlet.py (one primitive, four recipes:
 pilot-skill/deck-eval/ft-progress/league), meta_v1 = 200 decks
 stratified source x color x behavior, benchmark_v2 = rl22 frozen.
+
+## Benchmark era live: meta_v1 frozen, first scores (2026-08-27)
+
+meta_v1: 200 decks (source x color x behavior stratified, 362
+screened, 162 reserve), benchmark_v2 = rl22. Calibration (rl22 vs
+itself, seat-swapped, 400 games): 53%+-5 - valid; the +3 is seat-A
+always on the play with 1-game chunks, identical for every candidate,
+so 53 is the neutral point. rl23 first candidate: 51%+-5 = NOT
+distinguishable from rl22 on general skill, despite the legacy
+gauntlet's 49-vs-47 - that record was likely partly one-deck matchup
+luck. Lesson the new ruler teaches immediately: breadth rounds have
+hit diminishing returns at ~50 vs benchmark; further gains come from
+fine-tuning (per-deck) or training-recipe changes, not more of the
+same. Benchmark runs: 45 games/min, ~9 min per 400-game flagship.
+Dashboard: legacy confirm panel retired; benchmarks table + live
+benchmark progress bar + archived benchmark games shipped.
