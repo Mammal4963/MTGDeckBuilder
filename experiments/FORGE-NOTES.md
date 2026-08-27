@@ -820,3 +820,13 @@ value function ever measured (live vloss 0.52-0.54), half the params,
 faster serving. The pretrain->graft->RL recipe works end to end.
 Next: per-deck fine-tune era (Roaming Encounters first), benchmark
 gauntlet-v2, then the evolver.
+
+## rl23: NEW RECORD 49%+-6 CONFIRMED (2026-08-27)
+
+Round 23 (450 more never-seen decks, pool_v5, from rl22): gate 45,
+confirmation 49%+-6 vs builtin 36%+-4 - CONFIRMED GAIN, beats the 47
+all-time mark held by rl20/rl22. Every point of it earned on decks the
+net had never seen. Foundation chain: fbase -> rl22 47 -> rl23 49.
+Benchmark era: unified gauntlet.py (one primitive, four recipes:
+pilot-skill/deck-eval/ft-progress/league), meta_v1 = 200 decks
+stratified source x color x behavior, benchmark_v2 = rl22 frozen.
