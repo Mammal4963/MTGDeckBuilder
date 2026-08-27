@@ -88,13 +88,13 @@ def main():
         groups.setdefault(key, []).append(p.stem)
     rng = np.random.default_rng(89)
     cand = []
-    per = max(1, (args.keep * 3 // 2) // max(1, len(groups)))
+    per = max(2, (args.keep * 3) // max(1, len(groups)))
     for g in sorted(groups):
         names = sorted(groups[g])
-        take = min(max(per, 1), len(names))
+        take = min(per, len(names))
         cand += list(rng.choice(names, take, replace=False))
     rng.shuffle(cand)
-    cand = cand[:args.keep * 3 // 2]
+    cand = cand[:args.keep * 2]
     print(f"screening {len(cand)} candidates from "
           f"{len(groups)} source/color/behavior buckets", flush=True)
 
