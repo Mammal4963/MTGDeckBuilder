@@ -586,11 +586,16 @@ async function tick() {
     cards += card("journal age", age + "s", "", age > 3600 ? "stale" : "");
     if (d.alltime) cards += card("total games", d.alltime.toLocaleString(),
                                  "all runs, this box");
-    if (d.evolve)
-      cards += card("evolver", `gen ${d.evolve.gen}/${d.evolve.gens}`,
-        `${d.evolve.name} · phase ${d.evolve.phase} · best ` +
-        `${(100 * d.evolve.best).toFixed(0)}% · mean ` +
-        `${(100 * d.evolve.mean).toFixed(0)}% · mut ${d.evolve.avg_mut}`);
+    if (d.evolve) {
+      const ev = d.evolve;
+      const liv = ev.live ? ` · matches ${ev.live.done}/${ev.live.total}`
+        + ` (${ev.live.games}g)` : "";
+      cards += card("evolver",
+        `gen ${ev.live ? ev.live.gen : ev.gen}/${ev.gens}`,
+        `${ev.name} · phase ${ev.live ? ev.live.phase : ev.phase}` +
+        (ev.best != null ? ` · best ${(100 * ev.best).toFixed(0)}%` : "")
+        + liv);
+    }
     if (d.live)
       cards += card("in flight",
         `iter ${d.live.iter}`,

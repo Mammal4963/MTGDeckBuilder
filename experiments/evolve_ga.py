@@ -41,6 +41,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from pilot_bridge import ModelPolicy, start_server, run_bridged  # noqa: E402
 from improve_deck import FORGE_DECKS  # noqa: E402
+from self_play import RecordingPolicy  # noqa: E402
+import threading  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "output"
@@ -198,6 +200,51 @@ def main():
     servers = [start_server(0, policy=bench)
                for _ in range(args.parallel)]
     ports = [s.server_address[1] for s in servers]
+    # probe games are recorded and archived INSIDE the campaign dir -
+    # strictly separate from the training corpus (never trained on)
+    probe_rec = RecordingPolicy(bench)
+    probe_srv = start_server(0, policy=probe_rec)
+    probe_port = probe_srv.server_address[1]
+    prog_lock = threading.Lock()
+    live = {"done": 0, "total": 0, "games": 0}
+    last_entry = {}
+    hist_f = camp / "history.jsonl"
+    if hist_f.exists():
+        lines = hist_f.read_text(encoding="utf-8").splitlines()
+        if lines:
+            last_entry = json.loads(lines[-1])
+
+    def bump_live():
+        try:
+            with prog_lock:
+                (OUT / "evolve_progress.json").write_text(json.dumps(
+                    {**last_entry, "name": args.name,
+                     "gens": args.gens, "live": dict(live)}))
+        except OSError:
+            pass
+
+    def archive_probe(gen, deck_name, buffer):
+        import gzip
+        gdir = camp / "games"
+        gdir.mkdir(exist_ok=True)
+        seg, k = [], 0
+        for state, reply in buffer:
+            seg.append((state, reply))
+            if state.get("kind") != "game_end":
+                continue
+            won = bool(state.get("opp_lost")) \
+                and not state.get("i_lost")
+            fn = f"probe_gen{gen:03d}_{k:02d}.json.gz"
+            with gzip.open(gdir / fn, "wt", encoding="utf-8") as f:
+                json.dump({"gen": gen, "deck": deck_name, "won": won,
+                           "decisions": seg}, f,
+                          separators=(",", ":"))
+            with open(camp / "probe_index.jsonl", "a",
+                      encoding="utf-8") as f:
+                f.write(json.dumps({"gen": gen, "file": fn,
+                                    "won": won, "n_dec": len(seg),
+                                    "t": int(time.time())}) + "\n")
+            seg, k = [], k + 1
 
     def play(job):
         """(wk, deck_a, deck_b, n) -> (a_wins, b_wins, games)"""
@@ -211,8 +258,15 @@ def main():
             bw = len(re.findall(
                 rf"Game Result.*Ai\(2\)-{re.escape(db)} has won", out))
             g = len(re.findall(r"Game Result", out))
+            with prog_lock:
+                live["done"] += 1
+                live["games"] += g
+            bump_live()
             return aw, bw, g
         except Exception:
+            with prog_lock:
+                live["done"] += 1
+            bump_live()
             return 0, 0, 0
 
     for gen in range(gen0, args.gens):
@@ -224,6 +278,8 @@ def main():
 
         gw = {g.gid: 0 for g in pop}    # this-gen wins
         gg = {g.gid: 0 for g in pop}    # this-gen games
+        with prog_lock:
+            live.update(done=0, games=0, gen=gen, phase=phase)
         if phase == 0:
             jobs = []
             for i, g in enumerate(pop):
@@ -233,6 +289,7 @@ def main():
                     jobs.append((len(jobs), names[g.gid],
                                  names[int(o)], args.p0_games,
                                  g.gid, int(o)))
+            live["total"] = len(jobs)
             with ThreadPoolExecutor(max_workers=args.parallel) as tp:
                 res = list(tp.map(
                     lambda j: (j[4], j[5], play(j[:4])), jobs))
@@ -251,6 +308,7 @@ def main():
                 for o in picks:
                     jobs.append((len(jobs), names[g.gid], str(o), 2,
                                  g.gid, None))
+            live["total"] = len(jobs)
             with ThreadPoolExecutor(max_workers=args.parallel) as tp:
                 res = list(tp.map(
                     lambda j: (j[4], play(j[:4])), jobs))
@@ -264,11 +322,27 @@ def main():
         pop.sort(key=lambda g: -g.fitness())
         champ = pop[0]
 
-        # graduation probe (phase 0 only)
+        # graduation probe (phase 0 only) - recorded, archived in the
+        # campaign dir only (never the training corpus)
         grad = ""
         if phase == 0:
-            aw, _bw, n = play((0, names[champ.gid],
-                               args.grad_ref, 8))
+            probe_rec.buffer = []
+            try:
+                out = run_bridged(names[champ.gid], args.grad_ref, 8,
+                                  120 + 60 * 8, probe_port,
+                                  player_filter="", quiet=True,
+                                  worker=args.parallel)
+                aw = len(re.findall(
+                    rf"Game Result.*Ai\(1\)-"
+                    rf"{re.escape(names[champ.gid])} has won", out))
+                n = len(re.findall(r"Game Result", out))
+            except Exception:
+                aw, n = 0, 0
+            try:
+                archive_probe(gen, names[champ.gid],
+                              list(probe_rec.buffer))
+            except OSError:
+                pass
             grad = f" · grad-probe {aw}/{n}"
             if aw >= 2:
                 phase = 1
@@ -309,13 +383,14 @@ def main():
         state_f.write_text(json.dumps(
             {"gen": gen + 1, "phase": phase, "next_gid": next_gid,
              "seed": 97, "pop": [g.to_json() for g in pop]}))
+        last_entry = entry
         try:
             (OUT / "evolve_progress.json").write_text(json.dumps(
                 {**entry, "name": args.name, "gens": args.gens}))
         except OSError:
             pass
 
-    for s in servers:
+    for s in servers + [probe_srv]:
         s.shutdown()
         s.server_close()
     print(f"[evolve] campaign {args.name} done at gen {args.gens}",
