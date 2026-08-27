@@ -105,10 +105,16 @@ def main():
 
     def screen(job):
         wk, deck = job
-        out = run_bridged(deck, "fac_g0", args.games,
-                          90 + 40 * args.games, ports[wk % len(ports)],
-                          player_filter="", quiet=True, worker=wk)
-        games = len(re.findall(r"Game Result", out))
+        try:
+            out = run_bridged(deck, "fac_g0", args.games,
+                              90 + 40 * args.games,
+                              ports[wk % len(ports)],
+                              player_filter="", quiet=True, worker=wk)
+            games = len(re.findall(r"Game Result", out))
+        except Exception as e:
+            print(f"[screen] ERR  {deck}: {type(e).__name__}",
+                  flush=True)
+            games = 0        # infra hiccup or bad deck: drop it
         return deck, games
 
     keep = []
