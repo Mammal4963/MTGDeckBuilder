@@ -94,6 +94,9 @@ def main():
                     "(cancels deck strength; pilot-skill mode)")
     ap.add_argument("--parallel", type=int, default=8)
     ap.add_argument("--note", default="")
+    ap.add_argument("--meta-subset", type=int, default=0,
+                    help="use only the first N meta decks (frozen "
+                    "order) - cheap runs that stay comparable")
     args = ap.parse_args()
 
     if args.b_ckpt is None:
@@ -105,6 +108,9 @@ def main():
     if args.decks == "meta_v1":
         meta = json.loads((OUT / "meta_v1.json").read_text())
         opp_decks = meta["decks"]
+        if args.meta_subset:
+            # deterministic prefix: cheap runs stay comparable
+            opp_decks = opp_decks[:args.meta_subset]
     else:
         opp_decks = [d.strip() for d in args.decks.split(",")]
     if args.b_deck:

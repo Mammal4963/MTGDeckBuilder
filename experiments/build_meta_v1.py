@@ -135,11 +135,14 @@ def main():
         for key in sorted(by_key):
             if by_key[key] and len(final) < args.keep:
                 final.append(by_key[key].pop(0))
+    reserve = sorted(set(keep) - set(final))
     spec = {"benchmark": bench.name, "arch": "192,6",
-            "decks": final, "screened": len(cand),
-            "buckets": len(by_key), "version": "meta_v1"}
+            "decks": final, "reserve": reserve,
+            "screened": len(cand), "buckets": len(by_key),
+            "version": "meta_v1"}
     (OUT / "meta_v1.json").write_text(json.dumps(spec, indent=1))
-    print(f"[meta_v1] {len(final)} decks: {', '.join(final)}",
+    print(f"[meta_v1] {len(final)} decks frozen (order is canonical: "
+          f"subsets are the first N), {len(reserve)} in reserve",
           flush=True)
 
 
