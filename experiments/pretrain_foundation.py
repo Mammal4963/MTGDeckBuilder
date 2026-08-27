@@ -92,16 +92,17 @@ def build_dataset(max_games, max_per_game=40, seed=43,
     return train, hold, n
 
 
-def featurize(samples, feat):
-    """Ragged per-sample features; padding happens per MINIBATCH in
-    run_config. Padding the whole corpus to the global max board size
-    needs tens of GB of host RAM on big-board pool games."""
-    toks_l, cands_l, scals_l, acts, Rs = [], [], [], [], []
-    for s, rep, R in samples:
+def collate(samples, idx, feat, torch, dev):
+    """Featurize + pad ONE minibatch on the fly. Holding features for
+    the whole corpus - even ragged - needs tens of GB of host RAM at
+    400k+ decisions; recomputing per batch costs ~2min/epoch of CPU."""
+    batch = [samples[i] for i in idx]
+    toks_l, cands_l, scals_l, acts_l, Rs_l = [], [], [], [], []
+    for s, rep, R in batch:
         t, _ = feat.tokens_and_ids(s)
         c = np.stack([feat.cand_vec(x) for x in s["candidates"]])
-        toks_l.append(t.astype(np.float32))
-        cands_l.append(c.astype(np.float32))
+        toks_l.append(t)
+        cands_l.append(c)
         scals_l.append(feat.scalars(s))
         cands_meta = s["candidates"]
         nc = c.shape[0]
@@ -115,19 +116,9 @@ def featurize(samples, feat):
             prop = s.get("proposed", [])
             a = next((j for j, x in enumerate(cands_meta)
                       if prop and x["card"] == prop[0]), nc)
-        acts.append(min(a, nc))       # nc = the pass slot
-        Rs.append(R)
-    return dict(toks=toks_l, cands=cands_l,
-                scals=np.stack(scals_l).astype(np.float32),
-                acts=np.array(acts, np.int64),
-                Rs=np.array(Rs, np.float32))
-
-
-def collate(F, idx, torch, dev):
-    """Pad one minibatch (local maxima only) and move to device."""
-    toks_l = [F["toks"][i] for i in idx]
-    cands_l = [F["cands"][i] for i in idx]
-    B = len(idx)
+        acts_l.append(min(a, nc))     # nc = the pass slot
+        Rs_l.append(R)
+    B = len(batch)
     mt = max(t.shape[0] for t in toks_l)
     mc = max(c.shape[0] for c in cands_l)
     tdim, cdim = toks_l[0].shape[1], cands_l[0].shape[1]
@@ -143,15 +134,15 @@ def collate(F, idx, torch, dev):
         cands[k, :c.shape[0]] = c
         cmask[k, :c.shape[0]] = True
         cmask[k, mc] = True
-        a = F["acts"][idx[k]]
-        acts[k] = a if a < c.shape[0] else mc
+        acts[k] = acts_l[k] if acts_l[k] < c.shape[0] else mc
     return (torch.from_numpy(toks).to(dev),
             torch.from_numpy(tmask).to(dev),
             torch.from_numpy(cands).to(dev),
             torch.from_numpy(cmask).to(dev),
             torch.from_numpy(acts).to(dev),
-            torch.from_numpy(F["scals"][idx]).to(dev),
-            torch.from_numpy(F["Rs"][idx]).to(dev))
+            torch.from_numpy(np.stack(scals_l).astype(np.float32))
+                 .to(dev),
+            torch.from_numpy(np.array(Rs_l, np.float32)).to(dev))
 
 
 def make_model(torch, feat, D, layers):
@@ -185,7 +176,7 @@ def run_config(torch, feat, data_tr, data_ho, D, layers, lr,
                epochs, dev, val_coef=1.0, log=print):
     model = make_model(torch, feat, D, layers).to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
-    N = data_tr["Rs"].shape[0]
+    N = len(data_tr)          # raw (state, reply, R) samples
     BS = 1024
 
     def forward(batch, m):
@@ -209,7 +200,7 @@ def run_config(torch, feat, data_tr, data_ho, D, layers, lr,
         model.train()
         order = rng.permutation(N)
         for o in range(0, N, BS):
-            batch = collate(data_tr, order[o:o + BS], torch, dev)
+            batch = collate(data_tr, order[o:o + BS], feat, torch, dev)
             logits, v, acts, Rs = forward(batch, model)
             pl = torch.nn.functional.cross_entropy(logits, acts)
             vl = ((v - Rs) ** 2).mean()
@@ -222,10 +213,10 @@ def run_config(torch, feat, data_tr, data_ho, D, layers, lr,
     hits = tot = 0
     vs, rs = [], []
     with torch.no_grad():
-        M = data_ho["Rs"].shape[0]
+        M = len(data_ho)
         for o in range(0, M, BS):
             idx = np.arange(o, min(o + BS, M))
-            batch = collate(data_ho, idx, torch, dev)
+            batch = collate(data_ho, idx, feat, torch, dev)
             logits, v, acts, Rs = forward(batch, model)
             hits += int((logits.argmax(1) == acts).sum())
             tot += logits.shape[0]
@@ -268,10 +259,7 @@ def main():
         print(f"search data: {ng} games, {len(tr)} train / "
               f"{len(ho)} holdout decisions "
               f"({time.time()-t0:.0f}s)", flush=True)
-        t0 = time.time()
-        Ftr = featurize(tr, feat)
-        Fho = featurize(ho, feat)
-        print(f"featurized in {time.time()-t0:.0f}s", flush=True)
+        Ftr, Fho = tr, ho          # featurized lazily per minibatch
         rng = np.random.default_rng(47)
         Ds = [128, 192, 256, 384, 512]
         Ls = [2, 3, 4, 5, 6]
@@ -310,9 +298,7 @@ def main():
         tr, ho, ng = build_dataset(args.train_games, max_per_game=60)
         print(f"train data: {ng} games, {len(tr)}/{len(ho)} decisions",
               flush=True)
-        Ftr = featurize(tr, feat)
-        Fho = featurize(ho, feat)
-        model, met = run_config(torch, feat, Ftr, Fho, D, L,
+        model, met = run_config(torch, feat, tr, ho, D, L,
                                 args.train_lr,
                                 epochs=args.epochs, dev=dev)
         print("metrics:", json.dumps(met), flush=True)
