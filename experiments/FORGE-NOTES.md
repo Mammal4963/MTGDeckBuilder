@@ -810,3 +810,13 @@ and D=192 means rl20/21 (D=256) heads cannot graft. Path: BC the
 combat/target/mull heads from the corpus onto the D192 trunk, then
 generalist RL warm-started from foundation, then per-deck fine-tunes
 (Roaming Encounters first), then the evolver (option 1) at the end.
+
+## rl22: CONFIRMED GAIN 47%+-6 in ONE round from the foundation (2026-08-26)
+
+The foundation-era pilot (D=192 L=6, pretrained trunk, BC-grafted
+heads, one RL round over 850 decks) confirms at 47%+-6 vs builtin
+36%+-4 - equal to rl20, the old lineage's best after 20+ rounds. Best
+value function ever measured (live vloss 0.52-0.54), half the params,
+faster serving. The pretrain->graft->RL recipe works end to end.
+Next: per-deck fine-tune era (Roaming Encounters first), benchmark
+gauntlet-v2, then the evolver.
