@@ -444,6 +444,11 @@ async function tick() {
     cards += card("journal age", age + "s", "", age > 3600 ? "stale" : "");
     if (d.alltime) cards += card("total games", d.alltime.toLocaleString(),
                                  "all runs, this box");
+    if (d.evolve)
+      cards += card("evolver", `gen ${d.evolve.gen}/${d.evolve.gens}`,
+        `${d.evolve.name} · phase ${d.evolve.phase} · best ` +
+        `${(100 * d.evolve.best).toFixed(0)}% · mean ` +
+        `${(100 * d.evolve.mean).toFixed(0)}% · mut ${d.evolve.avg_mut}`);
     if (d.live)
       cards += card("in flight",
         `iter ${d.live.iter}`,
@@ -1008,6 +1013,14 @@ def main():
                         pass
                 stage["v4_ckpt"] = (OUT / "pilot2_v4.pt").exists()
                 body["stage"] = stage
+                # live evolver progress
+                epf = OUT / "evolve_progress.json"
+                if epf.exists() and \
+                        time.time() - epf.stat().st_mtime < 3600:
+                    try:
+                        body["evolve"] = json.loads(epf.read_text())
+                    except (OSError, json.JSONDecodeError):
+                        pass
                 # live benchmark-run progress from gauntlet.py
                 bpf = OUT / "bench_progress.json"
                 if bpf.exists() and \
