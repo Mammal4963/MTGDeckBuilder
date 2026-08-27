@@ -109,7 +109,8 @@ def main():
             out = run_bridged(deck, "fac_g0", args.games,
                               90 + 40 * args.games,
                               ports[wk % len(ports)],
-                              player_filter="", quiet=True, worker=wk)
+                              player_filter="", quiet=True,
+                              worker=wk % args.parallel)
             games = len(re.findall(r"Game Result", out))
         except Exception as e:
             print(f"[screen] ERR  {deck}: {type(e).__name__}",
