@@ -178,7 +178,29 @@ def main():
                     "from PILOT_D/PILOT_LAYERS (e.g. '256,4')")
     ap.add_argument("--skip-pilot", action="store_true",
                     help="builtin arm only")
+    ap.add_argument("--deck", default=None,
+                    help="our deck (default fac_roaming)")
+    ap.add_argument("--gauntlet", default=None,
+                    help="comma-separated opponent decks, or "
+                    "'v2' to load output/gauntlet_v2.json (also sets "
+                    "the benchmark as opponent pilot)")
+    ap.add_argument("--skip-builtin", action="store_true",
+                    help="no builtin arm (benchmark-era runs: the "
+                    "baseline is 50%% self-play by construction)")
     args = ap.parse_args()
+    global DECK, GAUNTLET
+    if args.deck:
+        DECK = args.deck
+    if args.gauntlet == "v2":
+        spec = json.loads((OUT / "gauntlet_v2.json").read_text())
+        GAUNTLET = spec["decks"]
+        if not args.opp_ckpt:
+            args.opp_ckpt = str(OUT / spec["benchmark"])
+            args.opp_arch = spec["arch"]
+        log(f"[gauntlet-v2] {len(GAUNTLET)} decks vs "
+            f"{spec['benchmark']}")
+    elif args.gauntlet:
+        GAUNTLET = [d.strip() for d in args.gauntlet.split(",")]
 
     jpath = OUT / args.journal
     journal = json.loads(jpath.read_text()) if jpath.exists() else {}
@@ -194,6 +216,15 @@ def main():
         for c in sim_server._SHARED.values():
             c.close()
         sim_server._SHARED.clear()
+
+    if args.skip_builtin:
+        if rl is not None:
+            pr, hr = ci95(rl["wins"], rl["games"])
+            sep = (pr - hr) > 0.5
+            log(f"[confirm-verdict] {args.arm} {pr:.0%} ±{hr:.0%} vs "
+                f"benchmark 50% (self-play baseline) -> "
+                f"{'CONFIRMED GAIN' if sep else 'no detectable change'}")
+        return
 
     # arm 2: builtin AI (no bridge, nothing to archive)
     bi = run_arm("builtin", journal, jpath, args.games_per_deck,
