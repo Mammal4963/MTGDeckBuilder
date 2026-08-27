@@ -35,8 +35,8 @@ POOL = HERE / "decks" / "pool_all"
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--keep", type=int, default=12)
-    ap.add_argument("--games", type=int, default=8)
+    ap.add_argument("--keep", type=int, default=200)
+    ap.add_argument("--games", type=int, default=4)
     ap.add_argument("--parallel", type=int, default=6)
     ap.add_argument("--champion", default=str(OUT / "pilot2_rl22.pt"))
     args = ap.parse_args()
@@ -46,20 +46,57 @@ def main():
         shutil.copy(args.champion, bench)
         print(f"[freeze] {args.champion} -> {bench}", flush=True)
 
-    # stratify candidates across deck sources for diversity
+    # stratify for SOURCE x COLOR x BEHAVIOR diversity
+    basics = {"Plains": "W", "Island": "U", "Swamp": "B",
+              "Mountain": "R", "Forest": "G"}
+
+    def colors(stem):
+        try:
+            text = (POOL / f"{stem}.dck").read_text(
+                encoding="utf-8", errors="replace")
+        except OSError:
+            return "?"
+        return "".join(c for b, c in basics.items()
+                       if re.search(rf"\d+ {b}\b", text)) or "C"
+
+    # behavior proxy: archived avg decisions/game where we have data
+    import collections
+    ndec = collections.defaultdict(list)
+    gidx = OUT / "games_index.jsonl"
+    if gidx.exists():
+        for ln in gidx.read_text(encoding="utf-8").splitlines():
+            try:
+                r = json.loads(ln)
+                if r.get("deck"):
+                    ndec[r["deck"]].append(r.get("n_dec", 0))
+            except json.JSONDecodeError:
+                pass
+
+    def behavior(stem):
+        v = ndec.get(stem)
+        if not v:
+            return "unknown"
+        avg = sum(v) / len(v)
+        return "fast" if avg < 180 else \
+            "mid" if avg < 300 else "grindy"
+
     groups = {}
     for p in POOL.glob("*.dck"):
-        key = re.match(r"([a-z]+)", p.stem)
-        groups.setdefault(key.group(1) if key else "misc",
-                          []).append(p.stem)
+        src = re.match(r"([a-z]+)", p.stem)
+        key = (src.group(1) if src else "misc",
+               colors(p.stem), behavior(p.stem))
+        groups.setdefault(key, []).append(p.stem)
     rng = np.random.default_rng(89)
     cand = []
-    per = max(2, (args.keep * 2) // max(1, len(groups)))
-    for g, names in sorted(groups.items()):
-        take = min(per, len(names))
-        cand += list(rng.choice(sorted(names), take, replace=False))
+    per = max(1, (args.keep * 3 // 2) // max(1, len(groups)))
+    for g in sorted(groups):
+        names = sorted(groups[g])
+        take = min(max(per, 1), len(names))
+        cand += list(rng.choice(names, take, replace=False))
+    rng.shuffle(cand)
+    cand = cand[:args.keep * 3 // 2]
     print(f"screening {len(cand)} candidates from "
-          f"{len(groups)} sources", flush=True)
+          f"{len(groups)} source/color/behavior buckets", flush=True)
 
     policy = ModelPolicy(ckpt=bench)
     servers = [start_server(0, policy=policy)
@@ -86,19 +123,21 @@ def main():
         s.shutdown()
         s.server_close()
 
-    # round-robin across sources for the final diverse pick
-    by_src = {}
+    # round-robin across the full diversity buckets for the final pick
+    by_key = {}
     for d in keep:
-        by_src.setdefault(re.match(r"([a-z]+)", d).group(1),
-                          []).append(d)
+        src = re.match(r"([a-z]+)", d)
+        key = (src.group(1) if src else "misc",
+               colors(d), behavior(d))
+        by_key.setdefault(key, []).append(d)
     final = []
-    while len(final) < args.keep and any(by_src.values()):
-        for src in sorted(by_src):
-            if by_src[src] and len(final) < args.keep:
-                final.append(by_src[src].pop(0))
+    while len(final) < args.keep and any(by_key.values()):
+        for key in sorted(by_key):
+            if by_key[key] and len(final) < args.keep:
+                final.append(by_key[key].pop(0))
     spec = {"benchmark": bench.name, "arch": "192,6",
             "decks": final, "screened": len(cand),
-            "version": "meta_v1"}
+            "buckets": len(by_key), "version": "meta_v1"}
     (OUT / "meta_v1.json").write_text(json.dumps(spec, indent=1))
     print(f"[meta_v1] {len(final)} decks: {', '.join(final)}",
           flush=True)

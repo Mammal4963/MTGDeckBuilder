@@ -127,18 +127,21 @@ def main():
         pairings.append((a_deck, opp))
         if args.swap:
             pairings.append((opp, a_deck))
-    per_pair = max(PER_CHUNK, args.games // len(pairings)
-                   // PER_CHUNK * PER_CHUNK)
+    # spread the game budget over pairings; with a big meta (200
+    # decks) each pairing gets 1-2 games - fine, the pooled CI comes
+    # from total games and the warm JVMs make small chunks cheap
+    chunk = max(1, min(PER_CHUNK, args.games // len(pairings)))
+    reps = max(1, round(args.games / (chunk * len(pairings))))
     jobs = []
-    for k in range(per_pair // PER_CHUNK):
+    for _k in range(reps):
         for pa, pb in pairings:
-            jobs.append((pa, pb))
+            jobs.append((pa, pb, chunk))
 
     results = {}
 
     def one(job):
-        ji, (da, db) = job
-        out = run_bridged(da, db, PER_CHUNK, 90 + 40 * PER_CHUNK,
+        ji, (da, db, chunk) = job
+        out = run_bridged(da, db, chunk, 90 + 40 * chunk,
                           ports[ji % len(ports)], player_filter="",
                           quiet=True, worker=ji % args.parallel)
         wins = len(re.findall(
