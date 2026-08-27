@@ -28,6 +28,146 @@ from urllib.parse import parse_qs, urlparse
 
 OUT = Path(__file__).resolve().parent / "output"
 _STATS_CACHE = {}
+
+EVOLVE_PAGE = """<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>deck evolution</title>
+<style>
+  :root { color-scheme: dark; }
+  body { background:#14161a; color:#d7dae0;
+         font:14px/1.5 system-ui,sans-serif; margin:0; padding:24px; }
+  h1 { font-size:18px; margin:0 0 4px; }
+  .sub { color:#8b93a1; font-size:12px; margin-bottom:18px; }
+  .cards { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+  .card { background:#1d2026; border:1px solid #2a2e36;
+          border-radius:8px; padding:10px 16px; min-width:110px; }
+  .card .k { color:#8b93a1; font-size:11px; text-transform:uppercase; }
+  .card .v { font-size:20px; font-weight:600; }
+  .panel { background:#191c21; border:1px solid #2a2e36;
+           border-radius:10px; padding:14px 18px; margin-bottom:16px; }
+  h2 { font-size:14px; margin:0 0 10px; color:#aeb6c2; }
+  canvas { width:100%; height:180px; }
+  select { background:#1d2026; color:#d7dae0; border:1px solid #2a2e36;
+           border-radius:6px; padding:4px 8px; }
+  pre { background:#1d2026; border:1px solid #2a2e36; border-radius:8px;
+        padding:12px; font-size:12px; max-height:420px; overflow:auto;
+        column-width:220px; }
+  a { color:#5aa9e6; }
+  .legend { font-size:11px; color:#8b93a1; margin-bottom:6px; }
+  .dot { display:inline-block; width:8px; height:8px;
+         border-radius:4px; margin-right:4px; }
+</style></head><body>
+<h1>Deck evolution</h1>
+<div class="sub"><a href="/">&larr; training dashboard</a> ·
+pure-noise genetic algorithm over 33,585 cards · phase 0 = fitness
+within the population, phase 1 = fitness vs the frozen meta
+<span id="status"></span></div>
+<div class="cards" id="cards"></div>
+<div class="panel"><h2>Fitness by generation</h2>
+<div class="legend"><span><i class="dot" style="background:#7ce38b"></i>
+best</span> <span><i class="dot" style="background:#5aa9e6"></i>mean</span>
+<span style="color:#c792ea">| purple line = graduation to meta
+fitness</span></div>
+<canvas id="c-fit"></canvas></div>
+<div class="panel"><h2>Self-adaptive mutation rate (population mean)</h2>
+<canvas id="c-mut"></canvas></div>
+<div class="panel"><h2>Champion decklist
+<select id="gen-pick"></select></h2>
+<pre id="deck">select a generation</pre></div>
+<script>
+function draw(cv, series, ymin, ymax, marks) {
+  const ctx = cv.getContext("2d");
+  const W = cv.width = cv.clientWidth * devicePixelRatio;
+  const H = cv.height = cv.clientHeight * devicePixelRatio;
+  ctx.clearRect(0, 0, W, H);
+  const pl = 40 * devicePixelRatio, pb = 22 * devicePixelRatio,
+        pt = 6 * devicePixelRatio, pr = 8 * devicePixelRatio;
+  const n = Math.max(...series.map(s => s.data.length));
+  if (!n) return;
+  const x = i => pl + (W - pl - pr) * (n === 1 ? 0.5 : i / (n - 1));
+  const y = v => pt + (H - pt - pb) * (1 - (v - ymin) / (ymax - ymin));
+  ctx.strokeStyle = "#2a2e36"; ctx.fillStyle = "#8b93a1";
+  ctx.font = `${10 * devicePixelRatio}px system-ui`;
+  for (let g = 0; g <= 4; g++) {
+    const v = ymin + (ymax - ymin) * g / 4;
+    ctx.beginPath(); ctx.moveTo(pl, y(v)); ctx.lineTo(W - pr, y(v));
+    ctx.stroke();
+    ctx.fillText(v.toFixed(2), 4, y(v) + 3 * devicePixelRatio);
+  }
+  for (const m of (marks || [])) {
+    ctx.strokeStyle = "#c792ea";
+    ctx.beginPath(); ctx.moveTo(x(m), pt); ctx.lineTo(x(m), H - pb);
+    ctx.stroke();
+  }
+  const step = Math.max(1, Math.ceil(n / 12));
+  ctx.textAlign = "center";
+  for (let i = 0; i < n; i += step)
+    ctx.fillText(String(i), x(i), H - 6 * devicePixelRatio);
+  ctx.textAlign = "left";
+  for (const s of series) {
+    ctx.strokeStyle = s.color; ctx.lineWidth = 2 * devicePixelRatio;
+    ctx.beginPath();
+    let started = false;
+    s.data.forEach((v, i) => { if (v == null) return;
+      started ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(i), y(v));
+      started = true; });
+    ctx.stroke();
+  }
+}
+let CUR = null;
+async function tick() {
+  const r = await fetch("/evolve-data" + (CUR ? "?c=" + CUR : ""));
+  const d = await r.json();
+  if (!d.name) {
+    document.getElementById("status").textContent = " · no campaigns yet";
+    return;
+  }
+  CUR = d.name;
+  const h = d.history;
+  const last = h[h.length - 1] || {};
+  document.getElementById("cards").innerHTML =
+    [["campaign", d.name], ["generation", last.gen],
+     ["phase", last.phase],
+     ["best fitness", (100 * (last.best || 0)).toFixed(0) + "%"],
+     ["mean", (100 * (last.mean || 0)).toFixed(0) + "%"],
+     ["mut rate", last.avg_mut],
+     ["sec/gen", last.dur_s]].map(([k, v]) =>
+      `<div class="card"><div class="k">${k}</div>` +
+      `<div class="v">${v}</div></div>`).join("");
+  const grad = h.findIndex((e, i) =>
+    i > 0 && e.phase === 1 && h[i - 1].phase === 0);
+  draw(document.getElementById("c-fit"),
+    [{color: "#7ce38b", data: h.map(e => e.best)},
+     {color: "#5aa9e6", data: h.map(e => e.mean)}], 0, 1,
+    grad >= 0 ? [grad] : []);
+  const muts = h.map(e => e.avg_mut);
+  draw(document.getElementById("c-mut"),
+    [{color: "#e0b050", data: muts}], 0,
+    Math.max(0.1, ...muts.filter(x => x != null)));
+  const sel = document.getElementById("gen-pick");
+  if (sel.options.length !== d.champions.length + 1) {
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">latest</option>' +
+      d.champions.map(g => `<option>${g}</option>`).join("");
+    sel.value = cur;
+  }
+}
+async function showDeck() {
+  const g = document.getElementById("gen-pick").value ||
+    String(Math.max(0, (CUR ? 1 : 1) &&
+      (await (await fetch("/evolve-data?c=" + CUR)).json())
+        .champions.slice(-1)[0]));
+  const r = await fetch(`/evolve-data?c=${CUR}&deck=${g}`);
+  const d = await r.json();
+  document.getElementById("deck").textContent =
+    d.deck ? d.deck.split("[Main]")[1].trim() : "not found";
+}
+document.getElementById("gen-pick")
+  .addEventListener("change", showDeck);
+tick(); setInterval(tick, 15000);
+setTimeout(showDeck, 1500); setInterval(showDeck, 60000);
+</script></body></html>"""
 GAMES = OUT / "games"
 
 LOCKS = ("Random Encounter",)
@@ -244,7 +384,9 @@ PAGE = """<!DOCTYPE html>
   .dec.sel { background:#23262d; outline:1px solid #3a4150; }
   #insp-body { max-height:300px; overflow-y:auto; }
 </style></head><body>
-<h1>Self-play RL &mdash; fac_roaming</h1>
+<h1>Neural pilot training</h1>
+<div class="sub"><a href="/evolve" style="color:#5aa9e6">&rarr; deck
+evolution dashboard</a></div>
 <div class="sub" id="status">loading&hellip;</div>
 <div class="cards" id="cards"></div>
 <div class="chartbox"><h2>Policy loss (PPO)</h2>
@@ -981,7 +1123,40 @@ def main():
 
         def do_GET(self):
             url = urlparse(self.path)
-            if url.path == "/data":
+            if url.path == "/evolve":
+                self._send(EVOLVE_PAGE.encode(), "text/html")
+            elif url.path == "/evolve-data":
+                q = parse_qs(url.query)
+                base = OUT / "evolve"
+                camps = sorted((p.name for p in base.glob("*")
+                                if (p / "history.jsonl").exists()),
+                               key=lambda n: (base / n / "history.jsonl")
+                               .stat().st_mtime) if base.exists() else []
+                body = {"campaigns": camps}
+                name = (q.get("c", [None])[0]
+                        or (camps[-1] if camps else None))
+                if name and re.fullmatch(r"[\w-]+", name) \
+                        and (base / name).exists():
+                    body["name"] = name
+                    hist = []
+                    for ln in (base / name / "history.jsonl") \
+                            .read_text(encoding="utf-8").splitlines():
+                        try:
+                            hist.append(json.loads(ln))
+                        except json.JSONDecodeError:
+                            pass
+                    body["history"] = hist
+                    body["champions"] = sorted(
+                        int(p.stem[len("champion_gen"):])
+                        for p in (base / name).glob("champion_gen*.dck"))
+                    g = q.get("deck", [None])[0]
+                    if g and g.isdigit():
+                        p = base / name / f"champion_gen{int(g):03d}.dck"
+                        if p.exists():
+                            body["deck"] = p.read_text(encoding="utf-8")
+                self._send(json.dumps(body).encode(),
+                           "application/json")
+            elif url.path == "/data":
                 # the newest round's journal takes over the charts
                 cands = [p for p in OUT.glob("selfplay_round*.json")
                          if re.fullmatch(r"selfplay_round\d*\.json", p.name)]
