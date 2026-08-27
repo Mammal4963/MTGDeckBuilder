@@ -264,6 +264,19 @@ gradient clip; sustained ~1.0 = oversized updates)</span></div>
 <canvas id="c-clipf" style="height:150px"></canvas></div></div></div>
 
 <div class="panel">
+<h2>Benchmarks <select id="bench-label"
+  style="background:#1d2026;color:#d7dae0;border:1px solid #2a2e36;
+  border-radius:6px;padding:3px 8px;font-size:12px;margin-left:8px">
+  <option value="">all labels</option></select></h2>
+<div class="scroll"><table id="bench-table"></table></div>
+<div class="muted" style="color:#8b93a1;font-size:11px;margin-top:4px">
+pilot-skill: seat-swapped vs the frozen benchmark (50% = equal skill) ·
+deck-eval: same pilot both seats (measures the deck) ·
+ft-progress: fixed deck vs meta_v1 (compare generations by score) ·
+league: product vs product</div>
+</div>
+
+<div class="panel">
 <h2>Mana per turn — all decks <span id="stats-n"
   style="color:#8b93a1;font-weight:400"></span></h2>
 <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
@@ -499,7 +512,41 @@ async function tick() {
   }
   loadGames();
   loadStats();
+  loadBench();
 }
+let BENCH = [];
+async function loadBench() {
+  try {
+    const r = await fetch("/benchmarks");
+    BENCH = await r.json();
+    const sel = document.getElementById("bench-label");
+    const cur = sel.value;
+    const labels = [...new Set(BENCH.map(b => b.label))].sort();
+    sel.innerHTML = '<option value="">all labels</option>' +
+      labels.map(l => `<option${l === cur ? " selected" : ""}>${l}</option>`)
+            .join("");
+    renderBench();
+  } catch (e) {}
+}
+function renderBench() {
+  const fl = document.getElementById("bench-label").value;
+  let rows = BENCH.filter(b => !fl || b.label === fl);
+  rows = rows.slice(-40).reverse();
+  document.getElementById("bench-table").innerHTML =
+    "<tr><th>when</th><th>label</th><th>candidate</th><th>deck</th>" +
+    "<th>vs</th><th>score</th><th>games</th><th>note</th></tr>" +
+    (rows.length ? rows.map(b =>
+      `<tr><td>${new Date(b.t * 1000).toLocaleString()}</td>` +
+      `<td>${b.label}</td>` +
+      `<td>${b.a_ckpt}${b.swap ? " (swap)" : ""}</td>` +
+      `<td>${b.a_deck || "&ndash;"}</td><td>${b.b_ckpt}</td>` +
+      `<td><b>${(100 * b.wr).toFixed(0)}%</b> &plusmn;${(100 * b.ci).toFixed(0)}%</td>` +
+      `<td>${b.games}</td><td>${b.note || ""}</td></tr>`).join("")
+     : '<tr><td colspan="8" style="color:#8b93a1">no benchmark runs yet' +
+       ' &mdash; gauntlet.py appends here</td></tr>');
+}
+document.getElementById("bench-label")
+  .addEventListener("change", renderBench);
 async function loadStats() {
   try {
     const r = await fetch("/stats"); const s = await r.json();
@@ -1032,6 +1079,18 @@ def main():
                         return [_finite(x) for x in o]
                     return o
                 self._send(json.dumps(_finite(body)).encode(),
+                           "application/json")
+            elif url.path == "/benchmarks":
+                rows = []
+                bf = OUT / "benchmarks.jsonl"
+                if bf.exists():
+                    for ln in bf.read_text(
+                            encoding="utf-8").splitlines():
+                        try:
+                            rows.append(json.loads(ln))
+                        except json.JSONDecodeError:
+                            pass
+                self._send(json.dumps(rows[-200:]).encode(),
                            "application/json")
             elif url.path == "/stats":
                 # opening hundreds of gzipped archives takes ~30s;
