@@ -364,12 +364,27 @@ def main():
         pop = elites + children
 
         avg_mut = sum(g.mut for g in pop) / len(pop)
+        lands_set = getattr(main, "_lands", None)
+        if lands_set is None:
+            try:
+                main._lands = lands_set = set(json.loads(
+                    (OUT / "card_lands.json").read_text(
+                        encoding="utf-8")))
+            except OSError:
+                main._lands = lands_set = set()
+
+        def nlands(g):
+            return sum(n for c, n in g.cards.items()
+                       if c in lands_set)
         entry = {"gen": gen, "phase": phase,
                  "best": round(champ.fitness(), 3),
                  "best_games": champ.games,
                  "mean": round(sum(gw[g] / max(1, gg[g])
                                    for g in gw) / len(gw), 3),
                  "avg_mut": round(avg_mut, 4),
+                 "lands_mean": round(sum(nlands(g) for g in pop)
+                                     / len(pop), 1),
+                 "lands_champ": nlands(champ),
                  "dur_s": round(time.time() - t0), "t": int(time.time())}
         print(f"[gen {gen}] phase {phase} best "
               f"{entry['best']:.0%} ({champ.games}g) mean "

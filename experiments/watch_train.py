@@ -28,6 +28,7 @@ from urllib.parse import parse_qs, urlparse
 
 OUT = Path(__file__).resolve().parent / "output"
 _STATS_CACHE = {}
+_LANDS_CACHE = {}
 
 EVOLVE_PAGE = """<!DOCTYPE html>
 <html><head><meta charset="utf-8">
@@ -71,6 +72,11 @@ best</span> <span><i class="dot" style="background:#5aa9e6"></i>mean</span>
 <span style="color:#c792ea">| purple line = graduation to meta
 fitness</span></div>
 <canvas id="c-fit"></canvas></div>
+<div class="panel"><h2>Lands per deck &mdash; evolution discovering mana</h2>
+<div class="legend"><span><i class="dot" style="background:#e0b050"></i>
+champion</span> <span><i class="dot" style="background:#5aa9e6"></i>
+population mean</span></div>
+<canvas id="c-lands"></canvas></div>
 <div class="panel"><h2>Self-adaptive mutation rate (population mean)</h2>
 <canvas id="c-mut"></canvas></div>
 <div class="panel"><h2>Champion decklist
@@ -142,6 +148,15 @@ async function tick() {
     [{color: "#7ce38b", data: h.map(e => e.best)},
      {color: "#5aa9e6", data: h.map(e => e.mean)}], 0, 1,
     grad >= 0 ? [grad] : []);
+  const cl = d.champ_lands || {};
+  const champLands = h.map(e => cl[e.gen] != null ? cl[e.gen]
+                                : e.lands_champ);
+  const meanLands = h.map(e => e.lands_mean);
+  const lmax = Math.max(10, ...champLands.filter(x => x != null),
+                        ...meanLands.filter(x => x != null));
+  draw(document.getElementById("c-lands"),
+    [{color: "#e0b050", data: champLands},
+     {color: "#5aa9e6", data: meanLands}], 0, lmax);
   const muts = h.map(e => e.avg_mut);
   draw(document.getElementById("c-mut"),
     [{color: "#e0b050", data: muts}], 0,
@@ -1175,6 +1190,32 @@ def main():
                     body["champions"] = sorted(
                         int(p.stem[len("champion_gen"):])
                         for p in (base / name).glob("champion_gen*.dck"))
+                    # champion land counts (retro-computable)
+                    try:
+                        lands = _LANDS_CACHE.get("s")
+                        if lands is None:
+                            lands = set(json.loads(
+                                (OUT / "card_lands.json").read_text(
+                                    encoding="utf-8")))
+                            _LANDS_CACHE["s"] = lands
+                        cl = {}
+                        for gnum in body["champions"]:
+                            key = (name, gnum)
+                            if key not in _LANDS_CACHE:
+                                txt = (base / name /
+                                       f"champion_gen{gnum:03d}.dck") \
+                                    .read_text(encoding="utf-8")
+                                n = 0
+                                for ln in txt.split("[Main]")[-1] \
+                                        .splitlines():
+                                    m = re.match(r"(\d+) (.+)", ln)
+                                    if m and m.group(2) in lands:
+                                        n += int(m.group(1))
+                                _LANDS_CACHE[key] = n
+                            cl[gnum] = _LANDS_CACHE[key]
+                        body["champ_lands"] = cl
+                    except OSError:
+                        pass
                     g = q.get("deck", [None])[0]
                     if g and g.isdigit():
                         p = base / name / f"champion_gen{int(g):03d}.dck"
