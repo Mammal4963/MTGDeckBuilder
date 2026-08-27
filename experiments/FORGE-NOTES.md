@@ -794,3 +794,19 @@ every 512-wide model lost to it despite 5x params; the production
 AUC at D>=384 but is optimal at D<=192. Search infra note: features
 must stay ragged with per-minibatch padding (global padding = 25GB).
 Full foundation pretrain launching: --train 192,6 on 20k games.
+
+## FOUNDATION MODEL BUILT: foundation_D192L6.pt (2026-08-26)
+
+Full pretrain of the HPO winner (D=192 L=6 lr 1e-3) on 20k balanced
+games / 441k decisions, 46k game-held-out: value AUC 0.790, cast acc
+0.759, vloss 0.788. Infra: featurization must be lazy per-minibatch
+(ragged whole-corpus features = 35GB host RAM). This closes the arc the
+user set out: "focus on creating a model with the best value function
+predicting wins and losses from board state." Era summary: 4 generalist
+rounds, ~106k archived seats, ~850 unique decks, rl20 CONFIRMED 47%.
+
+Fine-tune era notes: the foundation net has cast/pass/val heads only,
+and D=192 means rl20/21 (D=256) heads cannot graft. Path: BC the
+combat/target/mull heads from the corpus onto the D192 trunk, then
+generalist RL warm-started from foundation, then per-deck fine-tunes
+(Roaming Encounters first), then the evolver (option 1) at the end.
