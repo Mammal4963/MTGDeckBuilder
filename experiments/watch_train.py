@@ -51,8 +51,8 @@ EVOLVE_PAGE = """<!DOCTYPE html>
   select { background:#1d2026; color:#d7dae0; border:1px solid #2a2e36;
            border-radius:6px; padding:4px 8px; }
   pre { background:#1d2026; border:1px solid #2a2e36; border-radius:8px;
-        padding:12px; font-size:12px; max-height:420px; overflow:auto;
-        column-width:220px; }
+        padding:12px; font-size:12px; max-height:420px;
+        overflow-y:auto; -webkit-overflow-scrolling:touch; }
   a { color:#5aa9e6; }
   .legend { font-size:11px; color:#8b93a1; margin-bottom:6px; }
   .dot { display:inline-block; width:8px; height:8px;
