@@ -150,7 +150,12 @@ def main():
     ap.add_argument("--iters", type=int, default=60)
     ap.add_argument("--games", type=int, default=64)
     ap.add_argument("--val-games", type=int, default=96)
-    ap.add_argument("--lock", action="append", default=None)
+    ap.add_argument("--lock", action="append", default=None,
+                    help="locked-card name (repeatable); 'none' = no "
+                    "locks (generic fine-tune)")
+    ap.add_argument("--deck", default="fac_roaming",
+                    help="OUR deck (Forge deck name): the seat that "
+                    "gets shaping/eps and the validation gate")
     ap.add_argument("--lock-bonus", type=float, default=0.5)
     ap.add_argument("--temperature", type=float, default=0.7)
     ap.add_argument("--lr", type=float, default=5e-5)
@@ -185,9 +190,13 @@ def main():
     ap.add_argument("--max-decisions", type=int, default=12000,
                     help="PPO: subsample cap per batch (update cost)")
     args = ap.parse_args()
-    locks = args.lock if args.lock else ["Random Encounter"]
-    global TAG
+    if args.lock == ["none"]:
+        locks = []
+    else:
+        locks = args.lock if args.lock else ["Random Encounter"]
+    global TAG, DECK
     TAG = args.tag
+    DECK = args.deck
 
     import torch
     if args.mull:

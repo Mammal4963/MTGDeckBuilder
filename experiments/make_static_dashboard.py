@@ -187,8 +187,10 @@ TEMPLATE = """<!DOCTYPE html>
   button { background:#2a2e36; color:#d7dae0; border:0; border-radius:6px;
            padding:4px 12px; font-size:12px; cursor:pointer; }
 </style></head><body><div class="wrap">
-<h1>Neural Pilot Training — Roaming Encounters</h1>
+<h1>Neural Pilot Training</h1>
 <div class="sub" id="sub"></div>
+<div class="sub"><a href="finetune.html" style="color:#5aa9e6">&rarr;
+Fine-tune the pilot on YOUR deck</a> (runs on your own PC)</div>
 <div class="cards" id="cards"></div>
 <div class="panel"><h2>Winrate &amp; exploration per iteration (current round)</h2>
 <div class="legend"><span><i class="dot" style="background:#5aa9e6"></i>winrate

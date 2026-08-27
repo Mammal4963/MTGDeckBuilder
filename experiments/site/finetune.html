@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fine-tune the pilot on your deck</title>
+<style>
+  :root { color-scheme: dark; }
+  body { background:#14161a; color:#d7dae0; font:14px/1.5 system-ui,sans-serif;
+         margin:0 auto; padding:24px; max-width:860px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:22px 0 8px; color:#aeb6c2; }
+  .sub { color:#8b93a1; font-size:12px; margin-bottom:18px; }
+  textarea, input[type=text] { width:100%; box-sizing:border-box;
+    background:#1d2026; color:#d7dae0; border:1px solid #2a2e36;
+    border-radius:8px; padding:10px; font:13px/1.4 ui-monospace,monospace; }
+  textarea { height:220px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:4px 16px; margin:10px 0; }
+  .cards label { font-size:13px; cursor:pointer; }
+  .cards input { accent-color:#5aa9e6; margin-right:6px; }
+  button { background:#2b5d8a; color:#fff; border:0; border-radius:8px;
+    padding:9px 18px; font-size:14px; cursor:pointer; }
+  button:hover { background:#356fa3; }
+  pre { background:#1d2026; border:1px solid #2a2e36; border-radius:8px;
+    padding:12px; overflow-x:auto; font-size:12px; }
+  .step { background:#191c21; border:1px solid #2a2e36; border-radius:10px;
+    padding:14px 18px; margin:10px 0; }
+  .muted { color:#8b93a1; font-size:12px; }
+  a { color:#5aa9e6; }
+  details summary { cursor:pointer; color:#aeb6c2; }
+</style></head><body>
+<h1>Fine-tune the pilot on YOUR deck</h1>
+<div class="sub">The neural pilot was pretrained on ~850 decks. This page
+builds you a training config; the fine-tuning itself runs <b>on your own
+PC</b> (it needs a real game engine and a GPU-capable Python).</div>
+
+<div class="step">
+<h2>1 &mdash; Paste your decklist</h2>
+<div class="muted">One card per line: <code>4 Lightning Bolt</code>.
+Sideboard lines are ignored. 60&ndash;100 card decks work best.</div>
+<textarea id="deck" placeholder="8 Forest
+9 Mountain
+4 Random Encounter
+..."></textarea>
+<div style="margin-top:8px">deck name:
+<input type="text" id="name" placeholder="my_gruul_ramp"
+       style="width:240px"></div>
+</div>
+
+<div class="step">
+<h2>2 &mdash; Lock your key cards (optional)</h2>
+<div class="muted">Locked cards get extra training credit for being cast
+early &mdash; use this for a centerpiece the deck is built around.</div>
+<div class="cards" id="cardlist"><span class="muted">paste a decklist
+above first</span></div>
+</div>
+
+<div class="step">
+<h2>3 &mdash; Your training command</h2>
+<button onclick="gen()">generate</button>
+<div id="out" style="display:none">
+<pre id="cmd"></pre>
+<button onclick="dl()">download decklist.txt</button>
+<div class="muted" style="margin-top:8px">The runner verifies the deck,
+then trains in rounds of ~1&ndash;2 hours (pilot vs pilot: your deck vs a
+random pool deck every game). After each round it reports the win-rate
+gate and asks whether to run another. Watch live charts at
+<code>http://localhost:8123</code>.</div>
+</div>
+</div>
+
+<div class="step">
+<details><summary><b>One-time setup</b> (what your PC needs)</summary>
+<ol>
+<li>Windows with an NVIDIA GPU (CPU works, ~3&times; slower)</li>
+<li><a href="https://adoptium.net/">Java 17</a>,
+<a href="https://python.org">Python 3.12</a>, and
+<code>pip install torch numpy sentence-transformers</code></li>
+<li><a href="https://releases.cardforge.org/">Forge 2.0.14</a> installed
+at <code>D:\Forge</code> (or edit <code>experiments/improve_deck.py</code>)</li>
+<li>Clone the repo:
+<pre>git clone https://github.com/Mammal4963/MTGDeckBuilder</pre></li>
+<li>Full details: <code>experiments/FINETUNE-SETUP.md</code> in the repo</li>
+</ol>
+</details>
+</div>
+
+<script>
+function parse() {
+  const cards = new Map();
+  for (let ln of document.getElementById("deck").value.split("\n")) {
+    ln = ln.trim();
+    if (/^sideboard/i.test(ln)) break;
+    const m = ln.match(/^(\d+)\s*x?\s+(.+)/);
+    if (m) cards.set(m[2].trim(), (cards.get(m[2].trim()) || 0) + +m[1]);
+  }
+  return cards;
+}
+document.getElementById("deck").addEventListener("input", () => {
+  const cards = parse();
+  const el = document.getElementById("cardlist");
+  if (!cards.size) {
+    el.innerHTML = '<span class="muted">paste a decklist above first</span>';
+    return;
+  }
+  el.innerHTML = [...cards.entries()].map(([c, n]) =>
+    `<label><input type="checkbox" value="${c.replace(/"/g, "&quot;")}">` +
+    `${n}&times; ${c}</label>`).join("");
+});
+function gen() {
+  const cards = parse();
+  const total = [...cards.values()].reduce((a, b) => a + b, 0);
+  if (total < 40) { alert("decklist looks too small (" + total +
+    " cards) - paste it in step 1 first"); return; }
+  const name = (document.getElementById("name").value || "my_deck")
+    .replace(/\W/g, "_").slice(0, 24);
+  const locks = [...document.querySelectorAll("#cardlist input:checked")]
+    .map(i => i.value);
+  const lockArg = locks.length ?
+    ` --locks "${locks.join(",")}"` : "";
+  document.getElementById("cmd").textContent =
+    "python experiments\\finetune_runner.py --decklist decklist.txt " +
+    "--name " + name + lockArg + " --rounds ask";
+  document.getElementById("out").style.display = "block";
+}
+function dl() {
+  const blob = new Blob([document.getElementById("deck").value],
+                        {type: "text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "decklist.txt";
+  a.click();
+}
+</script>
+</body></html>

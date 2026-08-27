@@ -35,8 +35,13 @@ LEVELS = {
 
 def main():
     level = sys.argv[1] if len(sys.argv) > 1 else "champion"
+    if level == "custom":
+        # play_vs_pilot.py custom <ckpt-path> [D,layers]
+        arch = tuple(sys.argv[3].split(",")) if len(sys.argv) > 3 \
+            else ("192", "6")
+        LEVELS["custom"] = (sys.argv[2], arch)
     if level not in LEVELS:
-        print(f"levels: {', '.join(LEVELS)}")
+        print(f"levels: {', '.join(LEVELS)} | custom <ckpt> [D,layers]")
         return
 
     from improve_deck import FORGE_DIR
