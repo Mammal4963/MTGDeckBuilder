@@ -64,6 +64,7 @@ pure-noise genetic algorithm over 33,585 cards · phase 0 = fitness
 within the population, phase 1 = fitness vs the frozen meta
 <span id="status"></span></div>
 <div class="cards" id="cards"></div>
+<div id="evo-bars" style="margin:-6px 0 16px"></div>
 <div class="panel"><h2>Fitness by generation</h2>
 <div class="legend"><span><i class="dot" style="background:#7ce38b"></i>
 best</span> <span><i class="dot" style="background:#5aa9e6"></i>mean</span>
@@ -145,6 +146,26 @@ async function tick() {
   draw(document.getElementById("c-mut"),
     [{color: "#e0b050", data: muts}], 0,
     Math.max(0.1, ...muts.filter(x => x != null)));
+  const bars = document.getElementById("evo-bars");
+  const pr = d.progress || {};
+  const totalGens = pr.gens || 200;
+  const curGen = pr.live ? pr.live.gen : (last.gen != null ?
+    last.gen + 1 : 0);
+  const cpct = Math.min(100, 100 * curGen / totalGens);
+  let html = `<div style="font-size:12px;color:#8b93a1;margin-bottom:3px">
+      campaign: generation ${curGen} / ${totalGens}
+      (${cpct.toFixed(0)}%)</div>
+    <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:10px">
+    <div style="background:#5aa9e6;height:10px;border-radius:5px;width:${cpct}%"></div></div>`;
+  if (pr.live && pr.live.total) {
+    const gpct = Math.min(100, 100 * pr.live.done / pr.live.total);
+    html += `<div style="font-size:12px;color:#8b93a1;margin:6px 0 3px">
+        generation ${pr.live.gen}: ${pr.live.done} / ${pr.live.total}
+        matches · ${pr.live.games} games (${gpct.toFixed(0)}%)</div>
+      <div style="background:#1d2026;border:1px solid #2a2e36;border-radius:5px;height:7px">
+      <div style="background:#7ce38b;height:7px;border-radius:5px;width:${gpct}%"></div></div>`;
+  }
+  bars.innerHTML = html;
   const sel = document.getElementById("gen-pick");
   if (sel.options.length !== d.champions.length + 1) {
     const cur = sel.value;
@@ -1159,6 +1180,13 @@ def main():
                         p = base / name / f"champion_gen{int(g):03d}.dck"
                         if p.exists():
                             body["deck"] = p.read_text(encoding="utf-8")
+                epf = OUT / "evolve_progress.json"
+                if epf.exists() and \
+                        time.time() - epf.stat().st_mtime < 3600:
+                    try:
+                        body["progress"] = json.loads(epf.read_text())
+                    except (OSError, json.JSONDecodeError):
+                        pass
                 self._send(json.dumps(body).encode(),
                            "application/json")
             elif url.path == "/data":
