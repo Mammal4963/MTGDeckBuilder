@@ -82,6 +82,11 @@ population mean</span></div>
 <div class="panel"><h2>Champion decklist
 <select id="gen-pick"></select></h2>
 <pre id="deck">select a generation</pre></div>
+<div class="panel"><h2>Graduation-probe games (champion vs fac_g0)</h2>
+<div style="max-height:200px;overflow-y:auto">
+<table id="probes" style="width:100%;font-size:12px;
+  border-collapse:collapse"></table></div>
+<pre id="replay" style="display:none;margin-top:10px"></pre></div>
 <script>
 function draw(cv, series, ymin, ymax, marks) {
   const ctx = cv.getContext("2d");
@@ -181,6 +186,7 @@ async function tick() {
       <div style="background:#7ce38b;height:7px;border-radius:5px;width:${gpct}%"></div></div>`;
   }
   bars.innerHTML = html;
+  renderProbes(d.probes);
   const sel = document.getElementById("gen-pick");
   if (sel.options.length !== d.champions.length + 1) {
     const cur = sel.value;
@@ -201,6 +207,56 @@ async function showDeck() {
 }
 document.getElementById("gen-pick")
   .addEventListener("change", showDeck);
+let PROBES = [];
+function renderProbes(rows) {
+  PROBES = rows || [];
+  document.getElementById("probes").innerHTML =
+    "<tr><th style='text-align:left'>gen</th><th>result</th>" +
+    "<th>decisions</th><th>when</th></tr>" +
+    (PROBES.length ? PROBES.slice().reverse().map(p =>
+      `<tr style="cursor:pointer;border-top:1px solid #2a2e36"
+        onclick="replay('${p.file}')"><td>${p.gen}</td>` +
+      `<td style="color:${p.won ? '#7ce38b' : '#e06060'};text-align:center">
+        ${p.won ? "WIN" : "loss"}</td>` +
+      `<td style="text-align:center">${p.n_dec}</td>` +
+      `<td style="text-align:center">
+        ${new Date(p.t * 1000).toLocaleTimeString()}</td></tr>`).join("")
+     : "<tr><td colspan=4 style='color:#8b93a1'>none yet</td></tr>");
+}
+async function replay(f) {
+  const r = await fetch(`/evolve-game?c=${CUR}&f=${f}`);
+  const g = await r.json();
+  const el = document.getElementById("replay");
+  el.style.display = "block";
+  let lastTurn = null, lines = [`=== ${g.deck} vs fac_g0 — ` +
+    `${g.won ? "WIN" : "LOSS"} ===`];
+  for (const [s, rep] of g.decisions) {
+    const t = Math.ceil((s.turn || 0) / 2) + ((s.turn || 0) % 2 ? "a" : "b");
+    if (s.turn !== lastTurn) {
+      lastTurn = s.turn;
+      lines.push(`\\n-- turn ${t} · life ${s.my_life} vs ${s.opp_life} --`);
+    }
+    const k = s.kind;
+    if (k === "cast") {
+      let act = "";
+      if (rep === "ok") act = (s.proposed || [])[0] || "(pass)";
+      else if (rep.startsWith("force")) {
+        const i = +rep.split("\\t")[1];
+        act = "FORCE " + (((s.candidates || [])
+          .find(c => c.i === i) || {}).card || "?");
+      } else if (rep.startsWith("veto")) act = "veto (pass)";
+      if (act && act !== "(pass)") lines.push(`cast: ${act}`);
+    } else if (k === "attackers" && rep.length > 7)
+      lines.push(`attack: ${rep.slice(7)}`);
+    else if (k === "blockers" && rep.length > 6)
+      lines.push(`block: ${rep.slice(6)}`);
+    else if (k === "mulligan") lines.push(`mulligan: ${rep}`);
+    else if (k === "game_end")
+      lines.push(`\\n== game over · life ${s.my_life} vs ` +
+        `${s.opp_life} ==`);
+  }
+  el.textContent = lines.join("\\n");
+}
 tick(); setInterval(tick, 15000);
 setTimeout(showDeck, 1500); setInterval(showDeck, 60000);
 </script></body></html>"""
@@ -1221,6 +1277,16 @@ def main():
                         p = base / name / f"champion_gen{int(g):03d}.dck"
                         if p.exists():
                             body["deck"] = p.read_text(encoding="utf-8")
+                    pf = base / name / "probe_index.jsonl"
+                    if pf.exists():
+                        rows = []
+                        for ln in pf.read_text(
+                                encoding="utf-8").splitlines()[-60:]:
+                            try:
+                                rows.append(json.loads(ln))
+                            except json.JSONDecodeError:
+                                pass
+                        body["probes"] = rows
                 epf = OUT / "evolve_progress.json"
                 if epf.exists() and \
                         time.time() - epf.stat().st_mtime < 3600:
@@ -1230,6 +1296,19 @@ def main():
                         pass
                 self._send(json.dumps(body).encode(),
                            "application/json")
+            elif url.path == "/evolve-game":
+                q = parse_qs(url.query)
+                name = q.get("c", [""])[0]
+                f = q.get("f", [""])[0]
+                if re.fullmatch(r"[\w-]+", name) and \
+                        re.fullmatch(r"probe_gen\d+_\d+\.json\.gz", f) \
+                        and (OUT / "evolve" / name / "games" / f).exists():
+                    with gzip.open(OUT / "evolve" / name / "games" / f,
+                                   "rt", encoding="utf-8") as fh:
+                        self._send(fh.read().encode(),
+                                   "application/json")
+                else:
+                    self.send_error(404)
             elif url.path == "/data":
                 # the newest round's journal takes over the charts
                 cands = [p for p in OUT.glob("selfplay_round*.json")
