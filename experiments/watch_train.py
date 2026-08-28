@@ -70,7 +70,7 @@ within the population, phase 1 = fitness vs the frozen meta
 <div class="legend"><span><i class="dot" style="background:#7ce38b"></i>
 best</span> <span><i class="dot" style="background:#5aa9e6"></i>mean</span>
 <span style="color:#c792ea">| purple line = graduation to meta
-fitness</span></div>
+fitness</span><span id="fit-slope"></span></div>
 <canvas id="c-fit"></canvas></div>
 <div class="panel"><h2>Lands per deck &mdash; evolution discovering mana</h2>
 <div class="legend"><span><i class="dot" style="background:#e0b050"></i>
@@ -121,6 +121,8 @@ function draw(cv, series, ymin, ymax, marks) {
   ctx.textAlign = "left";
   for (const s of series) {
     ctx.strokeStyle = s.color; ctx.lineWidth = 2 * devicePixelRatio;
+    ctx.setLineDash(s.dash ? [6 * devicePixelRatio,
+                              5 * devicePixelRatio] : []);
     ctx.beginPath();
     let started = false;
     s.data.forEach((v, i) => { if (v == null) return;
@@ -128,6 +130,19 @@ function draw(cv, series, ymin, ymax, marks) {
       started = true; });
     ctx.stroke();
   }
+  ctx.setLineDash([]);
+}
+function linreg(pts) {  // [[x, y], ...] -> {a, b} for y = a + b x
+  const n = pts.length;
+  if (n < 3) return null;
+  const sx = pts.reduce((s, p) => s + p[0], 0),
+        sy = pts.reduce((s, p) => s + p[1], 0),
+        sxx = pts.reduce((s, p) => s + p[0] * p[0], 0),
+        sxy = pts.reduce((s, p) => s + p[0] * p[1], 0);
+  const den = n * sxx - sx * sx;
+  if (!den) return null;
+  const b = (n * sxy - sx * sy) / den;
+  return {a: (sy - b * sx) / n, b};
 }
 let CUR = null;
 async function tick() {
@@ -151,9 +166,23 @@ async function tick() {
       `<div class="v">${v}</div></div>`).join("");
   const grad = h.findIndex((e, i) =>
     i > 0 && e.phase === 1 && h[i - 1].phase === 0);
-  draw(document.getElementById("c-fit"),
-    [{color: "#7ce38b", data: h.map(e => e.best)},
-     {color: "#5aa9e6", data: h.map(e => e.mean)}], 0, 1,
+  const fitSeries = [{color: "#7ce38b", data: h.map(e => e.best)},
+                     {color: "#5aa9e6", data: h.map(e => e.mean)}];
+  const p1 = h.map((e, i) => [i, e]).filter(([i, e]) =>
+    e.phase === 1 && e.mean != null);
+  const fitB = linreg(p1.map(([i, e]) => [i, e.best]));
+  const fitM = linreg(p1.map(([i, e]) => [i, e.mean]));
+  if (fitM) {
+    fitSeries.push({color: "#8b93a1", dash: true,
+      data: h.map((e, i) => (grad >= 0 && i >= grad)
+        ? fitM.a + fitM.b * i : null)});
+    document.getElementById("fit-slope").textContent =
+      ` · post-graduation slope: mean ` +
+      `${fitM.b >= 0 ? "+" : ""}${(100 * fitM.b).toFixed(2)}%/gen` +
+      (fitB ? `, best ${fitB.b >= 0 ? "+" : ""}` +
+        `${(100 * fitB.b).toFixed(2)}%/gen` : "");
+  }
+  draw(document.getElementById("c-fit"), fitSeries, 0, 1,
     grad >= 0 ? [grad] : []);
   const cl = d.champ_lands || {};
   const champLands = h.map(e => cl[e.gen] != null ? cl[e.gen]
