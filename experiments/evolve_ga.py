@@ -227,6 +227,11 @@ def main():
         import gzip
         gdir = camp / "games"
         gdir.mkdir(exist_ok=True)
+        # champion's seat only: the server records BOTH seats, and
+        # each game emits a game_end per seat - unfiltered, every
+        # other "game" is a phantom 1-decision segment
+        buffer = [x for x in buffer
+                  if deck_name in x[0].get("player", "")]
         seg, k = [], 0
         for state, reply in buffer:
             seg.append((state, reply))
