@@ -173,9 +173,13 @@ async function tick() {
   const fitB = linreg(p1.map(([i, e]) => [i, e.best]));
   const fitM = linreg(p1.map(([i, e]) => [i, e.mean]));
   if (fitM) {
-    fitSeries.push({color: "#8b93a1", dash: true,
+    fitSeries.push({color: "#3a6a94", dash: true,
       data: h.map((e, i) => (grad >= 0 && i >= grad)
         ? fitM.a + fitM.b * i : null)});
+    if (fitB)
+      fitSeries.push({color: "#3f7a4a", dash: true,
+        data: h.map((e, i) => (grad >= 0 && i >= grad)
+          ? fitB.a + fitB.b * i : null)});
     document.getElementById("fit-slope").textContent =
       ` · post-graduation slope: mean ` +
       `${fitM.b >= 0 ? "+" : ""}${(100 * fitM.b).toFixed(2)}%/gen` +
