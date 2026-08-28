@@ -71,6 +71,15 @@ class Genome:
     def fitness(self):
         return self.wins / self.games if self.games else 0.0
 
+    def lcb(self):
+        """Lower confidence bound (z=1): survival ranking that a
+        lucky thin sample cannot win - proven veterans hold elite
+        slots until a child EARNS the eviction."""
+        if not self.games:
+            return 0.0
+        p = self.wins / self.games
+        return p - (p * (1 - p) / self.games) ** 0.5
+
     def to_json(self):
         return {"cards": self.cards, "mut": self.mut,
                 "wins": self.wins, "games": self.games,
@@ -324,7 +333,7 @@ def main():
                 g.wins += gw[g.gid]
                 g.games += gg[g.gid]
 
-        pop.sort(key=lambda g: -g.fitness())
+        pop.sort(key=lambda g: -g.lcb())
         champ = pop[0]
 
         # graduation probe (phase 0 only) - recorded, archived in the
