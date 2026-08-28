@@ -194,10 +194,24 @@ def main():
     ap.add_argument("--grad-ref", default="fac_g0",
                     help="weak external reference; champion taking "
                     "2/8 games off it triggers meta-phase graduation")
+    ap.add_argument("--allow-unsets", action="store_true",
+                    help="include Un-set (silver-border) cards in the "
+                    "universe; default: excluded, and any already in "
+                    "the population are randomly replaced on load")
     args = ap.parse_args()
 
     universe = json.loads((OUT / "card_universe.json")
                           .read_text(encoding="utf-8"))
+    banned = set()
+    if not args.allow_unsets:
+        try:
+            banned = set(json.loads((OUT / "card_unsets.json")
+                                    .read_text(encoding="utf-8")))
+        except OSError:
+            pass
+        universe = [c for c in universe if c not in banned]
+        print(f"[universe] {len(universe)} cards "
+              f"({len(banned)} Un-set cards excluded)", flush=True)
     camp = OUT / "evolve" / args.name
     camp.mkdir(parents=True, exist_ok=True)
     state_f = camp / "state.json"
@@ -209,6 +223,21 @@ def main():
         gen0, phase, next_gid = st["gen"], st["phase"], st["next_gid"]
         rng = np.random.default_rng(st["seed"] + gen0)
         print(f"[resume] gen {gen0}, phase {phase}", flush=True)
+        if banned:
+            swapped = 0
+            for g in pop:
+                for c in [c for c in g.cards if c in banned]:
+                    n = g.cards.pop(c)
+                    swapped += n
+                    while n > 0:
+                        r = universe[int(rng.integers(len(universe)))]
+                        take = min(n, cap(r) - g.cards.get(r, 0))
+                        if take > 0:
+                            g.cards[r] = g.cards.get(r, 0) + take
+                            n -= take
+            if swapped:
+                print(f"[universe] swapped {swapped} Un-set card "
+                      "copies out of the population", flush=True)
     else:
         pop = [rand_deck(universe, rng, i) for i in range(args.pop)]
         gen0, phase, next_gid = 0, 0, args.pop
