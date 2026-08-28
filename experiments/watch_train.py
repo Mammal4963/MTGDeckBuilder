@@ -82,11 +82,13 @@ population mean</span></div>
 <div class="panel"><h2>Champion decklist
 <select id="gen-pick"></select></h2>
 <pre id="deck">select a generation</pre></div>
-<div class="panel"><h2>Graduation-probe games (champion vs fac_g0)</h2>
-<div style="max-height:200px;overflow-y:auto">
+<div class="panel"><h2>Champion games <span id="pcount"
+  style="color:#8b93a1;font-weight:400"></span></h2>
+<div style="max-height:280px;overflow-y:auto">
 <table id="probes" style="width:100%;font-size:12px;
   border-collapse:collapse"></table></div>
-<pre id="replay" style="display:none;margin-top:10px"></pre></div>
+<div style="color:#8b93a1;font-size:11px;margin-top:4px">click a row
+to open the full board inspector</div></div>
 <script>
 function draw(cv, series, ymin, ymax, marks) {
   const ctx = cv.getContext("2d");
@@ -210,52 +212,25 @@ document.getElementById("gen-pick")
 let PROBES = [];
 function renderProbes(rows) {
   PROBES = rows || [];
+  document.getElementById("pcount").textContent =
+    `— ${PROBES.length} archived, newest first`;
   document.getElementById("probes").innerHTML =
-    "<tr><th style='text-align:left'>gen</th><th>result</th>" +
-    "<th>decisions</th><th>when</th></tr>" +
+    "<tr><th style='text-align:left'>game</th><th>gen</th><th>opp</th>" +
+    "<th>result</th><th>decisions</th><th>dur</th><th>when</th></tr>" +
     (PROBES.length ? PROBES.slice().reverse().map(p =>
       `<tr style="cursor:pointer;border-top:1px solid #2a2e36"
-        onclick="replay('${p.file}')"><td>${p.gen}</td>` +
+        onclick="location='/?g=${p.file}&c=' + CUR">` +
+      `<td>${p.file.replace(".json.gz", "")}</td>` +
+      `<td style="text-align:center">${p.gen}</td>` +
+      `<td style="text-align:center">${p.opp || "fac_g0"}</td>` +
       `<td style="color:${p.won ? '#7ce38b' : '#e06060'};text-align:center">
         ${p.won ? "WIN" : "loss"}</td>` +
       `<td style="text-align:center">${p.n_dec}</td>` +
+      `<td style="text-align:center">${p.dur_s != null ?
+        p.dur_s + "s" : "–"}</td>` +
       `<td style="text-align:center">
         ${new Date(p.t * 1000).toLocaleTimeString()}</td></tr>`).join("")
-     : "<tr><td colspan=4 style='color:#8b93a1'>none yet</td></tr>");
-}
-async function replay(f) {
-  const r = await fetch(`/evolve-game?c=${CUR}&f=${f}`);
-  const g = await r.json();
-  const el = document.getElementById("replay");
-  el.style.display = "block";
-  let lastTurn = null, lines = [`=== ${g.deck} vs fac_g0 — ` +
-    `${g.won ? "WIN" : "LOSS"} ===`];
-  for (const [s, rep] of g.decisions) {
-    const t = Math.ceil((s.turn || 0) / 2) + ((s.turn || 0) % 2 ? "a" : "b");
-    if (s.turn !== lastTurn) {
-      lastTurn = s.turn;
-      lines.push(`\\n-- turn ${t} · life ${s.my_life} vs ${s.opp_life} --`);
-    }
-    const k = s.kind;
-    if (k === "cast") {
-      let act = "";
-      if (rep === "ok") act = (s.proposed || [])[0] || "(pass)";
-      else if (rep.startsWith("force")) {
-        const i = +rep.split("\\t")[1];
-        act = "FORCE " + (((s.candidates || [])
-          .find(c => c.i === i) || {}).card || "?");
-      } else if (rep.startsWith("veto")) act = "veto (pass)";
-      if (act && act !== "(pass)") lines.push(`cast: ${act}`);
-    } else if (k === "attackers" && rep.length > 7)
-      lines.push(`attack: ${rep.slice(7)}`);
-    else if (k === "blockers" && rep.length > 6)
-      lines.push(`block: ${rep.slice(6)}`);
-    else if (k === "mulligan") lines.push(`mulligan: ${rep}`);
-    else if (k === "game_end")
-      lines.push(`\\n== game over · life ${s.my_life} vs ` +
-        `${s.opp_life} ==`);
-  }
-  el.textContent = lines.join("\\n");
+     : "<tr><td colspan=7 style='color:#8b93a1'>none yet</td></tr>");
 }
 tick(); setInterval(tick, 15000);
 setTimeout(showDeck, 1500); setInterval(showDeck, 60000);
@@ -1143,8 +1118,9 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowRight") { step(1); e.preventDefault(); }
 });
 
-async function openGame(f) {
-  const r = await fetch("/game?f=" + encodeURIComponent(f));
+async function openGame(f, camp) {
+  const r = await fetch("/game?f=" + encodeURIComponent(f) +
+    (camp ? "&c=" + encodeURIComponent(camp) : ""));
   const g = await r.json();
   G = g;
   const insp = document.getElementById("inspector");
@@ -1196,6 +1172,15 @@ document.getElementById("insp-close").addEventListener("click",
   () => { document.getElementById("inspector").style.display = "none";
           if (TIMER) { clearInterval(TIMER); TIMER = null; } });
 tick(); setInterval(tick, 5000);
+// deep link: /?g=<file>&c=<campaign> opens the inspector directly
+(() => {
+  const qp = new URLSearchParams(location.search);
+  if (qp.get("g"))
+    openGame(qp.get("g"), qp.get("c") || undefined).then(() => {
+      const el = document.getElementById("inspector");
+      if (el) el.scrollIntoView();
+    });
+})();
 </script></body></html>
 """
 
@@ -1496,13 +1481,20 @@ def main():
                 self._send(json.dumps({"rows": rows, "total": total}).encode(),
                            "application/json")
             elif url.path == "/game":
-                f = parse_qs(url.query).get("f", [""])[0]
-                if not re.fullmatch(
-                        r"(r\d+)?(it\d+_w\d+|cf\w+_j\d+)_\d+b?\.json\.gz", f) \
-                        or not (GAMES / f).exists():
+                q = parse_qs(url.query)
+                f = q.get("f", [""])[0]
+                c = q.get("c", [""])[0]
+                if c and re.fullmatch(r"[\w-]+", c) and \
+                        re.fullmatch(r"probe_gen\d+_\d+\.json\.gz", f):
+                    p = OUT / "evolve" / c / "games" / f
+                else:
+                    p = GAMES / f if re.fullmatch(
+                        r"(r\d+)?(it\d+_w\d+|cf\w+_j\d+)_\d+b?"
+                        r"\.json\.gz", f) else None
+                if p is None or not p.exists():
                     self.send_error(404)
                     return
-                with gzip.open(GAMES / f, "rt", encoding="utf-8") as fh:
+                with gzip.open(p, "rt", encoding="utf-8") as fh:
                     self._send(fh.read().encode(), "application/json")
             else:
                 self._send(PAGE.encode(), "text/html; charset=utf-8")

@@ -232,7 +232,7 @@ def main():
         except OSError:
             pass
 
-    def archive_probe(gen, deck_name, buffer):
+    def archive_probe(gen, deck_name, buffer, opp):
         import gzip
         gdir = camp / "games"
         gdir.mkdir(exist_ok=True)
@@ -249,14 +249,19 @@ def main():
             won = bool(state.get("opp_lost")) \
                 and not state.get("i_lost")
             fn = f"probe_gen{gen:03d}_{k:02d}.json.gz"
+            dur = round(sum(s.get("_dt_ms", 0)
+                            for s, _r in seg) / 1000, 1)
             with gzip.open(gdir / fn, "wt", encoding="utf-8") as f:
-                json.dump({"gen": gen, "deck": deck_name, "won": won,
+                json.dump({"gen": gen, "iter": f"evo-{gen}",
+                           "deck": deck_name, "opp": opp, "won": won,
+                           "lock_frac": 0.0, "dur_s": dur,
                            "decisions": seg}, f,
                           separators=(",", ":"))
             with open(camp / "probe_index.jsonl", "a",
                       encoding="utf-8") as f:
                 f.write(json.dumps({"gen": gen, "file": fn,
-                                    "won": won, "n_dec": len(seg),
+                                    "opp": opp, "won": won,
+                                    "dur_s": dur, "n_dec": len(seg),
                                     "t": int(time.time())}) + "\n")
             seg, k = [], k + 1
 
@@ -336,27 +341,31 @@ def main():
         pop.sort(key=lambda g: -g.lcb())
         champ = pop[0]
 
-        # graduation probe (phase 0 only) - recorded, archived in the
-        # campaign dir only (never the training corpus)
+        # champion showcase: recorded games every generation (vs the
+        # graduation ref in phase 0, vs a random meta deck after),
+        # archived in the campaign dir only - never the corpus. In
+        # phase 0 the result doubles as the graduation probe.
         grad = ""
+        showcase_opp = args.grad_ref if phase == 0 else \
+            str(rng.choice(meta_decks))
+        probe_rec.buffer = []
+        try:
+            out = run_bridged(names[champ.gid], showcase_opp, 8,
+                              120 + 60 * 8, probe_port,
+                              player_filter="", quiet=True,
+                              worker=args.parallel)
+            aw = len(re.findall(
+                rf"Game Result.*Ai\(1\)-"
+                rf"{re.escape(names[champ.gid])} has won", out))
+            n = len(re.findall(r"Game Result", out))
+        except Exception:
+            aw, n = 0, 0
+        try:
+            archive_probe(gen, names[champ.gid],
+                          list(probe_rec.buffer), showcase_opp)
+        except OSError:
+            pass
         if phase == 0:
-            probe_rec.buffer = []
-            try:
-                out = run_bridged(names[champ.gid], args.grad_ref, 8,
-                                  120 + 60 * 8, probe_port,
-                                  player_filter="", quiet=True,
-                                  worker=args.parallel)
-                aw = len(re.findall(
-                    rf"Game Result.*Ai\(1\)-"
-                    rf"{re.escape(names[champ.gid])} has won", out))
-                n = len(re.findall(r"Game Result", out))
-            except Exception:
-                aw, n = 0, 0
-            try:
-                archive_probe(gen, names[champ.gid],
-                              list(probe_rec.buffer))
-            except OSError:
-                pass
             grad = f" · grad-probe {aw}/{n}"
             if aw >= 2:
                 phase = 1
