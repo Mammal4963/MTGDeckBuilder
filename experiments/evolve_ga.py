@@ -59,14 +59,20 @@ def cap(card):
 
 
 class Genome:
-    __slots__ = ("cards", "mut", "wins", "games", "gid")
+    __slots__ = ("cards", "mut", "wins", "games", "gid",
+                 "mwins", "mgames")
 
     def __init__(self, cards, mut, gid):
         self.cards = cards          # dict name -> count, sums to 60
         self.mut = mut
-        self.wins = 0               # accumulated (meta phase)
+        self.wins = 0               # combined (meta + sibling)
         self.games = 0
+        self.mwins = 0              # meta-only: the reported score
+        self.mgames = 0
         self.gid = gid
+
+    def meta_rate(self):
+        return self.mwins / self.mgames if self.mgames else 0.0
 
     def fitness(self):
         return self.wins / self.games if self.games else 0.0
@@ -83,12 +89,16 @@ class Genome:
     def to_json(self):
         return {"cards": self.cards, "mut": self.mut,
                 "wins": self.wins, "games": self.games,
+                "mwins": self.mwins, "mgames": self.mgames,
                 "gid": self.gid}
 
     @staticmethod
     def from_json(d):
         g = Genome(d["cards"], d["mut"], d["gid"])
         g.wins, g.games = d["wins"], d["games"]
+        # pre-blend states: all accumulated games were meta games
+        g.mwins = d.get("mwins", d["wins"])
+        g.mgames = d.get("mgames", d["games"])
         return g
 
 
@@ -297,6 +307,7 @@ def main():
 
         gw = {g.gid: 0 for g in pop}    # this-gen wins
         gg = {g.gid: 0 for g in pop}    # this-gen games
+        mw = mg = None                  # meta-only (phase 1)
         with prog_lock:
             live.update(done=0, games=0, gen=gen, phase=phase)
         if phase == 0:
@@ -320,23 +331,43 @@ def main():
             for g in pop:                       # phase-0 fitness is
                 g.wins, g.games = gw[g.gid], gg[g.gid]   # per-gen only
         else:
+            # blended fitness: 12 meta games (the comparable score)
+            # + 4 sibling games (gradient among decks the meta can't
+            # yet tell apart). Selection ranks the combined record;
+            # charts report meta-only.
             jobs = []
-            for i, g in enumerate(pop):
-                picks = rng.choice(meta_decks, args.meta_games // 2,
-                                   replace=False)
+            mw = {g.gid: 0 for g in pop}
+            mg = {g.gid: 0 for g in pop}
+            for g in pop:
+                picks = rng.choice(meta_decks, 6, replace=False)
                 for o in picks:
                     jobs.append((len(jobs), names[g.gid], str(o), 2,
                                  g.gid, None))
+                sibs = rng.choice([x.gid for x in pop
+                                   if x.gid != g.gid], 2,
+                                  replace=False)
+                for o in sibs:
+                    jobs.append((len(jobs), names[g.gid],
+                                 names[int(o)], 2, g.gid, int(o)))
             live["total"] = len(jobs)
             with ThreadPoolExecutor(max_workers=args.parallel) as tp:
                 res = list(tp.map(
-                    lambda j: (j[4], play(j[:4])), jobs))
-            for ga, (aw, _bw, n) in res:
+                    lambda j: (j, play(j[:4])), jobs))
+            for j, (aw, bw, n) in res:
+                ga, gb = j[4], j[5]
                 gw[ga] += aw
                 gg[ga] += n
+                if gb is None:
+                    mw[ga] += aw
+                    mg[ga] += n
+                else:
+                    gw[gb] += bw
+                    gg[gb] += n
             for g in pop:                       # accumulate over gens
                 g.wins += gw[g.gid]
                 g.games += gg[g.gid]
+                g.mwins += mw[g.gid]
+                g.mgames += mg[g.gid]
 
         pop.sort(key=lambda g: -g.lcb())
         champ = pop[0]
@@ -369,8 +400,8 @@ def main():
             grad = f" · grad-probe {aw}/{n}"
             if aw >= 2:
                 phase = 1
-                for g in pop:
-                    g.wins = g.games = 0        # fresh comparable slate
+                for g in pop:                   # fresh comparable slate
+                    g.wins = g.games = g.mwins = g.mgames = 0
                 grad += " -> GRADUATED to meta fitness"
 
         # next generation: elites + children
@@ -399,11 +430,14 @@ def main():
         def nlands(g):
             return sum(n for c, n in g.cards.items()
                        if c in lands_set)
+        rw, rg = (mw, mg) if mg is not None else (gw, gg)
         entry = {"gen": gen, "phase": phase,
-                 "best": round(champ.fitness(), 3),
-                 "best_games": champ.games,
-                 "mean": round(sum(gw[g] / max(1, gg[g])
-                                   for g in gw) / len(gw), 3),
+                 "best": round(champ.meta_rate() if mg is not None
+                               else champ.fitness(), 3),
+                 "best_games": (champ.mgames if mg is not None
+                                else champ.games),
+                 "mean": round(sum(rw[g] / max(1, rg[g])
+                                   for g in rw) / len(rw), 3),
                  "avg_mut": round(avg_mut, 4),
                  "lands_mean": round(sum(nlands(g) for g in pop)
                                      / len(pop), 1),
