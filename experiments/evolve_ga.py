@@ -285,8 +285,9 @@ def main():
             seg.append((state, reply))
             if state.get("kind") != "game_end":
                 continue
-            won = bool(state.get("opp_lost")) \
-                and not state.get("i_lost")
+            # winner's game_end arrives with both flags False; only
+            # the loser sees i_lost=True
+            won = not state.get("i_lost")
             fn = f"probe_gen{gen:03d}_{k:02d}.json.gz"
             dur = round(sum(s.get("_dt_ms", 0)
                             for s, _r in seg) / 1000, 1)
