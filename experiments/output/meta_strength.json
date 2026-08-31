@@ -1,0 +1,1207 @@
+{
+ "t": 1788011418,
+ "rounds": 10,
+ "benchmark": "benchmark_v2.pt",
+ "ratings": [
+  {
+   "deck": "poolv5_210",
+   "wins": 20,
+   "games": 20,
+   "wr": 1.0
+  },
+  {
+   "deck": "poolv5_170",
+   "wins": 19,
+   "games": 20,
+   "wr": 0.95
+  },
+  {
+   "deck": "poolv4_279",
+   "wins": 19,
+   "games": 20,
+   "wr": 0.95
+  },
+  {
+   "deck": "poolv3_110",
+   "wins": 18,
+   "games": 20,
+   "wr": 0.9
+  },
+  {
+   "deck": "poolv5_100",
+   "wins": 18,
+   "games": 20,
+   "wr": 0.9
+  },
+  {
+   "deck": "poolv3_023",
+   "wins": 18,
+   "games": 20,
+   "wr": 0.9
+  },
+  {
+   "deck": "fac_roaming",
+   "wins": 17,
+   "games": 20,
+   "wr": 0.85
+  },
+  {
+   "deck": "pool_73",
+   "wins": 17,
+   "games": 20,
+   "wr": 0.85
+  },
+  {
+   "deck": "poolv3_089",
+   "wins": 17,
+   "games": 20,
+   "wr": 0.85
+  },
+  {
+   "deck": "poolv4_278",
+   "wins": 17,
+   "games": 20,
+   "wr": 0.85
+  },
+  {
+   "deck": "poolv4_120",
+   "wins": 17,
+   "games": 20,
+   "wr": 0.85
+  },
+  {
+   "deck": "poolv4_086",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv3_171",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv5_242",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv3_071",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv4_037",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv5_076",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv5_341",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv3_204",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv3_015",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv3_083",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv3_249",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "poolv3_206",
+   "wins": 16,
+   "games": 20,
+   "wr": 0.8
+  },
+  {
+   "deck": "pool_121",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "pool_79",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "pool_71",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv4_028",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv5_004",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv5_290",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "pool_55",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv4_099",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv5_401",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv5_205",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv4_305",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv5_068",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "pool_04",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "poolv4_319",
+   "wins": 15,
+   "games": 20,
+   "wr": 0.75
+  },
+  {
+   "deck": "pool_82",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv5_203",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv4_376",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv4_064",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv3_064",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv4_351",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv3_073",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv4_173",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv3_070",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv4_077",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv3_075",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv5_201",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv5_215",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv5_113",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "poolv5_274",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "pool_68",
+   "wins": 14,
+   "games": 20,
+   "wr": 0.7
+  },
+  {
+   "deck": "fac_g0",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_50",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_97",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_85",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv5_041",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv4_199",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "fac_g1",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_42",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_95",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv4_368",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv5_349",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv3_093",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv4_299",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv5_200",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "poolv5_288",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_113",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_129",
+   "wins": 13,
+   "games": 20,
+   "wr": 0.65
+  },
+  {
+   "deck": "pool_21",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv5_187",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv5_051",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv5_337",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "pool_54",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "pool_33",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "pool_70",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv5_135",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv4_010",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv3_113",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv4_280",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv3_143",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv3_231",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv4_193",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "pool_148",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "pool_94",
+   "wins": 12,
+   "games": 20,
+   "wr": 0.6
+  },
+  {
+   "deck": "poolv4_036",
+   "wins": 11,
+   "games": 19,
+   "wr": 0.5789
+  },
+  {
+   "deck": "fac_g2",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "poolv4_136",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "poolv5_019",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "poolv3_134",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "poolv3_119",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "poolv4_286",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "poolv5_178",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "poolv3_149",
+   "wins": 11,
+   "games": 20,
+   "wr": 0.55
+  },
+  {
+   "deck": "pool_05",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "poolv4_089",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "poolv5_189",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "poolv3_091",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "pool_66",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "poolv5_448",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "poolv5_302",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "pool_60",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "pool_81",
+   "wins": 10,
+   "games": 20,
+   "wr": 0.5
+  },
+  {
+   "deck": "pool_38",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "pool_74",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "pool_43",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "pool_139",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv5_355",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv5_299",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv3_199",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv5_306",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv4_130",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv4_252",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "pool_104",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "pool_140",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv3_145",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv3_133",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv4_135",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv5_410",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv5_310",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "poolv4_324",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "pool_72",
+   "wins": 9,
+   "games": 20,
+   "wr": 0.45
+  },
+  {
+   "deck": "pool_126",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "pool_115",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv4_372",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv4_247",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv5_074",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv4_292",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv5_196",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv3_207",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "pool_83",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "pool_91",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv5_398",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv3_060",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv5_327",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "poolv5_009",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "pool_76",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "pool_69",
+   "wins": 8,
+   "games": 20,
+   "wr": 0.4
+  },
+  {
+   "deck": "pool_111",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "pool_17",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv4_240",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv5_054",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv4_337",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv4_168",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv5_096",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv3_112",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv3_209",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "pool_84",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "pool_117",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "pool_12",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "poolv5_263",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "pool_89",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "pool_65",
+   "wins": 7,
+   "games": 20,
+   "wr": 0.35
+  },
+  {
+   "deck": "pool_80",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "pool_102",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv5_402",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv4_202",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv5_305",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv4_169",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv4_147",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "pool_145",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "pool_123",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv3_055",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv4_389",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "poolv4_209",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "pool_110",
+   "wins": 6,
+   "games": 20,
+   "wr": 0.3
+  },
+  {
+   "deck": "pool_31",
+   "wins": 5,
+   "games": 19,
+   "wr": 0.2632
+  },
+  {
+   "deck": "pool_101",
+   "wins": 5,
+   "games": 20,
+   "wr": 0.25
+  },
+  {
+   "deck": "pool_16",
+   "wins": 5,
+   "games": 20,
+   "wr": 0.25
+  },
+  {
+   "deck": "poolv4_008",
+   "wins": 5,
+   "games": 20,
+   "wr": 0.25
+  },
+  {
+   "deck": "poolv5_375",
+   "wins": 5,
+   "games": 20,
+   "wr": 0.25
+  },
+  {
+   "deck": "pool_56",
+   "wins": 5,
+   "games": 20,
+   "wr": 0.25
+  },
+  {
+   "deck": "pool_09",
+   "wins": 5,
+   "games": 20,
+   "wr": 0.25
+  },
+  {
+   "deck": "pool_29",
+   "wins": 5,
+   "games": 20,
+   "wr": 0.25
+  },
+  {
+   "deck": "pool_114",
+   "wins": 4,
+   "games": 20,
+   "wr": 0.2
+  },
+  {
+   "deck": "pool_92",
+   "wins": 4,
+   "games": 20,
+   "wr": 0.2
+  },
+  {
+   "deck": "poolv4_011",
+   "wins": 4,
+   "games": 20,
+   "wr": 0.2
+  },
+  {
+   "deck": "pool_28",
+   "wins": 4,
+   "games": 20,
+   "wr": 0.2
+  },
+  {
+   "deck": "poolv5_059",
+   "wins": 4,
+   "games": 20,
+   "wr": 0.2
+  },
+  {
+   "deck": "pool_141",
+   "wins": 3,
+   "games": 20,
+   "wr": 0.15
+  },
+  {
+   "deck": "pool_136",
+   "wins": 3,
+   "games": 20,
+   "wr": 0.15
+  },
+  {
+   "deck": "poolv5_399",
+   "wins": 3,
+   "games": 20,
+   "wr": 0.15
+  },
+  {
+   "deck": "pool_147",
+   "wins": 3,
+   "games": 20,
+   "wr": 0.15
+  },
+  {
+   "deck": "pool_88",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "pool_86",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "pool_64",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "pool_130",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "poolv5_395",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "poolv3_058",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "pool_144",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "poolv5_334",
+   "wins": 2,
+   "games": 20,
+   "wr": 0.1
+  },
+  {
+   "deck": "pool_78",
+   "wins": 1,
+   "games": 20,
+   "wr": 0.05
+  },
+  {
+   "deck": "poolv3_179",
+   "wins": 1,
+   "games": 20,
+   "wr": 0.05
+  },
+  {
+   "deck": "poolv4_146",
+   "wins": 1,
+   "games": 20,
+   "wr": 0.05
+  },
+  {
+   "deck": "pool_11",
+   "wins": 1,
+   "games": 20,
+   "wr": 0.05
+  },
+  {
+   "deck": "pool_14",
+   "wins": 0,
+   "games": 20,
+   "wr": 0.0
+  },
+  {
+   "deck": "pool_103",
+   "wins": 0,
+   "games": 20,
+   "wr": 0.0
+  },
+  {
+   "deck": "pool_47",
+   "wins": 0,
+   "games": 20,
+   "wr": 0.0
+  },
+  {
+   "deck": "poolv4_297",
+   "wins": 0,
+   "games": 20,
+   "wr": 0.0
+  }
+ ]
+}

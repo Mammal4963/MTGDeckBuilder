@@ -91,7 +91,9 @@ def archive_games(run_id, ji, deck_a, opp, buffer):
         seg.append((state, reply))
         if state.get("kind") != "game_end":
             continue
-        won = bool(state.get("opp_lost")) and not state.get("i_lost")
+        # winner's game_end arrives with both flags False; only the
+        # loser sees i_lost=True
+        won = not state.get("i_lost")
         name = f"cf{run_id}_j{ji:02d}_{k:02d}.json.gz"
         dur = round(sum(s.get("_dt_ms", 0) for s, _r in seg) / 1000, 1)
         rec = {"iter": f"cf-{run_id}", "worker": ji, "seq": k,
@@ -200,8 +202,10 @@ def main():
                           list(workers[wk].buffer))
         except OSError:
             pass
+        # count wins by SEAT, not deck name: Forge names players from
+        # the .dck metadata Name, which need not match the filename
         wins = len(re.findall(
-            rf"Game Result.*Ai\(1\)-{re.escape(da)} has won", out))
+            r"Game Result.*Ai\(1\)-\S.* has won", out))
         games = len(re.findall(r"Game Result", out))
         return (da, db), wins, games
 

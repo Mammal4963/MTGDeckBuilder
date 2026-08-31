@@ -846,3 +846,31 @@ fine-tuning (per-deck) or training-recipe changes, not more of the
 same. Benchmark runs: 45 games/min, ~9 min per 400-game flagship.
 Dashboard: legacy confirm panel retired; benchmarks table + live
 benchmark progress bar + archived benchmark games shipped.
+
+## GENESIS COMPLETE: 200 generations, noise -> meta parity (2026-08-31)
+
+The control campaign is done: 200 generations, 42 wall-hours, ~30k
+games, zero structural priors (lands were just cards). Final champion
+(gid 2967, gen 199): deep deck-eval 52%+-5 over 442 games vs meta_v1 -
+statistical parity with the average curated meta deck, from pure
+noise. Its manabase: 18 lands, ZERO basics - all evolved duals/triomes
+(Gilt-Leaf Palace x4, Elegant Parlor x3, Molten Tributary x3, Indatha
+Triome...). Mean-fitness arc: 24% pre-blend, 31% after blended
+fitness (gen 145), 40% after Un-set exclusion (gen 161), 44% final
+band, peak 51% at gen 194 - each intervention moved the mean. Land
+discovery: ~9 -> 18.4 mean lands. Graduation at gen 26.
+
+Bugs the wrap-up caught: (1) gauntlet.py counted wins by regex
+"Ai(1)-<deck arg>" but Forge names players from .dck metadata Name -
+any filename/Name mismatch scores 0%; now counts by seat. (2)
+archive won required opp_lost=True, but the winner's game_end arrives
+(False, False); now won = not i_lost. The evolver itself was immune
+(its filenames == metadata names) - the campaign's numbers stand.
+Winner's-curse note: champion showed 72% on its 36-game evolver
+sample; honest deep measure 52%. Champion-selection bias is real -
+always deep-eval before claiming a number.
+
+Next (user-approved direction): strength-skewed evolver meta is built
+(meta_evolver_v1 = top 60 of 200 by intra-meta winrate, avg 76%;
+meta_holdout_v1 = 40 disjoint, rank-spread) from a 2000-game rating
+pass. Then: seeded islands for build-around novelty hunting.
